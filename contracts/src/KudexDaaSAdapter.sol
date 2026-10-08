@@ -48,8 +48,19 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
         _;
     }
 
-    constructor() Ownable(msg.sender) {
+    constructor(address initialVault) Ownable(msg.sender) {
         authorizedSentinels[msg.sender] = true;
+        if (initialVault != address(0)) {
+            vaultProfiles[initialVault] = VaultProfile({
+                isRegistered: true,
+                lastAssessmentTimestamp: block.timestamp,
+                totalRestructuredDebt: 0,
+                collateralizationRatioBps: 12000,
+                restructuringActive: false
+            });
+            registeredVaults.push(initialVault);
+            emit VaultRegistered(initialVault, 12000);
+        }
     }
 
     function setSentinel(address sentinel, bool authorized) external onlyOwner {

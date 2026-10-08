@@ -37,6 +37,12 @@ export function Navbar() {
             >
               DaaS Sentinel
             </Link>
+            <Link
+              href="/docs"
+              className="hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+            >
+              Documentation
+            </Link>
           </nav>
         </div>
 

@@ -15,6 +15,9 @@ import {
   FiLayers,
   FiCheckCircle,
   FiCode,
+  FiEye,
+  FiFileText,
+  FiDollarSign,
 } from 'react-icons/fi';
 import { RiRobot2Line } from 'react-icons/ri';
 
@@ -228,6 +231,71 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Enterprise Commercial Payroll & Invoicing Shielding */}
+      <section className="py-20 md:py-28 border-b border-neutral-200/60 dark:border-neutral-800/60 bg-white/40 dark:bg-neutral-950/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-xs font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-semibold">
+              Commercial Confidentiality
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold font-mono text-neutral-900 dark:text-white mt-2">
+              Shielding Enterprise Payroll & Invoice Liquidity
+            </h2>
+            <p className="text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto mt-3 text-sm font-sans leading-relaxed">
+              Standard EVM transactions expose corporate financial strategies, trade discounts, and executive compensation on public ledgers. Kudex enables complete commercial discretion while preserving mathematical solvency and regulatory auditability.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md space-y-4">
+              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 w-fit">
+                <FiDollarSign className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                Confidential Corporate Payroll
+              </h3>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
+                Disburse compensation and contractor retainers as Groth16 shielded notes. Competitors cannot scrape wallet balances, salary tiers, or internal compensation structures from public mempool watchers.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md space-y-4">
+              <div className="p-3 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 w-fit">
+                <FiFileText className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                Proprietary Trade Invoices
+              </h3>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
+                Finance supplier receivables, vendor volume discounts, and supply chain invoices without leaking proprietary pricing matrices or counterparty relationships to competitor algorithmic trading desks.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-md space-y-4">
+              <div className="p-3 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 w-fit">
+                <FiEye className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                Selective Disclosure & Viewing Keys
+              </h3>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
+                Retain full institutional auditability. Generate read-only viewing keys to grant compliance officers, tax authorities, or internal auditors instant cryptographic proof of balances with zero data leaks.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/docs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-mono font-medium text-neutral-800 dark:text-neutral-200 transition"
+            >
+              <span>Read Enterprise Compliance & Viewing Key Whitepaper</span>
+              <FiArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
       </section>
 

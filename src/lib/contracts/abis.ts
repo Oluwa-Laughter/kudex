@@ -234,3 +234,8 @@ export const kudexDaaSAdapterAbi = [
     stateMutability: 'view',
   },
 ] as const;
+
+export const KUDEX_VAULT_ABI = kudexVaultAbi;
+export const KUDEX_RFQ_ABI = kudexRFQMarketAbi;
+export const KUDEX_DAAS_ABI = kudexDaaSAdapterAbi;
+

@@ -14,6 +14,7 @@ import {
   FiChevronRight,
   FiCode,
   FiExternalLink,
+  FiBook,
 } from 'react-icons/fi';
 
 const navItems = [
@@ -92,6 +93,15 @@ export function Sidebar() {
         <div className={`pt-6 px-3 mb-2 text-[10px] font-mono uppercase tracking-wider text-neutral-400 ${collapsed ? 'hidden' : 'block'}`}>
           Portaldot Protocol
         </div>
+
+        <Link
+          href="/docs"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-900 dark:hover:text-neutral-100 transition"
+          title={collapsed ? 'Technical Docs' : undefined}
+        >
+          <FiBook className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+          {!collapsed && <span>Technical Docs</span>}
+        </Link>
 
         <a
           href="https://testnet.portaldot.world/explorer"

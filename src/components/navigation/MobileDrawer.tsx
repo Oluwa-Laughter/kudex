@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as Dialog from '@radix-ui/react-dialog';
-import { FiMenu, FiX, FiGrid, FiLayers, FiRepeat, FiActivity, FiShield } from 'react-icons/fi';
+import { FiMenu, FiX, FiGrid, FiLayers, FiRepeat, FiActivity, FiShield, FiBook } from 'react-icons/fi';
 import { Logo } from '@/components/brand/Logo';
 import { ThemeToggle } from '@/components/brand/ThemeToggle';
 
@@ -28,6 +28,11 @@ const navItems = [
     name: 'Sentinel & DaaS Health',
     href: '/dashboard/governance',
     icon: FiActivity,
+  },
+  {
+    name: 'Technical Docs',
+    href: '/docs',
+    icon: FiBook,
   },
 ];
 

@@ -16,7 +16,7 @@ contract KudexDaaSAdapterTest is Test {
     address public sentinel = address(0x99);
 
     function setUp() public {
-        adapter = new KudexDaaSAdapter();
+        adapter = new KudexDaaSAdapter(address(0));
         verifier = new Groth16Verifier();
         asset = new MockERC20("Portaldot USD", "pUSD", 6);
         vault = new KudexVault(asset, "Kudex Confidential pUSD", "k-pUSD", address(verifier));
