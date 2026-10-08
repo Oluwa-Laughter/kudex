@@ -1,0 +1,10 @@
+# KUDEX AGENT ENVIRONMENT RULES
+ENFORCE: Next.js 16, React 19, TypeScript 7.
+ENFORCE: Viem @latest, Wagmi @latest, TanStack Query v5.
+ENFORCE: BigInt for all Wei, POT, and token math.
+ENFORCE: 14 decimals for native POT calculations.
+ENFORCE: `as const` on all contract ABIs.
+ENFORCE: `react-icons` for all iconography. Never render emojis.
+ENFORCE: Semantic Tailwind design tokens. No inline hex colors.
+REJECT: Ethers.js (v5/v6), Web3.js, deprecated Wagmi v1 hooks.
+REJECT: Floating-point math on on-chain values.
