@@ -59,11 +59,11 @@ export default function AppProtectionPage() {
     <div className="space-y-8">
       {/* Workspace Header */}
       <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
-          Risk Protection & Default-as-a-Service (DaaS)
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+          Risk Protection & Solvency Defense
         </h2>
         <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
-          Algorithmic debt solvency surveillance. Replaces destructive flash liquidations with structured risk amortization.
+          Algorithmic debt solvency surveillance. Replaces sudden liquidations with structured risk amortization and capital protection.
         </p>
       </div>
 

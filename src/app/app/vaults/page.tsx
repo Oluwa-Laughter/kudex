@@ -74,7 +74,7 @@ export default function AppVaultsPage() {
       tvl: '$4,150,000 pUSD',
       utilization: '74.2%',
       riskScore: '2,400 bps',
-      description: 'Balanced risk-reward tranche with amortized DaaS restructuring.',
+      description: 'Balanced risk-reward tranche with amortized risk restructuring.',
     },
     {
       id: 'junior',
@@ -93,7 +93,7 @@ export default function AppVaultsPage() {
     <div className="space-y-8">
       {/* Workspace Header */}
       <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
           Institutional Credit Vaults & Yield Tranches
         </h2>
         <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
@@ -125,7 +125,7 @@ export default function AppVaultsPage() {
         </div>
 
         <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-1 transition-colors duration-200">
-          <span className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400">DaaS Solvency Floor</span>
+          <span className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400">Automated Solvency Floor</span>
           <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
             1.42x
           </div>

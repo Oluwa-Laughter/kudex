@@ -74,9 +74,9 @@ export const APP_NAV_ITEMS = [
     icon: RiShieldCheckLine,
   },
   {
-    name: 'Help & Guides',
-    href: '/app/docs',
-    icon: FiBook,
+    name: 'How It Works',
+    href: '/app/how-it-works',
+    icon: FiCheckCircle,
   },
 ];
 

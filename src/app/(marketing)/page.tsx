@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   FiArrowRight,
@@ -11,13 +11,13 @@ import {
   FiCpu,
   FiTrendingUp,
   FiCheckCircle,
-  FiFileText,
   FiRepeat,
   FiActivity,
-  FiBarChart2,
+  FiSliders,
+  FiPlay,
 } from 'react-icons/fi';
-import { RiRobot2Line, RiExchangeFundsLine, RiShieldCheckLine } from 'react-icons/ri';
-import { useAccount, useReadContract } from 'wagmi';
+import { RiRobot2Line, RiExchangeFundsLine, RiShieldCheckLine, RiBankCardLine } from 'react-icons/ri';
+import { useReadContract } from 'wagmi';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
 import { formatUnits } from 'viem';
@@ -52,238 +52,335 @@ export default function MarketingHomePage() {
   const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : 1850;
   const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);
 
+  // Interactive Hero Widget State
+  const [demoAmount, setDemoAmount] = useState('5,000');
+  const [demoAsset, setDemoAsset] = useState('pUSDC');
+  const [demoStatus, setDemoStatus] = useState<'idle' | 'simulating' | 'settled'>('idle');
+
+  const handleRunDemo = () => {
+    setDemoStatus('simulating');
+    setTimeout(() => {
+      setDemoStatus('settled');
+    }, 900);
+  };
+
   return (
     <div className="relative overflow-hidden">
-      {/* Background Ambient Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-[#00E599]/10 via-[#2E68FF]/5 to-transparent blur-[140px] pointer-events-none -z-10" />
-
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-700 dark:text-neutral-300 mb-8 shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse" />
-          <span className="text-[#00E599] font-medium uppercase tracking-wider">
-            Autonomous Confidential Settlement
-          </span>
-          <span className="text-slate-300 dark:text-neutral-500">|</span>
-          <span className="text-slate-500 dark:text-neutral-400">Institutional Capital Layer</span>
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-[#131826] border border-slate-200 dark:border-[#1E2638] text-xs font-medium text-slate-700 dark:text-neutral-300 mb-6">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>Decentralized Confidential Settlement</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 dark:text-neutral-100 tracking-tight leading-[1.12]">
+            Confidential Settlement for Global Capital
+          </h1>
+
+          <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
+            Execute private corporate disbursements, earn protected yield across fractionalized credit tranches,
+            and trade without public mempool front-running.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/app/overview"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20"
+            >
+              <span>Launch Application</span>
+              <FiArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white dark:bg-[#131826] hover:bg-slate-100 dark:hover:bg-[#1B2232] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#1E2638] font-semibold text-sm transition"
+            >
+              <span>How It Works</span>
+              <FiPlay className="w-3.5 h-3.5 text-emerald-500" />
+            </Link>
+          </div>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-neutral-100 max-w-5xl mx-auto leading-[1.1]">
-          Confidential Settlement & Autonomous Liquidity for{' '}
-          <span className="bg-gradient-to-r from-[#00E599] via-emerald-400 to-[#2E68FF] bg-clip-text text-transparent">
-            Global Capital
-          </span>
-        </h1>
+        {/* Live Interactive Hero Sandbox Widget */}
+        <div className="mt-14 max-w-3xl mx-auto">
+          <div className="rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] p-6 sm:p-8 shadow-xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-[#1E2638]">
+              <div>
+                <div className="text-xs uppercase tracking-wider font-semibold text-slate-400 dark:text-neutral-500">
+                  Interactive Settlement Sandbox
+                </div>
+                <div className="text-base font-bold text-slate-900 dark:text-neutral-100 mt-0.5">
+                  Test Zero-MEV Shielded Settlement
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Live Testnet Simulation</span>
+              </div>
+            </div>
 
-        <p className="mt-8 text-lg sm:text-xl text-slate-600 dark:text-neutral-400 max-w-3xl mx-auto leading-relaxed">
-          Shielded corporate disbursements, fractionalized real-world asset credit tranches,
-          and agent-native RFQ execution. Maintain complete financial privacy while preserving
-          mathematical solvency and regulatory auditability.
-        </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638]">
+                <label className="text-xs text-slate-500 dark:text-neutral-400 font-medium">
+                  Transfer Amount
+                </label>
+                <div className="flex items-center justify-between mt-1.5">
+                  <input
+                    type="text"
+                    value={demoAmount}
+                    onChange={(e) => setDemoAmount(e.target.value)}
+                    className="bg-transparent font-bold text-lg text-slate-900 dark:text-neutral-100 outline-none w-32"
+                  />
+                  <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-200 dark:bg-[#1B2232] text-slate-700 dark:text-neutral-300">
+                    pUSDC
+                  </span>
+                </div>
+              </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/app/overview"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-xl shadow-[#00E599]/20 group"
-          >
-            <span>Launch Protocol</span>
-            <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            href="/solutions/enterprise-payroll"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white dark:bg-[#0E121B] hover:bg-slate-100 dark:hover:bg-[#161C2B] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D] font-semibold text-base transition shadow-sm"
-          >
-            <FiLock className="w-4 h-4 text-[#00E599]" />
-            <span>Explore Enterprise Solutions</span>
-          </Link>
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638]">
+                <label className="text-xs text-slate-500 dark:text-neutral-400 font-medium">
+                  Receiving Asset
+                </label>
+                <div className="flex items-center justify-between mt-1.5">
+                  <div className="font-bold text-lg text-slate-900 dark:text-neutral-100 tabular-nums">
+                    {demoAmount}
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    kUSDp (Shielded)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3.5 rounded-xl bg-slate-100 dark:bg-[#0A0D14] text-xs font-mono text-slate-600 dark:text-neutral-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-slate-200 dark:border-[#1E2638]">
+              <div>
+                Privacy Commitment:{' '}
+                <span className="text-slate-800 dark:text-neutral-200 font-semibold">
+                  0x7a9c...4e21 (Client Encrypted)
+                </span>
+              </div>
+              <div className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                Slippage: 0.00% | Front-run Risk: 0%
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs text-slate-500 dark:text-neutral-400">
+                Solvers quote off-chain. Atomic execution on-chain.
+              </div>
+              <button
+                onClick={handleRunDemo}
+                disabled={demoStatus === 'simulating'}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-bold text-xs transition hover:opacity-90 disabled:opacity-50"
+              >
+                {demoStatus === 'simulating'
+                  ? 'Simulating RFQ Match...'
+                  : demoStatus === 'settled'
+                  ? 'Settled Successfully'
+                  : 'Simulate Shielded Swap'}
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Live Protocol Metrics Ribbon */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-white/80 dark:bg-[#0E121B]/80 border border-slate-200 dark:border-[#21293D] backdrop-blur-xl shadow-sm transition-colors duration-200">
-          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#161C2B]/50 border border-slate-200/80 dark:border-[#21293D]/60 text-left">
-            <div className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-1">
+        {/* Live Protocol Metrics */}
+        <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-2xl bg-white dark:bg-[#131826] border border-slate-200 dark:border-[#1E2638] shadow-sm">
+          <div className="p-3 text-left">
+            <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
               Total Shielded Value
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums mt-1">
               {displayTVL}
             </div>
-            <div className="text-xs text-[#00E599] font-mono mt-1 flex items-center gap-1">
-              <FiTrendingUp className="w-3.5 h-3.5" />
-              <span>Real-Time On-Chain TVL</span>
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
+              On-Chain Capital Pools
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#161C2B]/50 border border-slate-200/80 dark:border-[#21293D]/60 text-left">
-            <div className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-1">
-              Settlement Volume
+          <div className="p-3 text-left">
+            <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
+              24h Settled Volume
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums mt-1">
               {displayVolume}
             </div>
-            <div className="text-xs text-[#00E599] font-mono mt-1 flex items-center gap-1">
-              <FiCheckCircle className="w-3.5 h-3.5" />
-              <span>Indexed RFQ Delivery</span>
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
+              Zero Front-Running
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#161C2B]/50 border border-slate-200/80 dark:border-[#21293D]/60 text-left">
-            <div className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-1">
-              Active Agent Fleets
+          <div className="p-3 text-left">
+            <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
+              Solvency Health
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
-              48 Fleets
-            </div>
-            <div className="text-xs text-slate-500 dark:text-neutral-400 font-mono mt-1 flex items-center gap-1">
-              <FiCpu className="w-3.5 h-3.5 text-[#00E599]" />
-              <span>Bounded Session Keys</span>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#161C2B]/50 border border-slate-200/80 dark:border-[#21293D]/60 text-left">
-            <div className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-1">
-              Solvency Health Factor
-            </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums mt-1">
               {healthFactor}x
             </div>
-            <div className="text-xs text-[#00E599] font-mono mt-1 flex items-center gap-1">
-              <FiShield className="w-3.5 h-3.5" />
-              <span>DaaS Algorithmic Floor</span>
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
+              Automated Solvency Floor
+            </div>
+          </div>
+
+          <div className="p-3 text-left">
+            <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
+              Active Agents
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tabular-nums mt-1">
+              48 Fleets
+            </div>
+            <div className="text-xs text-slate-500 dark:text-neutral-400 font-medium mt-1">
+              Bounded Delegation Keys
             </div>
           </div>
         </div>
       </section>
 
-      {/* Institutional Architecture Pillars */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-xs font-mono uppercase tracking-widest text-[#00E599] font-semibold mb-3">
-            Core Protocol Pillars
+      {/* Modular Capabilities (Distinct Layouts, Not 3 Clone Cards) */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200 dark:border-[#1E2638]">
+        <div className="mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+            Institutional Infrastructure Built for Scale
           </h2>
-          <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
-            Engineered for Confidentiality, Yield & Autonomy
-          </h3>
-          <p className="mt-4 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
-            Every transaction, settlement, and debt restructuring event executes deterministically
-            with zero plaintext leakage and continuous mathematical verification.
+          <p className="mt-2 text-base text-slate-600 dark:text-neutral-400">
+            Three dedicated modules engineered for privacy, risk mitigation, and algorithmic execution.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Pillar 1 */}
-          <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] hover:border-[#00E599]/40 hover:bg-slate-50 dark:hover:bg-[#161C2B]/60 transition flex flex-col justify-between group shadow-sm">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-[#00E599]/10 text-[#00E599] flex items-center justify-center mb-6 border border-[#00E599]/20 group-hover:scale-105 transition-transform">
-                <FiLock className="w-6 h-6" />
+        {/* Feature Module 1: Enterprise Payroll & Shielded Transfers (Asymmetrical Wide Banner) */}
+        <div className="p-8 sm:p-10 rounded-3xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                <FiLock className="w-3.5 h-3.5" />
+                <span>Confidential Disbursements</span>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-neutral-100 mb-3">
-                Confidential Settlement & Payroll
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed mb-6">
-                Shield corporate balances, vendor invoicing, and international contractor payroll.
-                Public explorers and mempool surveillance bots see only cryptographic commitments,
-                safeguarding operational privacy.
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+                Enterprise Payroll with Zero Public Balance Leaks
+              </h3>
+              <p className="text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
+                Pay global contractors, vendor invoices, and cross-border teams without disclosing company treasury
+                balances or salary figures on transparent public explorers.
               </p>
-              <ul className="space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Zero public balance leakage</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Asymmetric viewing keys for compliance</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Instant recipient note redemption</span>
-                </li>
-              </ul>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-neutral-300">
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <span>Client-side note shielding</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-neutral-300">
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <span>Opt-in compliance viewing keys</span>
+                </div>
+              </div>
+              <div className="pt-4">
+                <Link
+                  href="/solutions/enterprise-payroll"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  <span>Explore Enterprise Payroll</span>
+                  <FiArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
-            <div className="pt-8">
-              <Link
-                href="/solutions/enterprise-payroll"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00E599] hover:underline"
-              >
-                <span>Enterprise Payroll Details</span>
-                <FiArrowRight className="w-4 h-4" />
-              </Link>
+
+            <div className="lg:col-span-5">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638] space-y-3 font-mono text-xs">
+                <div className="text-xs uppercase font-semibold text-slate-500 pb-2 border-b border-slate-200 dark:border-[#1E2638]">
+                  Sample Shielded Disbursement
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-[#1E2638]">
+                  <span className="text-slate-500">Sender Balance:</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Encrypted (Private)</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200 dark:border-[#1E2638]">
+                  <span className="text-slate-500">Recipients:</span>
+                  <span className="text-slate-800 dark:text-neutral-200">12 Shielded Addresses</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500">Public Mempool View:</span>
+                  <span className="text-blue-500">Valid Proof / 0 Data Leaks</span>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Pillar 2 */}
-          <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] hover:border-[#2E68FF]/40 hover:bg-slate-50 dark:hover:bg-[#161C2B]/60 transition flex flex-col justify-between group shadow-sm">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-[#2E68FF]/10 text-[#2E68FF] flex items-center justify-center mb-6 border border-[#2E68FF]/20 group-hover:scale-105 transition-transform">
-                <FiLayers className="w-6 h-6" />
+        {/* Feature Split Modules 2 & 3 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Module 2: Protected Yield Tranches */}
+          <div className="p-8 rounded-3xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold">
+                <FiLayers className="w-3.5 h-3.5" />
+                <span>Yield Architecture</span>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-neutral-100 mb-3">
-                Credit Tranches & DaaS Solvency
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed mb-6">
-                Institutional credit facilities divided into Senior, Mezzanine, and Junior risk tranches.
-                Protected by Default-as-a-Service automated restructuring that prevents sudden insolvency cascades.
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100">
+                Institutional Credit Tranches & Solvency Floor
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+                Deposit into Senior, Mezzanine, or Junior risk tiers. Automated solvency monitoring triggers proactive
+                debt restructuring before liquidations cascade.
               </p>
-              <ul className="space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#2E68FF] flex-shrink-0" />
-                  <span>Senior tranche principal protection</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#2E68FF] flex-shrink-0" />
-                  <span>Algorithmic debt haircut distribution</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#2E68FF] flex-shrink-0" />
-                  <span>Continuous on-chain risk telemetry</span>
-                </li>
-              </ul>
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638] space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-slate-700 dark:text-neutral-300">Senior Tranche:</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">8.5% APY (Principal Protected)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-slate-700 dark:text-neutral-300">Mezzanine Tranche:</span>
+                  <span className="font-bold text-blue-500">14.2% APY (Balanced Risk)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-semibold text-slate-700 dark:text-neutral-300">Junior Tranche:</span>
+                  <span className="font-bold text-purple-500">22.8% APY (First-Loss High Return)</span>
+                </div>
+              </div>
             </div>
-            <div className="pt-8">
+            <div className="pt-6">
               <Link
                 href="/solutions/credit-tranches"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2E68FF] hover:underline"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
               >
-                <span>Credit Tranches Details</span>
+                <span>Explore Credit Tranches</span>
                 <FiArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          {/* Pillar 3 */}
-          <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] hover:border-[#00E599]/40 hover:bg-slate-50 dark:hover:bg-[#161C2B]/60 transition flex flex-col justify-between group shadow-sm">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-[#00E599]/10 text-[#00E599] flex items-center justify-center mb-6 border border-[#00E599]/20 group-hover:scale-105 transition-transform">
-                <RiRobot2Line className="w-6 h-6" />
+          {/* Module 3: Autonomous Kudex Agent */}
+          <div className="p-8 rounded-3xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-semibold">
+                <RiRobot2Line className="w-3.5 h-3.5" />
+                <span>Autonomous Runtime</span>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-neutral-100 mb-3">
-                Kudex Agent Fleet Execution
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed mb-6">
-                Deploy autonomous software agents to negotiate off-chain RFQ spreads with solvers
-                under strict session policies. Spend caps, expiration times, and contract whitelists
-                eliminate signature fatigue.
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-neutral-100">
+                Kudex Agent with Bounded Session Keys
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+                Automate RFQ execution, stop-losses, and yield rebalancing. Grant temporary execution permissions
+                with daily spend caps and instant revocation switches.
               </p>
-              <ul className="space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Zero-popup session execution</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Strict spending limit ceilings</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-[#00E599] flex-shrink-0" />
-                  <span>Instant one-click revocation switch</span>
-                </li>
-              </ul>
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638] space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Delegation Model:</span>
+                  <span className="font-semibold text-slate-800 dark:text-neutral-200">Bounded Session Policy</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Max Spend Limit:</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">Strict Daily Ceiling</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Master Key Exposure:</span>
+                  <span className="font-semibold text-purple-500">Zero (Keys Never Stored)</span>
+                </div>
+              </div>
             </div>
-            <div className="pt-8">
+            <div className="pt-6">
               <Link
                 href="/solutions/autonomous-agents"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00E599] hover:underline"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline"
               >
-                <span>Agent Architecture Details</span>
+                <span>Explore Agent Architecture</span>
                 <FiArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -291,136 +388,81 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      {/* Interactive KUDEX AGENT Experience Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-[#00E599]">
-              <RiRobot2Line className="w-4 h-4" />
-              <span>MEET KUDEX AGENT</span>
+      {/* Comparison Section */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200 dark:border-[#1E2638]">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+            Why Capital Allocators Choose Kudex
+          </h2>
+          <p className="mt-2 text-base text-slate-600 dark:text-neutral-400">
+            Compare Kudex against public Automated Market Makers and centralized trading venues.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
+            <div className="text-xs uppercase font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+              Front-Running Defense
             </div>
-            <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight leading-tight">
-              Natural Language Intent to Cryptographic Execution
-            </h3>
-            <p className="text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
-              No complex transaction builders or multi-step calldata assembly.
-              Simply instruct KUDEX AGENT in plain language. The agent simulates state diffs,
-              queries competitive institutional solvers, and presents verified quotes ready for instant execution.
+            <h4 className="text-lg font-bold text-slate-900 dark:text-neutral-100 mb-2">
+              Zero MEV Exploitation
+            </h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Transparent mempools allow predatory bots to extract billions in sandwich attacks.
+              Kudex settles swaps privately with competitive off-chain solvers.
             </p>
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] shadow-sm">
-                <div className="p-2 rounded-lg bg-[#00E599]/10 text-[#00E599] mt-0.5">
-                  <FiActivity className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-neutral-200">
-                    Pre-Flight Solvency Simulators
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
-                    Calculates exact balance deltas and verifies invariant preservation before touching the ledger.
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] shadow-sm">
-                <div className="p-2 rounded-lg bg-[#2E68FF]/10 text-[#2E68FF] mt-0.5">
-                  <RiExchangeFundsLine className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-neutral-200">
-                    Optimal RFQ Solver Routing
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
-                    Solvers compete off-chain to deliver sub-second fill rates with zero sandwich or front-running risk.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href="/app/overview"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition"
-              >
-                <span>Try KUDEX AGENT Live</span>
-                <FiArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
           </div>
 
-          <div className="lg:col-span-7">
-            <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-2xl p-6 font-mono text-sm space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-[#00E599]/80" />
-                  <span className="ml-2 text-xs text-slate-500 dark:text-neutral-400">kudex-agent-runtime</span>
-                </div>
-                <span className="text-xs text-[#00E599] px-2 py-0.5 rounded bg-[#00E599]/10">
-                  SYSTEM READY
-                </span>
-              </div>
-
-              <div className="space-y-3 text-slate-700 dark:text-neutral-300">
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] text-xs text-slate-800 dark:text-neutral-300 border border-slate-200 dark:border-transparent">
-                  <span className="text-[#00E599] font-bold">User:</span> &ldquo;Disburse 2,500 pUSD to the treasury pool and shield receipt notes for audit.&rdquo;
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-[#06080D] border border-slate-200 dark:border-[#21293D] space-y-2 text-xs">
-                  <div className="text-[#00E599] flex items-center gap-1.5 font-semibold">
-                    <RiRobot2Line className="w-4 h-4" />
-                    <span>KUDEX AGENT:</span>
-                  </div>
-                  <p className="text-slate-700 dark:text-neutral-300 font-sans">
-                    Generating client-side note commitment. Simulating vault state transition:
-                  </p>
-                  <div className="p-2.5 rounded-lg bg-white dark:bg-[#161C2B] font-mono text-[11px] text-slate-800 dark:text-neutral-300 space-y-1 border border-slate-200 dark:border-transparent">
-                    <div>Commitment: 0x8f4c...3e19 (Client-Side Encrypted)</div>
-                    <div>Asset Delta: -2,500.00 pUSD</div>
-                    <div>Invariant Solvency: Preserved (Health Factor: 1.42x)</div>
-                    <div className="text-[#00E599]">Estimated Gas: 0.00014 POT (Native Base Unit)</div>
-                  </div>
-                  <div className="pt-2 flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#00E599] text-[#06080D] font-bold text-xs">
-                      <FiCheckCircle className="w-3.5 h-3.5" />
-                      Ready to Execute
-                    </span>
-                    <span className="text-slate-400 dark:text-neutral-500 text-[11px]">
-                      Session Key Policy: Single-Click Bounded Delegation
-                    </span>
-                  </div>
-                </div>
-              </div>
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
+            <div className="text-xs uppercase font-semibold text-blue-500 mb-2">
+              Mathematical Solvency
             </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-neutral-100 mb-2">
+              Proactive Debt Defense
+            </h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Traditional lending protocols suffer sudden liquidations when oracle prices swing.
+              Kudex executes algorithmic restructuring to protect senior capital.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
+            <div className="text-xs uppercase font-semibold text-purple-500 mb-2">
+              Safe Autonomy
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-neutral-100 mb-2">
+              Bounded Delegation
+            </h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Delegate trading logic to autonomous software without ever exporting your private seed phrase
+              or exposing your full balance to risk.
+            </p>
           </div>
         </div>
       </section>
 
       {/* Call to Action Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="rounded-3xl border border-[#21293D] bg-gradient-to-b from-[#0E121B] to-[#06080D] p-12 sm:p-16 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-radial from-[#00E599]/10 via-transparent to-transparent opacity-60 pointer-events-none" />
-          <h3 className="text-3xl sm:text-5xl font-extrabold text-neutral-100 tracking-tight max-w-3xl mx-auto leading-tight">
-            Institutional Privacy and Yield Await Your Capital
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="rounded-3xl border border-slate-200 dark:border-[#1E2638] bg-slate-950 text-white p-10 sm:p-14 text-center relative overflow-hidden">
+          <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight max-w-2xl mx-auto">
+            Experience Confidential Decentralized Settlement
           </h3>
-          <p className="mt-6 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Begin shielding balances, managing high-grade credit tranches, or deploying autonomous
-            Kudex Agents on our high-speed settlement network today.
+          <p className="mt-4 text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
+            Shield your first balance, deposit into audited yield vaults, or test Kudex Agent on our high-speed network.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/app/overview"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-xl shadow-[#00E599]/20"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20"
             >
               <span>Launch Kudex Workspace</span>
-              <FiArrowRight className="w-5 h-5" />
+              <FiArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/docs"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#161C2B] hover:bg-[#21293D] text-neutral-200 border border-[#21293D] font-semibold text-base transition"
+              href="/how-it-works"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-neutral-200 border border-slate-700 font-semibold text-sm transition"
             >
-              <span>View Technical Documentation</span>
+              <span>Read How It Works</span>
             </Link>
           </div>
         </div>

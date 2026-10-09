@@ -36,7 +36,7 @@ export default function MarketingLayout({
       icon: FiLock,
     },
     {
-      title: 'Credit Tranches & DaaS',
+      title: 'Credit Tranches & Solvency',
       desc: 'Institutional yield pools with algorithmic debt restructuring',
       href: '/solutions/credit-tranches',
       icon: FiLayers,
@@ -140,12 +140,12 @@ export default function MarketingLayout({
               </Link>
 
               <Link
-                href="/docs"
+                href="/how-it-works"
                 className={`hover:text-slate-900 dark:hover:text-white transition ${
-                  pathname === '/docs' ? 'text-[#00E599] font-bold' : ''
+                  pathname === '/how-it-works' ? 'text-emerald-500 font-bold' : ''
                 }`}
               >
-                Documentation
+                How It Works
               </Link>
             </nav>
           </div>
@@ -206,11 +206,11 @@ export default function MarketingLayout({
               Bridge
             </Link>
             <Link
-              href="/docs"
+              href="/how-it-works"
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
             >
-              Documentation
+              How It Works
             </Link>
             <div className="pt-2">
               <Link
@@ -264,7 +264,7 @@ export default function MarketingLayout({
                 </li>
                 <li>
                   <Link href="/solutions/credit-tranches" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Credit Tranches & DaaS
+                    Credit Tranches & Solvency
                   </Link>
                 </li>
                 <li>
@@ -316,13 +316,13 @@ export default function MarketingLayout({
               </h5>
               <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
                 <li>
-                  <Link href="/docs" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Protocol Guides & FAQ
+                  <Link href="/how-it-works" className="hover:text-slate-900 dark:hover:text-white transition">
+                    How It Works
                   </Link>
                 </li>
                 <li>
-                  <Link href="/app/docs" className="hover:text-slate-900 dark:hover:text-white transition">
-                    User Knowledge Base
+                  <Link href="/app/how-it-works" className="hover:text-slate-900 dark:hover:text-white transition">
+                    App User Guide
                   </Link>
                 </li>
                 <li>

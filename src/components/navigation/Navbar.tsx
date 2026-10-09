@@ -38,10 +38,10 @@ export function Navbar() {
               Risk Protection
             </Link>
             <Link
-              href="/docs"
+              href="/how-it-works"
               className="hover:text-[#00E599] transition"
             >
-              Documentation
+              How It Works
             </Link>
           </nav>
         </div>

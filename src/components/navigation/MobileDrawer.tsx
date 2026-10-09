@@ -25,13 +25,13 @@ const navItems = [
     icon: FiRepeat,
   },
   {
-    name: 'Risk Protection & DaaS',
+    name: 'Risk Protection',
     href: '/app/protection',
     icon: FiActivity,
   },
   {
-    name: 'Documentation',
-    href: '/docs',
+    name: 'How It Works',
+    href: '/how-it-works',
     icon: FiBook,
   },
 ];

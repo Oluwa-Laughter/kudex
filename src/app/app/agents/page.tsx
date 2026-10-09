@@ -43,7 +43,7 @@ export default function AppAgentsPage() {
     {
       id: 'agent-daas',
       name: 'Solvency Monitor',
-      role: 'DaaS Risk Scoring & Debt Haircut Cascade',
+      role: 'Solvency Risk Scoring & Debt Protection',
       status: 'STANDBY',
       spendCap: '$5,000.00 pUSD',
       spent: '$0.00 pUSD',
@@ -68,7 +68,7 @@ export default function AppAgentsPage() {
       {/* Workspace Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
             Kudex Agent Fleet & Session Policies
           </h2>
           <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">

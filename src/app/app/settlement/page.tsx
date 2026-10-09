@@ -92,7 +92,7 @@ export default function AppSettlementPage() {
     <div className="space-y-8">
       {/* Workspace Header */}
       <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
           Confidential Settlement & Shielded Invoicing
         </h2>
         <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
@@ -113,7 +113,7 @@ export default function AppSettlementPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-sm font-medium transition border-b-2 font-mono whitespace-nowrap ${
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-sm font-semibold transition border-b-2 whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'border-[#00E599] text-[#00E599] bg-white dark:bg-[#0E121B]'
                   : 'border-transparent text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200'
@@ -133,7 +133,7 @@ export default function AppSettlementPage() {
           {activeTab === 'SHIELD' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-neutral-100">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-neutral-100">
                   Shield Assets into Confidential Pool
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">

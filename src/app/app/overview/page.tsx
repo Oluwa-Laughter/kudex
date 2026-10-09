@@ -59,11 +59,11 @@ export default function AppOverviewPage() {
       {/* Workspace Welcome & Quick Action Ribbon */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
-            Portfolio Telemetry & Execution Desk
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+            Portfolio Overview & Execution Desk
           </h2>
           <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
-            Real-time confidential balance tracking, solver settlement feed, and autonomous KUDEX AGENT runtime.
+            Real-time confidential balances, solver settlement feed, and autonomous Kudex Agent.
           </p>
         </div>
 
@@ -110,9 +110,9 @@ export default function AppOverviewPage() {
           icon={FiCpu}
         />
         <MetricCard
-          title="DaaS Solvency Health Factor"
+          title="Solvency Health Factor"
           value={`${healthFactor}x`}
-          subValue="Default Threshold: < 1.15x"
+          subValue="Safe Threshold: > 1.15x"
           changeBps={40}
           icon={FiActivity}
         />
@@ -129,11 +129,11 @@ export default function AppOverviewPage() {
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
               <div className="flex items-center gap-2">
                 <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
+                <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
                   Live Settlement Ledger
                 </h3>
               </div>
-              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+              <span className="text-xs text-slate-500 dark:text-neutral-400">
                 Indexed Real-Time Events
               </span>
             </div>
