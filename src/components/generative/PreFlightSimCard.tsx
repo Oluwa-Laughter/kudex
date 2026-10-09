@@ -44,42 +44,42 @@ export function PreFlightSimCard({ simulation }: PreFlightSimCardProps) {
         </div>
       </div>
 
-      <div className="space-y-3 py-4 text-xs">
+      <div className="space-y-3 py-4 text-sm">
         <div className="grid grid-cols-2 gap-3">
           <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-            <div className="flex items-center gap-1.5 text-neutral-400 text-[11px] mb-1">
+            <div className="flex items-center gap-1.5 text-neutral-400 text-xs mb-1">
               <FiDollarSign className="w-3.5 h-3.5" />
               <span>Projected Balance Delta</span>
             </div>
-            <span className="font-mono text-neutral-800 dark:text-neutral-100 font-semibold">
+            <span className="font-mono text-neutral-800 dark:text-neutral-100 font-semibold text-sm">
               {simulation.assetDelta}
             </span>
           </div>
 
           <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-            <div className="flex items-center gap-1.5 text-neutral-400 text-[11px] mb-1">
+            <div className="flex items-center gap-1.5 text-neutral-400 text-xs mb-1">
               <FiActivity className="w-3.5 h-3.5" />
               <span>Est. Execution Gas</span>
             </div>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold text-sm">
               {simulation.gasEstimatePOT} POT
             </span>
           </div>
         </div>
 
         <div className="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800">
-          <div className="flex items-center gap-1.5 text-neutral-400 text-[11px] mb-1">
+          <div className="flex items-center gap-1.5 text-neutral-400 text-xs mb-1">
             <FiLayers className="w-3.5 h-3.5" />
             <span>Allowance & Approval Ceiling</span>
           </div>
-          <span className="text-neutral-700 dark:text-neutral-300">
+          <span className="text-neutral-700 dark:text-neutral-300 text-sm">
             {simulation.approvalStatus}
           </span>
         </div>
 
         <div className="p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-100/60 dark:bg-neutral-800/60">
-          <span className="text-neutral-400 block text-[11px] mb-1">Security Audit Summary</span>
-          <p className="text-neutral-700 dark:text-neutral-300 font-mono text-[11px]">
+          <span className="text-neutral-400 block text-xs mb-1">Security Audit Summary</span>
+          <p className="text-neutral-700 dark:text-neutral-300 font-mono text-xs">
             {simulation.securitySummary}
           </p>
         </div>

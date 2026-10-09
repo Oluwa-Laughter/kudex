@@ -257,8 +257,8 @@ export function CopilotTerminal() {
                       return <RFQQuoteCard key={toolCallId} quote={result} />;
                     }
                     return (
-                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-[11px] font-mono animate-pulse">
-                        Solving optimum RFQ execution across Portaldot liquidity...
+                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-xs font-mono animate-pulse">
+                        Solving optimum RFQ execution across confidential liquidity...
                       </div>
                     );
                   }
@@ -268,8 +268,8 @@ export function CopilotTerminal() {
                       return <PreFlightSimCard key={toolCallId} simulation={result} />;
                     }
                     return (
-                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-[11px] font-mono animate-pulse">
-                        Simulating pre-flight state diffs on Portaldot node...
+                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-xs font-mono animate-pulse">
+                        Simulating pre-flight state diffs on Kudex settlement node...
                       </div>
                     );
                   }
@@ -279,8 +279,8 @@ export function CopilotTerminal() {
                       return <ShieldReceiptCard key={toolCallId} receipt={result} />;
                     }
                     return (
-                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-[11px] font-mono animate-pulse">
-                        Generating client-side Zero-Knowledge note commitment...
+                      <div key={toolCallId} className="my-2 p-3 rounded-lg bg-neutral-200/50 dark:bg-neutral-700/50 text-xs font-mono animate-pulse">
+                        Generating client-side confidential note commitment...
                       </div>
                     );
                   }

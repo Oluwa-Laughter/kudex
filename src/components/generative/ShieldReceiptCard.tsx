@@ -29,7 +29,7 @@ export function ShieldReceiptCard({ receipt }: ShieldReceiptCardProps) {
       typeof value === 'bigint' ? value.toString() : value, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `kudex-zk-note-${receipt.commitment.slice(0, 10)}.json`);
+    downloadAnchor.setAttribute('download', `kudex-shielded-note-${receipt.commitment.slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -58,7 +58,7 @@ export function ShieldReceiptCard({ receipt }: ShieldReceiptCardProps) {
       <div className="space-y-3 py-4 text-xs">
         <div>
           <span className="text-neutral-400 block mb-1">Commitment Hash:</span>
-          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 font-mono text-[11px] text-neutral-800 dark:text-neutral-200 break-all">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 font-mono text-xs text-neutral-800 dark:text-neutral-200 break-all">
             <span>{receipt.commitment}</span>
             <button
               onClick={() => copyToClipboard(receipt.commitment, 'comm')}
@@ -72,7 +72,7 @@ export function ShieldReceiptCard({ receipt }: ShieldReceiptCardProps) {
 
         <div>
           <span className="text-neutral-400 block mb-1">Nullifier Identifier:</span>
-          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 font-mono text-[11px] text-neutral-800 dark:text-neutral-200 break-all">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 font-mono text-xs text-neutral-800 dark:text-neutral-200 break-all">
             <span>{receipt.nullifier}</span>
             <button
               onClick={() => copyToClipboard(receipt.nullifier, 'null')}
@@ -86,13 +86,13 @@ export function ShieldReceiptCard({ receipt }: ShieldReceiptCardProps) {
 
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div className="p-2.5 rounded-lg border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-            <span className="text-neutral-400 block text-[11px]">Vault Address:</span>
+            <span className="text-neutral-400 block text-xs">Vault Address:</span>
             <span className="font-mono text-neutral-800 dark:text-neutral-200 font-medium">
               {truncateAddress(receipt.vaultAddress, 6)}
             </span>
           </div>
           <div className="p-2.5 rounded-lg border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-            <span className="text-neutral-400 block text-[11px]">Asset Value:</span>
+            <span className="text-neutral-400 block text-xs">Asset Value:</span>
             <span className="font-mono text-emerald-600 dark:text-emerald-400 font-medium">
               {receipt.amount.toString()} {receipt.tokenSymbol}
             </span>

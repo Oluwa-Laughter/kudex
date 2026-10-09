@@ -2,285 +2,205 @@
 
 import React, { useState } from 'react';
 import {
-  FiRepeat,
-  FiShield,
-  FiZap,
   FiArrowRight,
-  FiCheckCircle,
+  FiShield,
+  FiRepeat,
   FiClock,
-  FiActivity,
-  FiLock,
-  FiGlobe,
+  FiCheckCircle,
+  FiExternalLink,
+  FiZap,
 } from 'react-icons/fi';
 import { RiRouteLine } from 'react-icons/ri';
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { truncateAddress } from '@/lib/utils';
-import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
+import { useProtocolStore, BridgeTransfer } from '@/lib/protocol-store';
 
 export default function AppBridgePage() {
   const { isConnected, address } = useAccount();
-  const [sourceChain, setSourceChain] = useState<'Ethereum' | 'Base' | 'Arbitrum'>('Base');
-  const [amount, setAmount] = useState('2500');
-  const [shieldOnArrival, setShieldOnArrival] = useState(true);
+  const { bridgeTransfers, addBridgeTransfer } = useProtocolStore();
+
+  const [originChain, setOriginChain] = useState('Ethereum Sepolia');
+  const [targetChain, setTargetChain] = useState('Kudex Settlement');
+  const [asset, setAsset] = useState('USDC');
+  const [amount, setAmount] = useState('1000');
   const [isBridging, setIsBridging] = useState(false);
-  const [bridgeCompleted, setBridgeCompleted] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
 
-  const feeAmount = (parseFloat(amount || '0') * 0.0008).toFixed(2);
-  const receiveAmount = (parseFloat(amount || '0') - parseFloat(feeAmount)).toFixed(2);
+  const handleInitiateBridge = () => {
+    const num = parseFloat(amount);
+    if (!num || num <= 0) return;
 
-  const handleBridge = () => {
     setIsBridging(true);
     setTimeout(() => {
       setIsBridging(false);
-      setBridgeCompleted(true);
-    }, 2000);
+      const txHash = `0x${Array.from(crypto.getRandomValues(new Uint8Array(20)))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')}`;
+
+      const transfer = addBridgeTransfer({
+        originChain,
+        targetChain,
+        asset,
+        amount: num.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+        status: 'SETTLED',
+        txHash,
+        mode: 'Direct Deposit',
+      });
+
+      setNotification(`Bridge transfer of $${num.toLocaleString()} ${asset} completed into Kudex!`);
+      setTimeout(() => setNotification(null), 4000);
+    }, 1200);
   };
 
-  const bridgeHistory = [
-    {
-      id: 'brg-102',
-      origin: 'Base',
-      target: 'Kudex Settlement',
-      asset: 'USDC',
-      amount: '5,000.00',
-      status: 'SETTLED',
-      time: '14 mins ago',
-      mode: 'Shield Note',
-    },
-    {
-      id: 'brg-101',
-      origin: 'Ethereum',
-      target: 'Kudex Settlement',
-      asset: 'USDC',
-      amount: '12,500.00',
-      status: 'SETTLED',
-      time: '2 hours ago',
-      mode: 'Direct Deposit',
-    },
-    {
-      id: 'brg-100',
-      origin: 'Arbitrum',
-      target: 'Kudex Settlement',
-      asset: 'ETH',
-      amount: '2.50',
-      status: 'SETTLED',
-      time: '1 day ago',
-      mode: 'Shield Note',
-    },
-  ];
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Workspace Header */}
-      <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+      <div className="pb-6 border-b border-slate-200 dark:border-[#21293D]">
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Cross-Chain Capital Gateway & Solver Bridge
         </h2>
-        <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
+        <p className="text-base text-slate-600 dark:text-slate-300 mt-1.5">
           Atomic liquidity routing from major EVM networks. Bridge funds with immediate confidential note conversion.
         </p>
       </div>
 
+      {notification && (
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold text-sm flex items-center gap-2">
+          <FiCheckCircle className="w-5 h-5" />
+          <span>{notification}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Bridge Execution Desk */}
-        <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-            <div className="flex items-center gap-2">
-              <RiRouteLine className="w-5 h-5 text-[#2E68FF]" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+        <div className="lg:col-span-6 p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
+          <div className="flex items-center justify-between pb-5 border-b border-slate-200 dark:border-[#21293D]">
+            <div className="flex items-center gap-2.5">
+              <RiRouteLine className="w-6 h-6 text-blue-500" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Bridge Liquidity
               </h3>
             </div>
-            <span className="text-xs font-mono text-[#00E599] flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse" />
-              <span>Fast Solver Relay: Active</span>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              Gateway Operational
             </span>
           </div>
 
           <div className="space-y-5">
-            {/* Source Network Selection */}
-            <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
-                Origin Network
-              </label>
-              <div className="grid grid-cols-3 gap-2.5">
-                {(['Ethereum', 'Base', 'Arbitrum'] as const).map((chain) => (
-                  <button
-                    key={chain}
-                    onClick={() => setSourceChain(chain)}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-mono font-medium transition border ${
-                      sourceChain === chain
-                        ? 'bg-[#2E68FF] text-white border-[#2E68FF] font-bold shadow-md shadow-[#2E68FF]/20'
-                        : 'bg-slate-100 dark:bg-[#161C2B] text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-[#21293D] hover:border-slate-400 dark:hover:border-neutral-600'
-                    }`}
-                  >
-                    {chain}
-                  </button>
-                ))}
+            {/* Origin & Target Chain selectors */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                  Origin Network
+                </label>
+                <select
+                  value={originChain}
+                  onChange={(e) => setOriginChain(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-bold text-sm text-slate-900 dark:text-white outline-none"
+                >
+                  <option value="Ethereum Sepolia">Ethereum Sepolia</option>
+                  <option value="Arbitrum Sepolia">Arbitrum Sepolia</option>
+                  <option value="Base Sepolia">Base Sepolia</option>
+                  <option value="Polygon Amoy">Polygon Amoy</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                  Destination
+                </label>
+                <div className="px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-[#161C2B] font-bold text-sm text-emerald-600 dark:text-emerald-400 flex items-center">
+                  {targetChain}
+                </div>
               </div>
             </div>
 
-            {/* Destination Network Fixed */}
+            {/* Asset and Amount */}
             <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
-                Destination Network
+              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                Bridge Amount
               </label>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] flex items-center justify-between text-xs font-mono">
-                <span className="font-bold text-slate-900 dark:text-neutral-100">Kudex Settlement Network</span>
-                <span className="text-[#00E599] font-bold">PRIMARY</span>
-              </div>
-            </div>
-
-            {/* Amount Input */}
-            <div>
-              <div className="flex justify-between text-xs font-mono text-slate-500 dark:text-neutral-400 mb-2">
-                <span>Transfer Amount</span>
-                <span>Asset: USDC</span>
-              </div>
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+              <div className="flex rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-hidden focus-within:border-emerald-500">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-transparent text-lg font-mono font-bold text-slate-900 dark:text-neutral-100 focus:outline-none"
+                  className="flex-1 px-4 py-3.5 bg-transparent font-bold text-xl text-slate-900 dark:text-white outline-none tabular-nums"
                 />
-                <span className="px-3 py-1 rounded-lg bg-white dark:bg-[#0E121B] text-xs font-mono font-bold text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D]">
-                  USDC
-                </span>
-              </div>
-            </div>
-
-            {/* Shield on Arrival Toggle */}
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] flex items-center justify-between">
-              <div>
-                <div className="text-sm font-semibold text-slate-800 dark:text-neutral-200 flex items-center gap-1.5">
-                  <FiLock className="w-4 h-4 text-[#00E599]" />
-                  <span>Shield on Arrival</span>
-                </div>
-                <div className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
-                  Deposit directly into confidential vault note upon bridging
-                </div>
-              </div>
-              <button
-                onClick={() => setShieldOnArrival(!shieldOnArrival)}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition duration-300 ${
-                  shieldOnArrival ? 'bg-[#00E599]' : 'bg-slate-300 dark:bg-neutral-700'
-                }`}
-              >
-                <div
-                  className={`bg-white dark:bg-[#06080D] w-4 h-4 rounded-full shadow-md transform transition duration-300 ${
-                    shieldOnArrival ? 'translate-x-6' : ''
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Fee Breakdown */}
-            <div className="p-4 rounded-xl bg-slate-100 dark:bg-[#06080D] border border-slate-200 dark:border-[#21293D] space-y-2 text-xs font-mono">
-              <div className="flex justify-between text-slate-500 dark:text-neutral-400">
-                <span>Solver Liquidity Fee:</span>
-                <span className="text-slate-800 dark:text-neutral-200 tabular-nums">${feeAmount} (8 bps)</span>
-              </div>
-              <div className="flex justify-between text-slate-500 dark:text-neutral-400">
-                <span>Estimated Finality:</span>
-                <span className="text-[#00E599]">~12 Seconds</span>
-              </div>
-              <div className="border-t border-slate-200 dark:border-[#21293D] pt-2 flex justify-between text-slate-900 dark:text-neutral-100 font-bold text-sm">
-                <span>Total You Receive:</span>
-                <span className="text-[#00E599] tabular-nums">${receiveAmount}</span>
-              </div>
-            </div>
-
-            {bridgeCompleted ? (
-              <div className="p-4 rounded-xl bg-[#00E599]/10 border border-[#00E599]/40 text-center space-y-2">
-                <div className="flex items-center justify-center gap-2 text-[#00E599] font-bold text-sm">
-                  <FiCheckCircle className="w-5 h-5" />
-                  <span>Bridge Settlement Completed!</span>
-                </div>
-                <p className="text-xs text-slate-700 dark:text-neutral-300 font-mono">
-                  {shieldOnArrival
-                    ? 'Confidential commitment note generated and confirmed on-chain.'
-                    : 'Tokens delivered to recipient wallet.'}
-                </p>
-                <button
-                  onClick={() => setBridgeCompleted(false)}
-                  className="mt-2 text-xs text-[#00E599] hover:underline font-mono"
+                <select
+                  value={asset}
+                  onChange={(e) => setAsset(e.target.value)}
+                  className="px-4 py-3.5 bg-slate-100 dark:bg-[#21293D] text-slate-900 dark:text-white font-bold text-sm outline-none border-l border-slate-200 dark:border-[#21293D]"
                 >
-                  Bridge Another Transfer
-                </button>
+                  <option value="USDC">USDC</option>
+                  <option value="ETH">ETH</option>
+                  <option value="USDT">USDT</option>
+                </select>
               </div>
-            ) : (
-              <button
-                onClick={handleBridge}
-                disabled={isBridging || !amount}
-                className="w-full py-4 rounded-xl bg-[#2E68FF] hover:bg-[#2557d6] text-white font-bold text-sm transition shadow-lg shadow-[#2E68FF]/20 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isBridging ? (
-                  <>
-                    <FiActivity className="w-4 h-4 animate-spin" />
-                    <span>Routing Solver Liquidity Across Chains...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Execute Cross-Chain Bridge</span>
-                    <FiArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            )}
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs space-y-2 text-slate-600 dark:text-slate-400">
+              <div className="flex justify-between">
+                <span>Estimated Finality:</span>
+                <span className="font-semibold text-slate-900 dark:text-white">~15 Seconds (Fast Path)</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Routing Fee:</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">0.00% (Subsidized Testnet)</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleInitiateBridge}
+              disabled={isBridging || !amount || parseFloat(amount) <= 0}
+              className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
+            >
+              {isBridging ? 'Relaying Cross-Chain Packets...' : 'Initiate Bridge Transfer'}
+            </button>
           </div>
         </div>
 
-        {/* Bridge History Ledger */}
+        {/* Bridge Records */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-              <div className="flex items-center gap-2">
-                <FiClock className="w-4 h-4 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
-                  Cross-Chain Transfer Ledger
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-                Verified Finality
+          <div className="p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+            <div className="flex items-center justify-between pb-5 border-b border-slate-200 dark:border-[#21293D]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Recent Bridge Transfers
+              </h3>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                {bridgeTransfers.length} Transfers
               </span>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-2">
-              {bridgeHistory.map((item) => (
-                <div key={item.id} className="py-4 flex items-center justify-between text-xs font-mono">
-                  <div>
-                    <div className="font-bold text-slate-800 dark:text-neutral-200">
-                      {item.origin} → {item.target}
+            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-3">
+              {bridgeTransfers.length > 0 ? (
+                bridgeTransfers.map((item: BridgeTransfer) => (
+                  <div key={item.id} className="py-4.5 flex items-center justify-between text-sm">
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white">
+                        {item.originChain} &rarr; {item.targetChain}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Tx: {truncateAddress(item.txHash, 6)} | {new Date(item.timestamp).toLocaleTimeString()}
+                      </div>
                     </div>
-                    <div className="text-slate-500 dark:text-neutral-400 text-[11px] mt-0.5">
-                      Mode: <span className="text-[#00E599]">{item.mode}</span> | {item.time}
+                    <div className="text-right">
+                      <div className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                        {item.amount} {item.asset}
+                      </div>
+                      <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                        {item.status}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-slate-900 dark:text-neutral-100 tabular-nums">
-                      {item.amount} {item.asset}
-                    </div>
-                    <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] bg-[#00E599]/10 text-[#00E599] font-bold">
-                      {item.status}
-                    </span>
-                  </div>
+                ))
+              ) : (
+                <div className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+                  No bridge transactions recorded yet.
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-
-          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-3 transition-colors duration-200">
-            <div className="flex items-center gap-2 text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
-              <FiGlobe className="w-4 h-4 text-[#2E68FF]" />
-              <span>Multi-Chain Solver Security Architecture</span>
-            </div>
-            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-              Kudex solvers stake protocol collateral to provide fast bridging fills.
-              If a solver fails to deliver funds on destination within 60 seconds, their staked bond
-              is slashed and refunded directly to the user.
-            </p>
           </div>
         </div>
       </div>

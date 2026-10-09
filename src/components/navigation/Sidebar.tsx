@@ -62,7 +62,7 @@ export function Sidebar() {
       </div>
 
       <div className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
-        <div className={`px-3 mb-2 text-[10px] font-mono uppercase tracking-wider text-neutral-400 ${collapsed ? 'hidden' : 'block'}`}>
+        <div className={`px-3 mb-2 text-xs font-mono uppercase tracking-wider text-neutral-400 ${collapsed ? 'hidden' : 'block'}`}>
           Navigation
         </div>
 
@@ -74,7 +74,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
                 isActive
                   ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-semibold'
                   : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-900 dark:hover:text-neutral-100'
@@ -90,13 +90,13 @@ export function Sidebar() {
           );
         })}
 
-        <div className={`pt-6 px-3 mb-2 text-[10px] font-mono uppercase tracking-wider text-neutral-400 ${collapsed ? 'hidden' : 'block'}`}>
+        <div className={`pt-6 px-3 mb-2 text-xs font-mono uppercase tracking-wider text-neutral-400 ${collapsed ? 'hidden' : 'block'}`}>
           Resources
         </div>
 
         <Link
           href="/how-it-works"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-900 dark:hover:text-neutral-100 transition"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-900 dark:hover:text-neutral-100 transition"
           title={collapsed ? 'How It Works' : undefined}
         >
           <FiBook className="w-4 h-4 flex-shrink-0 text-emerald-500" />
@@ -106,12 +106,12 @@ export function Sidebar() {
 
       {!collapsed && (
         <div className="p-4 border-t border-neutral-200 dark:border-neutral-800">
-          <div className="p-3 rounded-xl bg-neutral-100/70 dark:bg-neutral-900/70 border border-neutral-200 dark:border-neutral-800 text-[11px]">
+          <div className="p-3 rounded-xl bg-neutral-100/70 dark:bg-neutral-900/70 border border-neutral-200 dark:border-neutral-800 text-xs">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-semibold text-neutral-800 dark:text-neutral-200">Network Operational</span>
             </div>
-            <p className="text-neutral-500 font-mono text-[10px]">
+            <p className="text-neutral-500 font-mono text-xs">
               Confidential Settlement Active
             </p>
           </div>

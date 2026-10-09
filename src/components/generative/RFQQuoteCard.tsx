@@ -43,10 +43,10 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
   return (
     <div className="my-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/80 p-5 backdrop-blur-md shadow-sm">
       <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-neutral-800">
-        <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 font-mono">
+        <span className="text-sm font-semibold uppercase tracking-wider text-neutral-500 font-mono">
           Agentic RFQ Order
         </span>
-        <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+        <div className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
           <FiShield className="w-4 h-4" />
           <span>Pre-Flight Verified</span>
         </div>
@@ -54,8 +54,8 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
 
       <div className="grid grid-cols-3 items-center py-4">
         <div>
-          <p className="text-xs text-neutral-400">You Offer</p>
-          <p className="text-base font-semibold text-neutral-900 dark:text-white tabular-nums font-mono">
+          <p className="text-sm text-neutral-400">You Offer</p>
+          <p className="text-lg font-bold text-neutral-900 dark:text-white tabular-nums font-mono">
             {quote.amountIn} {quote.tokenIn}
           </p>
         </div>
@@ -65,23 +65,23 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xs text-neutral-400">You Receive</p>
-          <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums font-mono">
+          <p className="text-sm text-neutral-400">You Receive</p>
+          <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums font-mono">
             {quote.estimatedReceive} {quote.tokenOut}
           </p>
         </div>
       </div>
 
-      <div className="py-2.5 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 mb-4 text-xs flex flex-wrap items-center justify-between gap-2 border border-neutral-100 dark:border-neutral-800">
+      <div className="py-2.5 px-3 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 mb-4 text-sm flex flex-wrap items-center justify-between gap-2 border border-neutral-100 dark:border-neutral-800">
         <div className="flex items-center gap-1.5 text-neutral-500">
           <span>Solver:</span>
-          <span className="font-mono text-neutral-800 dark:text-neutral-200">
+          <span className="font-mono text-neutral-800 dark:text-neutral-200 font-medium">
             {quote.solver.startsWith('0x') ? truncateAddress(quote.solver) : quote.solver}
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-neutral-500">
           <span>Slippage:</span>
-          <span className="font-mono text-neutral-800 dark:text-neutral-200">
+          <span className="font-mono text-neutral-800 dark:text-neutral-200 font-medium">
             {quote.maxSlippageBps ? `${(quote.maxSlippageBps / 100).toFixed(2)}%` : '0.50%'}
           </span>
         </div>
@@ -112,9 +112,9 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
       )}
 
       <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-        <div className="text-xs text-neutral-500">
+        <div className="text-sm text-neutral-500">
           <span>Est. Gas: </span>
-          <span className="font-mono text-neutral-700 dark:text-neutral-300">
+          <span className="font-mono text-neutral-700 dark:text-neutral-300 font-medium">
             {quote.estimatedGasPOT} POT
           </span>
         </div>
@@ -122,9 +122,9 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
         <button
           onClick={handleExecute}
           disabled={isPending || isConfirming || (isConfirmed && sessionExecuted)}
-          className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 disabled:opacity-50"
         >
-          <FiZap className="w-3.5 h-3.5" />
+          <FiZap className="w-4 h-4" />
           {isPending || isConfirming
             ? 'Executing...'
             : isConfirmed

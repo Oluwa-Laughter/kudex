@@ -5,7 +5,7 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: 'KUDEX | Autonomous Confidential Settlement Layer & RFQ Marketplace',
   description:
-    'Confidential settlement layer, fractionalized RWA vaults, client-side Zero-Knowledge commitments, and Default-as-a-Service on Portaldot Network V3.0 EVM.',
+    'Institutional-grade confidential settlement network, protected real-world asset yield vaults, and autonomous agent execution.',
   icons: {
     icon: '/logo.svg',
   },

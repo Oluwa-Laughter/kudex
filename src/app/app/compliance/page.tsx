@@ -5,62 +5,49 @@ import {
   FiShield,
   FiKey,
   FiDownload,
-  FiCopy,
-  FiCheck,
-  FiLock,
-  FiCalendar,
   FiCheckCircle,
-  FiTrash2,
+  FiCopy,
+  FiSlash,
+  FiLock,
   FiFileText,
+  FiPlus,
 } from 'react-icons/fi';
 import { RiShieldCheckLine } from 'react-icons/ri';
 import { truncateAddress } from '@/lib/utils';
+import { useProtocolStore, ViewingKey } from '@/lib/protocol-store';
 
 export default function AppCompliancePage() {
-  const [auditorName, setAuditorName] = useState('PwC Compliance Audit Desk');
-  const [validDays, setValidDays] = useState(30);
+  const { viewingKeys, addViewingKey, revokeViewingKey, orders, notes } = useProtocolStore();
+
+  const [auditorName, setAuditorName] = useState('');
+  const [scope, setScope] = useState('Full Settlement & Solvency Audit');
+  const [validDays, setValidDays] = useState('30');
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
 
-  const [activeKeys, setActiveKeys] = useState([
-    {
-      id: 'vk-01',
-      auditor: 'Deloitte Global Tax Audit',
-      keyHash: '0x9fa8...21c4',
-      scope: 'Full 2025 Ledger Decryption',
-      issuedAt: 'Oct 01, 2026',
-      expiresIn: '22 Days',
-      status: 'ACTIVE',
-    },
-    {
-      id: 'vk-02',
-      auditor: 'Internal Financial Controller',
-      keyHash: '0x33b1...78ae',
-      scope: 'Contractor Payroll Only',
-      issuedAt: 'Sep 15, 2026',
-      expiresIn: '6 Days',
-      status: 'ACTIVE',
-    },
-  ]);
+  const handleGenerateKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auditorName) return;
 
-  const handleGenerateKey = () => {
     const rawKey = `kudex-vk-${Array.from(crypto.getRandomValues(new Uint8Array(24)))
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('')}`;
     setGeneratedKey(rawKey);
 
-    setActiveKeys((prev) => [
-      {
-        id: `vk-${Date.now().toString().slice(-4)}`,
-        auditor: auditorName,
-        keyHash: `${rawKey.slice(0, 10)}...${rawKey.slice(-6)}`,
-        scope: 'Quarterly Settlement Audit',
-        issuedAt: 'Just Now',
-        expiresIn: `${validDays} Days`,
-        status: 'ACTIVE',
-      },
-      ...prev,
-    ]);
+    const keyHash = `${rawKey.slice(0, 10)}...${rawKey.slice(-6)}`;
+
+    addViewingKey({
+      auditor: auditorName,
+      keyHash,
+      scope,
+      validDays: parseInt(validDays) || 30,
+      status: 'ACTIVE',
+    });
+
+    setNotification(`Generated viewing key for auditor "${auditorName}"!`);
+    setAuditorName('');
+    setTimeout(() => setNotification(null), 4000);
   };
 
   const copyKey = () => {
@@ -71,173 +58,222 @@ export default function AppCompliancePage() {
     }
   };
 
-  const handleRevokeKey = (id: string) => {
-    setActiveKeys((prev) => prev.filter((k) => k.id !== id));
-  };
-
   const handleDownloadReport = () => {
     const auditData = {
       protocol: 'Kudex Confidential Settlement Network',
       exportTimestamp: new Date().toISOString(),
       solvencyInvariant: 'VERIFIED_100%',
-      transactions: [
-        { tx: '0x88f...12a', type: 'SHIELD_DEPOSIT', amount: '5,000.00 pUSD', timestamp: '2026-10-08T14:22:00Z', verified: true },
-        { tx: '0x32c...90b', type: 'RFQ_SWAP_FILL', amount: '2,500.00 pUSD', timestamp: '2026-10-08T18:40:00Z', verified: true },
-        { tx: '0x14d...55e', type: 'SHIELD_PAYROLL', amount: '12,000.00 pUSD', timestamp: '2026-10-09T08:10:00Z', verified: true },
-      ],
+      activeNotesCount: notes.length,
+      ordersSettledCount: orders.length,
+      portfolioNotes: notes.map((n) => ({
+        id: n.id,
+        commitment: n.commitment,
+        amount: n.amount,
+        asset: n.asset,
+        status: n.status,
+        timestamp: new Date(n.timestamp).toISOString(),
+      })),
+      settledOrders: orders.map((o) => ({
+        id: o.id,
+        pair: `${o.makerAsset}/${o.takerAsset}`,
+        makerAmount: o.makerAmount,
+        takerAmount: o.takerAmount,
+        solver: o.solver,
+        status: o.status,
+        timestamp: new Date(o.timestamp).toISOString(),
+      })),
     };
 
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(auditData, null, 2));
+    const blob = new Blob([JSON.stringify(auditData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     const dl = document.createElement('a');
-    dl.setAttribute('href', dataStr);
-    dl.setAttribute('download', `kudex-audit-report-${Date.now()}.json`);
-    document.body.appendChild(dl);
+    dl.href = url;
+    dl.download = `kudex-audit-proof-${Date.now()}.json`;
     dl.click();
     dl.remove();
+
+    setNotification('Exported complete cryptographic audit proof (JSON)!');
+    setTimeout(() => setNotification(null), 4000);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Workspace Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#21293D]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 pb-6 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Compliance & Auditor Viewing Keys
           </h2>
-          <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
+          <p className="text-base text-slate-600 dark:text-slate-300 mt-1.5">
             Generate asymmetric read-only viewing keys for regulatory audit without disclosing balances publicly.
           </p>
         </div>
 
         <button
           onClick={handleDownloadReport}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D] text-xs font-semibold transition"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#21293D] text-sm font-semibold transition"
         >
-          <FiDownload className="w-4 h-4 text-[#00E599]" />
+          <FiDownload className="w-4 h-4 text-emerald-500" />
           <span>Export Audit Proof (JSON)</span>
         </button>
       </div>
 
+      {notification && (
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold text-sm flex items-center gap-2">
+          <FiCheckCircle className="w-5 h-5" />
+          <span>{notification}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Key Generator Form */}
-        <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
-          <div className="flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-[#21293D]">
-            <FiKey className="w-5 h-5 text-[#00E599]" />
-            <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
-              Generate Auditor Viewing Key
-            </h3>
+        {/* Left Form: Key Issuance Desk */}
+        <div className="lg:col-span-5 p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
+            <div className="flex items-center gap-2.5">
+              <FiKey className="w-6 h-6 text-emerald-500" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Issue Auditor Viewing Key
+              </h3>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              Read-Only Scope
+            </span>
           </div>
 
-          <div className="space-y-4">
+          <form onSubmit={handleGenerateKey} className="space-y-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
-                Auditor Entity or Authority Name
+              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                Auditor / Recipient Entity
               </label>
               <input
                 type="text"
+                required
+                placeholder="e.g. KPMG Digital Audit Team"
                 value={auditorName}
                 onChange={(e) => setAuditorName(e.target.value)}
-                placeholder="e.g. PwC, Ernst & Young, Tax Counsel"
-                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-slate-900 dark:text-white font-medium text-sm outline-none focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-mono text-slate-500 dark:text-neutral-400 mb-2">
-                <span>Key Expiration Period:</span>
-                <span className="text-[#00E599] font-bold">{validDays} Days</span>
-              </div>
+              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                Audit Scope
+              </label>
+              <select
+                value={scope}
+                onChange={(e) => setScope(e.target.value)}
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-slate-900 dark:text-white font-medium text-sm outline-none"
+              >
+                <option value="Full Settlement & Solvency Audit">Full Settlement & Solvency Audit</option>
+                <option value="Contractor Payroll Disbursements Only">Contractor Payroll Disbursements Only</option>
+                <option value="Credit Facility Debt Amortization Only">Credit Facility Debt Amortization Only</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
+                Key Validity (Days)
+              </label>
               <input
-                type="range"
-                min="7"
-                max="90"
-                step="7"
+                type="number"
                 value={validDays}
-                onChange={(e) => setValidDays(Number(e.target.value))}
-                className="w-full accent-[#00E599] bg-slate-200 dark:bg-[#161C2B] rounded-lg cursor-pointer"
+                onChange={(e) => setValidDays(e.target.value)}
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-slate-900 dark:text-white font-bold text-sm outline-none focus:border-emerald-500"
               />
             </div>
 
             <button
-              onClick={handleGenerateKey}
-              className="w-full py-3.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-lg shadow-[#00E599]/15 flex items-center justify-center gap-2"
+              type="submit"
+              className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base transition shadow-md shadow-emerald-500/20"
             >
-              <FiKey className="w-4 h-4" />
-              <span>Create Asymmetric Viewing Key</span>
+              Generate Asymmetric Viewing Key
             </button>
-          </div>
+          </form>
 
           {generatedKey && (
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-[#00E599]/40 space-y-2">
-              <span className="text-xs font-mono text-[#00E599] uppercase font-bold block">
-                Issued Viewing Key:
-              </span>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-100 dark:bg-[#06080D] font-mono text-[11px] text-slate-800 dark:text-neutral-200 break-all border border-slate-200 dark:border-[#21293D]">
-                <span>{generatedKey}</span>
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <span>Derived Private Viewing Key</span>
                 <button
                   onClick={copyKey}
-                  className="ml-2 p-1 text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white"
+                  className="hover:text-emerald-500 flex items-center gap-1 font-semibold"
                 >
-                  {copiedKey ? <FiCheck className="w-4 h-4 text-[#00E599]" /> : <FiCopy className="w-4 h-4" />}
+                  <FiCopy className="w-3.5 h-3.5" />
+                  <span>{copiedKey ? 'Copied' : 'Copy Key'}</span>
                 </button>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-neutral-400">
-                Provide this key to your certified auditor. It confers read-only decryption rights.
-              </p>
+              <div className="font-mono text-xs text-slate-900 dark:text-white break-all">
+                {generatedKey}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Active Viewing Keys Table */}
+        {/* Right Active Viewing Keys List */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-              <div className="flex items-center gap-2">
-                <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
-                  Active Auditor Key Disclosures
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-                Cryptographic Access Log
+          <div className="p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+            <div className="flex items-center justify-between pb-5 border-b border-slate-200 dark:border-[#21293D]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                Active Viewing Keys
+              </h3>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                {viewingKeys.filter((k) => k.status === 'ACTIVE').length} Active
               </span>
             </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-2">
-              {activeKeys.map((item) => (
-                <div key={item.id} className="py-4 flex items-center justify-between text-xs font-mono">
-                  <div>
-                    <div className="font-bold text-slate-800 dark:text-neutral-200">{item.auditor}</div>
-                    <div className="text-slate-500 dark:text-neutral-400 text-[11px] mt-0.5">
-                      Scope: {item.scope} | Hash: {item.keyHash}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <span className="text-[#00E599] block font-bold">{item.status}</span>
-                      <span className="text-slate-400 dark:text-neutral-500 text-[10px] block">Expires in {item.expiresIn}</span>
-                    </div>
-                    <button
-                      onClick={() => handleRevokeKey(item.id)}
-                      className="p-1.5 rounded-lg text-slate-400 dark:text-neutral-500 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition"
-                      title="Revoke Key"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-4">
+              {viewingKeys.length > 0 ? (
+                viewingKeys.map((vk: ViewingKey) => {
+                  const isRevoked = vk.status === 'REVOKED';
 
-          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-2 transition-colors duration-200">
-            <h4 className="text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
-              Audit Invariant Verifiability
-            </h4>
-            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
-              Viewing keys permit mathematical verification of balances, inflows, and outflows
-              without revealing counterparty addresses or linking multiple independent transactions.
-            </p>
+                  return (
+                    <div key={vk.id} className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                      <div className="space-y-1">
+                        <div className="font-bold text-slate-900 dark:text-white">
+                          {vk.auditor}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                          Scope: {vk.scope} | Valid: {vk.validDays} Days
+                        </div>
+                        <div className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                          Key Hash: {vk.keyHash}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-bold ${
+                            isRevoked
+                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                              : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          }`}
+                        >
+                          {vk.status}
+                        </span>
+
+                        {!isRevoked && (
+                          <button
+                            onClick={() => {
+                              revokeViewingKey(vk.id);
+                              setNotification(`Revoked viewing key for ${vk.auditor}!`);
+                              setTimeout(() => setNotification(null), 3000);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 transition"
+                            title="Revoke Viewing Key"
+                          >
+                            <FiSlash className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+                  No active auditor viewing keys generated yet.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

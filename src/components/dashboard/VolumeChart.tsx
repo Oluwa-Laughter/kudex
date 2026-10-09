@@ -127,7 +127,7 @@ export function VolumeChart() {
                       <p className="text-sm font-bold text-emerald-600 dark:text-[#00E599]">
                         ${data.volume.toLocaleString()} pUSD
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-neutral-400 mt-1">
+                      <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                         Est. Gas: {data.potGas} POT
                       </p>
                     </div>

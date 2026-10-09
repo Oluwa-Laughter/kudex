@@ -103,8 +103,8 @@ export async function POST(req: Request) {
 
       // Tool 2: Live Vault Telemetry Direct Read via Viem readContract
       if (lower.includes('telemetry') || lower.includes('health') || lower.includes('risk') || lower.includes('tvl') || lower.includes('status')) {
-        let totalAssetsStr = '14250000000000';
-        let riskScoreNum = 1850;
+        let totalAssetsStr = '0';
+        let riskScoreNum = 1200;
         let isDefaultedBool = false;
 
         try {

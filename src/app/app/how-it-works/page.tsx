@@ -52,14 +52,14 @@ export default function AppHowItWorksPage() {
   ];
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#1E2638]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             How Kudex Works
           </h2>
-          <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-1.5">
             Complete walkthrough of private trading, institutional yield vaults, and autonomous agent execution.
           </p>
         </div>
@@ -67,22 +67,22 @@ export default function AppHowItWorksPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/app/overview"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shadow-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-sm"
           >
             <span>Go to Dashboard</span>
-            <FiArrowRight className="w-3.5 h-3.5" />
+            <FiArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
 
       {/* Modular Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-[#1E2638] pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-[#21293D] pb-3">
         <button
           onClick={() => setActiveTab('quickstart')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
             activeTab === 'quickstart'
-              ? 'bg-emerald-500 text-slate-950 shadow-sm'
-              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#131826]'
+              ? 'bg-[#00E599] text-[#06080D] font-bold shadow-sm'
+              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161C2B]'
           }`}
         >
           <FiCheckCircle className="w-4 h-4" />
@@ -91,10 +91,10 @@ export default function AppHowItWorksPage() {
 
         <button
           onClick={() => setActiveTab('yield')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
             activeTab === 'yield'
-              ? 'bg-emerald-500 text-slate-950 shadow-sm'
-              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#131826]'
+              ? 'bg-[#00E599] text-[#06080D] font-bold shadow-sm'
+              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161C2B]'
           }`}
         >
           <FiTrendingUp className="w-4 h-4" />
@@ -103,10 +103,10 @@ export default function AppHowItWorksPage() {
 
         <button
           onClick={() => setActiveTab('privacy')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
             activeTab === 'privacy'
-              ? 'bg-emerald-500 text-slate-950 shadow-sm'
-              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#131826]'
+              ? 'bg-[#00E599] text-[#06080D] font-bold shadow-sm'
+              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161C2B]'
           }`}
         >
           <FiShield className="w-4 h-4" />
@@ -117,81 +117,81 @@ export default function AppHowItWorksPage() {
       {/* Tab 1: 4-Step Quickstart */}
       {activeTab === 'quickstart' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-bold text-base mb-4 border border-emerald-500/20">
                 1
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Connect Wallet
               </h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 Connect your preferred Web3 wallet using the button in the top right corner. Kudex works with all standard browser extensions and mobile wallets.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1E2638] text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D] text-sm font-semibold text-emerald-600 dark:text-[#00E599]">
                 Non-custodial, no email or password needed
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm mb-4">
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] flex items-center justify-center font-bold text-base mb-4 border border-blue-500/20">
                 2
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Fund Your Wallet
               </h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 Obtain testnet POT and pUSDC tokens from the community faucet or transfer assets across from other chains using the built-in Cross-Chain Bridge.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1E2638]">
+              <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D]">
                 <Link
                   href="/app/bridge"
-                  className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                  className="text-sm font-semibold text-blue-600 dark:text-[#2E68FF] hover:underline inline-flex items-center gap-1.5"
                 >
                   <span>Open Bridge Gateway</span>
-                  <FiArrowRight className="w-3 h-3" />
+                  <FiArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm mb-4">
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-bold text-base mb-4 border border-emerald-500/20">
                 3
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Shield Balances or Earn Yield
               </h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 Deposit into protected credit tranches to earn up to 22.8% APY, or send confidential transfers to any address with zero public mempool leakage.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1E2638]">
+              <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D]">
                 <Link
                   href="/app/vaults"
-                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
+                  className="text-sm font-semibold text-emerald-600 dark:text-[#00E599] hover:underline inline-flex items-center gap-1.5"
                 >
                   <span>View Earn Vaults</span>
-                  <FiArrowRight className="w-3 h-3" />
+                  <FiArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm mb-4">
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-base mb-4 border border-purple-500/20">
                 4
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Automate with Kudex Agent
               </h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 Configure bounded session limits and instruct Kudex Agent to execute trades, rebalance yields, and monitor solvency 24/7 without exposing your master keys.
               </p>
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1E2638]">
+              <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D]">
                 <Link
                   href="/app/agents"
-                  className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
+                  className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1.5"
                 >
                   <span>Configure Agent</span>
-                  <FiArrowRight className="w-3 h-3" />
+                  <FiArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
@@ -202,21 +202,21 @@ export default function AppHowItWorksPage() {
       {/* Tab 2: Interactive Yield Calculator */}
       {activeTab === 'yield' && (
         <div className="space-y-6">
-          <div className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-neutral-100">
+          <div className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               Interactive Yield Simulator
             </h3>
-            <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
+            <p className="text-base text-slate-600 dark:text-neutral-400 mt-1.5">
               Select or slide your deposit amount to see projected 1-year earnings across our 3 risk tiers.
             </p>
 
             {/* Slider and Presets */}
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-700 dark:text-neutral-300">
+                <span className="text-base font-semibold text-slate-700 dark:text-neutral-300">
                   Simulated Deposit Amount
                 </span>
-                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-[#00E599] tabular-nums">
                   ${depositAmount.toLocaleString()} pUSD
                 </span>
               </div>
@@ -228,18 +228,18 @@ export default function AppHowItWorksPage() {
                 step="500"
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(Number(e.target.value))}
-                className="w-full accent-emerald-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                className="w-full accent-[#00E599] cursor-pointer h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
               />
 
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex flex-wrap gap-2.5 pt-1">
                 {[1000, 5000, 10000, 25000].map((amt) => (
                   <button
                     key={amt}
                     onClick={() => setDepositAmount(amt)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
                       depositAmount === amt
-                        ? 'bg-emerald-500 text-slate-950 font-bold'
-                        : 'bg-slate-100 dark:bg-[#1B2232] text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-[#252E42]'
+                        ? 'bg-[#00E599] text-[#06080D] font-bold'
+                        : 'bg-slate-100 dark:bg-[#161C2B] text-slate-700 dark:text-neutral-300 hover:bg-slate-200 dark:hover:bg-[#21293D]'
                     }`}
                   >
                     ${amt.toLocaleString()}
@@ -249,77 +249,83 @@ export default function AppHowItWorksPage() {
             </div>
 
             {/* 3 Tranches Comparison */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-200 dark:border-[#1E2638]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-8 pt-6 border-t border-slate-200 dark:border-[#21293D]">
               {/* Senior */}
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-[#1E2638] bg-slate-50 dark:bg-[#0A0D14]">
-                <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
-                  Senior Tranche
-                </div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-neutral-100 mt-1">
-                  8.5% APY
-                </div>
-                <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                  Capital Protected
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-200 dark:border-[#1E2638]">
-                  <div className="text-xs text-slate-500">Projected 1-Yr Profit:</div>
-                  <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                    +${Number(seniorReturn).toLocaleString()}
+              <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]/50 flex flex-col justify-between">
+                <div>
+                  <div className="text-xs uppercase font-mono font-semibold text-slate-500 dark:text-neutral-400">
+                    Senior Tranche (AAA)
+                  </div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mt-2">
+                    8.50% APY
+                  </div>
+                  <div className="text-sm text-emerald-600 dark:text-[#00E599] font-semibold mt-1">
+                    Capital Protected
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-slate-200 dark:border-[#21293D]">
+                    <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Projected 1-Yr Profit:</div>
+                    <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-[#00E599] tabular-nums mt-0.5">
+                      +${Number(seniorReturn).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 <Link
                   href="/app/vaults"
-                  className="mt-4 block w-full py-2 text-center rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition"
+                  className="mt-6 block w-full py-3 text-center rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-sm"
                 >
                   Deposit Senior
                 </Link>
               </div>
 
               {/* Mezzanine */}
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-[#1E2638] bg-slate-50 dark:bg-[#0A0D14]">
-                <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
-                  Mezzanine Tranche
-                </div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-neutral-100 mt-1">
-                  14.2% APY
-                </div>
-                <div className="text-xs text-blue-500 font-semibold mt-1">
-                  Balanced Risk / Return
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-200 dark:border-[#1E2638]">
-                  <div className="text-xs text-slate-500">Projected 1-Yr Profit:</div>
-                  <div className="text-xl font-bold text-blue-500 tabular-nums">
-                    +${Number(mezzanineReturn).toLocaleString()}
+              <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]/50 flex flex-col justify-between">
+                <div>
+                  <div className="text-xs uppercase font-mono font-semibold text-slate-500 dark:text-neutral-400">
+                    Mezzanine Tranche (BBB)
+                  </div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mt-2">
+                    14.20% APY
+                  </div>
+                  <div className="text-sm text-blue-600 dark:text-[#2E68FF] font-semibold mt-1">
+                    Balanced Risk / Return
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-slate-200 dark:border-[#21293D]">
+                    <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Projected 1-Yr Profit:</div>
+                    <div className="text-2xl font-bold font-mono text-blue-600 dark:text-[#2E68FF] tabular-nums mt-0.5">
+                      +${Number(mezzanineReturn).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 <Link
                   href="/app/vaults"
-                  className="mt-4 block w-full py-2 text-center rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition"
+                  className="mt-6 block w-full py-3 text-center rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition shadow-sm"
                 >
                   Deposit Mezzanine
                 </Link>
               </div>
 
               {/* Junior */}
-              <div className="p-5 rounded-xl border border-slate-200 dark:border-[#1E2638] bg-slate-50 dark:bg-[#0A0D14]">
-                <div className="text-xs uppercase font-semibold text-slate-500 dark:text-neutral-400">
-                  Junior Tranche
-                </div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-neutral-100 mt-1">
-                  22.8% APY
-                </div>
-                <div className="text-xs text-purple-500 font-semibold mt-1">
-                  First-Loss Max Return
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-200 dark:border-[#1E2638]">
-                  <div className="text-xs text-slate-500">Projected 1-Yr Profit:</div>
-                  <div className="text-xl font-bold text-purple-500 tabular-nums">
-                    +${Number(juniorReturn).toLocaleString()}
+              <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]/50 flex flex-col justify-between">
+                <div>
+                  <div className="text-xs uppercase font-mono font-semibold text-slate-500 dark:text-neutral-400">
+                    Junior Tranche (Equity)
+                  </div>
+                  <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mt-2">
+                    22.80% APY
+                  </div>
+                  <div className="text-sm text-purple-600 dark:text-purple-400 font-semibold mt-1">
+                    First-Loss Max Return
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-slate-200 dark:border-[#21293D]">
+                    <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Projected 1-Yr Profit:</div>
+                    <div className="text-2xl font-bold font-mono text-purple-600 dark:text-purple-400 tabular-nums mt-0.5">
+                      +${Number(juniorReturn).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 <Link
                   href="/app/vaults"
-                  className="mt-4 block w-full py-2 text-center rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition"
+                  className="mt-6 block w-full py-3 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition shadow-sm"
                 >
                   Deposit Junior
                 </Link>
@@ -333,47 +339,47 @@ export default function AppHowItWorksPage() {
       {activeTab === 'privacy' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
-                <FiLock className="w-5 h-5" />
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center mb-4 border border-emerald-500/20">
+                <FiLock className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Confidential Note Commitments
               </h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 When you execute transfers or deposits, your device computes a mathematical commitment.
                 The public blockchain records only the cryptographic proof that your balance is valid without revealing how much you own or who you sent it to.
               </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-700 dark:text-neutral-300">
+              <ul className="mt-5 space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Public mempool bots see zero plain data</span>
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500" />
+                  <span>Public mempool bots see zero plaintext data</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500" />
                   <span>Prevents front-running and copy-trading</span>
                 </li>
               </ul>
             </div>
 
-            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
-                <FiShield className="w-5 h-5" />
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] flex items-center justify-center mb-4 border border-blue-500/20">
+                <FiShield className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-neutral-100">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Asymmetric Viewing Keys
               </h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                 Institutional entities require verifiable audits for tax authorities and fund compliance.
                 Kudex allows you to export read-only viewing keys for specific accounts without granting spend permissions.
               </p>
-              <ul className="mt-4 space-y-2 text-xs text-slate-700 dark:text-neutral-300">
+              <ul className="mt-5 space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                  <FiCheckCircle className="w-4 h-4 text-blue-500" />
                   <span>Full regulatory compliance on demand</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                  <FiCheckCircle className="w-4 h-4 text-blue-500" />
                   <span>Auditors can verify without withdrawing funds</span>
                 </li>
               </ul>
@@ -383,28 +389,28 @@ export default function AppHowItWorksPage() {
       )}
 
       {/* Accordion FAQ */}
-      <div className="rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-neutral-100 mb-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 sm:p-8 shadow-sm">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
           Common Questions
         </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {faqs.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
               <div
                 key={idx}
-                className="border border-slate-200 dark:border-[#1E2638] rounded-xl overflow-hidden"
+                className="border border-slate-200 dark:border-[#21293D] rounded-xl overflow-hidden bg-slate-50/50 dark:bg-[#161C2B]/30"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-slate-900 dark:text-neutral-100"
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-base text-slate-900 dark:text-white"
                 >
                   <span>{faq.q}</span>
-                  {isOpen ? <FiChevronUp className="w-4 h-4 flex-shrink-0" /> : <FiChevronDown className="w-4 h-4 flex-shrink-0" />}
+                  {isOpen ? <FiChevronUp className="w-5 h-5 flex-shrink-0 text-slate-500" /> : <FiChevronDown className="w-5 h-5 flex-shrink-0 text-slate-500" />}
                 </button>
                 {isOpen && (
-                  <div className="p-4 pt-0 text-xs sm:text-sm text-slate-600 dark:text-neutral-400 leading-relaxed border-t border-slate-100 dark:border-[#1E2638] mt-2">
+                  <div className="p-5 pt-0 text-base text-slate-600 dark:text-neutral-400 leading-relaxed border-t border-slate-200/60 dark:border-[#21293D] mt-2">
                     {faq.a}
                   </div>
                 )}

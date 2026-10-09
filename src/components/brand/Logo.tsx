@@ -11,9 +11,9 @@ interface LogoProps {
 
 export function Logo({ size = 'md', showSubtitle = true }: LogoProps) {
   const dimensions = {
-    sm: { img: 28, text: 'text-base', sub: 'text-[9px]' },
-    md: { img: 36, text: 'text-xl', sub: 'text-[10px]' },
-    lg: { img: 48, text: 'text-2xl', sub: 'text-xs' },
+    sm: { img: 30, text: 'text-lg', sub: 'text-xs' },
+    md: { img: 38, text: 'text-2xl', sub: 'text-xs' },
+    lg: { img: 50, text: 'text-3xl', sub: 'text-sm' },
   }[size];
 
   return (

@@ -138,12 +138,12 @@ export default function HowItWorksPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-[#131826] border border-slate-200 dark:border-[#1E2638] text-xs font-medium text-slate-700 dark:text-neutral-300 mb-6">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-sm font-semibold text-slate-700 dark:text-neutral-300 mb-6">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00E599] animate-pulse" />
           <span>Interactive Protocol Guide</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-neutral-100 tracking-tight max-w-4xl mx-auto leading-tight">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto leading-tight">
           How Kudex Settles Global Capital with Complete Privacy & Solvency
         </h1>
 
@@ -155,16 +155,16 @@ export default function HowItWorksPage() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/app/overview"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-lg shadow-[#00E599]/20"
           >
             <span>Launch Application</span>
             <FiArrowRight className="w-4 h-4" />
           </Link>
           <a
             href="#simulator"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white dark:bg-[#131826] hover:bg-slate-100 dark:hover:bg-[#1B2232] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#1E2638] font-semibold text-sm transition"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-white dark:bg-[#0E121B] hover:bg-slate-100 dark:hover:bg-[#161C2B] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D] font-bold text-base transition"
           >
-            <FiPlay className="w-4 h-4 text-emerald-500" />
+            <FiPlay className="w-4 h-4 text-[#00E599]" />
             <span>Interactive Simulator</span>
           </a>
         </div>
@@ -173,7 +173,7 @@ export default function HowItWorksPage() {
       {/* 4 Core Pillars Modular Tabs */}
       <section id="simulator" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Explore Kudex Core Capabilities
           </h2>
           <p className="mt-2 text-base text-slate-600 dark:text-neutral-400">
@@ -182,48 +182,48 @@ export default function HowItWorksPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-[#131826] border border-slate-200 dark:border-[#1E2638] max-w-2xl mx-auto mb-12">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 p-2 rounded-2xl bg-slate-100 dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] max-w-2xl mx-auto mb-12">
           <button
             onClick={() => { setActiveTab('trading'); setSimStep(1); }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition ${
               activeTab === 'trading'
-                ? 'bg-white dark:bg-[#1B2232] text-slate-900 dark:text-neutral-100 shadow-sm'
+                ? 'bg-white dark:bg-[#161C2B] text-slate-900 dark:text-white shadow-md'
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <RiExchangeFundsLine className="w-4 h-4 text-emerald-500" />
+            <RiExchangeFundsLine className="w-4 h-4 text-[#00E599]" />
             <span>Private Trading</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('vaults'); setSimStep(1); }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition ${
               activeTab === 'vaults'
-                ? 'bg-white dark:bg-[#1B2232] text-slate-900 dark:text-neutral-100 shadow-sm'
+                ? 'bg-white dark:bg-[#161C2B] text-slate-900 dark:text-white shadow-md'
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <FiShield className="w-4 h-4 text-blue-500" />
+            <FiShield className="w-4 h-4 text-[#2E68FF]" />
             <span>Protected Yield</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('transfers'); setSimStep(1); }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition ${
               activeTab === 'transfers'
-                ? 'bg-white dark:bg-[#1B2232] text-slate-900 dark:text-neutral-100 shadow-sm'
+                ? 'bg-white dark:bg-[#161C2B] text-slate-900 dark:text-white shadow-md'
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <RiBankCardLine className="w-4 h-4 text-emerald-500" />
+            <RiBankCardLine className="w-4 h-4 text-[#00E599]" />
             <span>Shielded Transfers</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('agent'); setSimStep(1); }}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition ${
               activeTab === 'agent'
-                ? 'bg-white dark:bg-[#1B2232] text-slate-900 dark:text-neutral-100 shadow-sm'
+                ? 'bg-white dark:bg-[#161C2B] text-slate-900 dark:text-white shadow-md'
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -242,32 +242,32 @@ export default function HowItWorksPage() {
                 <div
                   key={item.step}
                   onClick={() => setSimStep(item.step)}
-                  className={`p-6 rounded-2xl border cursor-pointer transition-all ${
+                  className={`p-6 sm:p-7 rounded-2xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-white dark:bg-[#131826] border-emerald-500 shadow-md'
-                      : 'bg-white/60 dark:bg-[#131826]/40 border-slate-200 dark:border-[#1E2638] hover:border-slate-300 dark:hover:border-slate-700'
+                      ? 'bg-white dark:bg-[#0E121B] border-[#00E599] shadow-lg ring-1 ring-[#00E599]/30'
+                      : 'bg-white/70 dark:bg-[#0E121B]/60 border-slate-200 dark:border-[#21293D] hover:border-slate-300 dark:hover:border-neutral-700'
                   }`}
                 >
                   <div className="flex items-start gap-4">
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 transition ${
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base flex-shrink-0 transition ${
                         isSelected
-                          ? 'bg-emerald-500 text-slate-950 font-bold'
-                          : 'bg-slate-100 dark:bg-[#1B2232] text-slate-600 dark:text-neutral-400'
+                          ? 'bg-[#00E599] text-[#06080D]'
+                          : 'bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400'
                       }`}
                     >
                       {item.step}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-neutral-100">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                         {item.title}
                       </h3>
-                      <p className="mt-1.5 text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+                      <p className="mt-2 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
                         {item.desc}
                       </p>
                       {isSelected && (
-                        <div className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                          <FiCheckCircle className="w-3.5 h-3.5" />
+                        <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-[#00E599] bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                          <FiCheckCircle className="w-4 h-4" />
                           <span>{item.action}</span>
                         </div>
                       )}
@@ -280,38 +280,38 @@ export default function HowItWorksPage() {
 
           {/* Right Column: Live Interactive Sandbox Terminal */}
           <div className="lg:col-span-5 sticky top-28">
-            <div className="rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] p-6 shadow-xl">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#1E2638]">
+            <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 sm:p-7 shadow-xl">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-rose-500/80" />
                   <div className="w-3 h-3 rounded-full bg-amber-500/80" />
                   <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 ml-2">
+                  <span className="text-sm font-mono text-slate-500 dark:text-neutral-400 ml-2">
                     interactive-verifier
                   </span>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+                <span className="text-sm font-semibold px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-[#00E599]">
                   STEP {simStep} OF 3
                 </span>
               </div>
 
               <div className="py-6 space-y-4">
-                <div className="text-xs uppercase tracking-wider font-semibold text-slate-400 dark:text-neutral-500">
+                <div className="text-xs uppercase tracking-wider font-mono font-semibold text-slate-500 dark:text-neutral-400">
                   Current Execution State
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#0A0D14] border border-slate-200 dark:border-[#1E2638] font-mono text-xs space-y-2 text-slate-700 dark:text-neutral-300">
+                <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] font-mono text-sm space-y-2.5 text-slate-700 dark:text-neutral-300">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Flow:</span>
-                    <span className="text-slate-900 dark:text-neutral-100 font-semibold uppercase">{activeTab}</span>
+                    <span className="text-slate-900 dark:text-white font-semibold uppercase">{activeTab}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Stage:</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">{stepsData[activeTab][simStep - 1].title}</span>
+                    <span className="text-emerald-600 dark:text-[#00E599] font-bold">{stepsData[activeTab][simStep - 1].title}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Privacy Status:</span>
-                    <span className="text-blue-500 font-semibold">Zero Mempool Leakage</span>
+                    <span className="text-[#2E68FF] font-semibold">Zero Mempool Leakage</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Solvency Invariant:</span>
@@ -319,8 +319,8 @@ export default function HowItWorksPage() {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-800 dark:text-neutral-200 leading-relaxed">
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">Key Benefit: </span>
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-sm text-slate-800 dark:text-neutral-200 leading-relaxed">
+                  <span className="font-bold text-emerald-600 dark:text-[#00E599]">Key Benefit: </span>
                   {activeTab === 'trading' && 'No sandwich attacks or front-running can extract value from your swap.'}
                   {activeTab === 'vaults' && 'Your capital is backed by verifiable on-chain debt protection mechanics.'}
                   {activeTab === 'transfers' && 'Balance transfers happen without disclosing balances to blockchain surveillance tools.'}
@@ -331,7 +331,7 @@ export default function HowItWorksPage() {
               <div className="pt-2 flex items-center gap-3">
                 <button
                   onClick={() => setSimStep((prev) => (prev % 3) + 1)}
-                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-md"
+                  className="w-full py-3.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-md"
                 >
                   Advance to Step {(simStep % 3) + 1}
                 </button>
@@ -342,9 +342,9 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Comparison Grid: Kudex vs Traditional DeFi vs CeFi */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#1E2638]">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             How Kudex Compares
           </h2>
           <p className="mt-2 text-base text-slate-600 dark:text-neutral-400">
@@ -353,45 +353,45 @@ export default function HowItWorksPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse rounded-2xl overflow-hidden border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826]">
+          <table className="w-full text-left border-collapse rounded-2xl overflow-hidden border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B]">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-[#1E2638] bg-slate-50 dark:bg-[#0A0D14] text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">
+              <tr className="border-b border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-sm font-semibold text-slate-600 dark:text-neutral-400 uppercase tracking-wider">
                 <th className="p-4 sm:p-5">Feature</th>
-                <th className="p-4 sm:p-5 text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10">Kudex Protocol</th>
+                <th className="p-4 sm:p-5 text-emerald-600 dark:text-[#00E599] font-bold bg-[#00E599]/10">Kudex Protocol</th>
                 <th className="p-4 sm:p-5">Traditional AMMs</th>
                 <th className="p-4 sm:p-5">Centralized Exchanges</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-[#1E2638] text-sm text-slate-700 dark:text-neutral-300">
+            <tbody className="divide-y divide-slate-100 dark:divide-[#21293D] text-base text-slate-700 dark:text-neutral-300">
               <tr>
-                <td className="p-4 sm:p-5 font-semibold text-slate-900 dark:text-neutral-100">Trade Privacy</td>
-                <td className="p-4 sm:p-5 font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">Encrypted Off-Chain RFQ</td>
-                <td className="p-4 sm:p-5 text-slate-500">Public Mempool (Front-run risk)</td>
-                <td className="p-4 sm:p-5 text-slate-500">Internal database (Opaque)</td>
+                <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Trade Privacy</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Encrypted Off-Chain RFQ</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Public Mempool (Front-run risk)</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Internal database (Opaque)</td>
               </tr>
               <tr>
-                <td className="p-4 sm:p-5 font-semibold text-slate-900 dark:text-neutral-100">Custody of Assets</td>
-                <td className="p-4 sm:p-5 font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">100% Non-Custodial</td>
-                <td className="p-4 sm:p-5 text-slate-500">Non-Custodial</td>
+                <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Custody of Assets</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">100% Non-Custodial</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Non-Custodial</td>
                 <td className="p-4 sm:p-5 text-rose-500 font-semibold">Full Custodial Risk (FTX/Celsius)</td>
               </tr>
               <tr>
-                <td className="p-4 sm:p-5 font-semibold text-slate-900 dark:text-neutral-100">Solvency Guarantees</td>
-                <td className="p-4 sm:p-5 font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">Automated Debt Solvency Floor</td>
-                <td className="p-4 sm:p-5 text-slate-500">None (Cascade liquidations)</td>
-                <td className="p-4 sm:p-5 text-slate-500">Unverified / Self-reported</td>
+                <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Solvency Guarantees</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Automated Debt Solvency Floor</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">None (Cascade liquidations)</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Unverified / Self-reported</td>
               </tr>
               <tr>
-                <td className="p-4 sm:p-5 font-semibold text-slate-900 dark:text-neutral-100">Automated Agent Execution</td>
-                <td className="p-4 sm:p-5 font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">Bounded Session Delegation</td>
-                <td className="p-4 sm:p-5 text-slate-500">Requires Full Private Key Exposure</td>
-                <td className="p-4 sm:p-5 text-slate-500">API keys with withdrawal risk</td>
+                <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Automated Agent Execution</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Bounded Session Delegation</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Requires Full Private Key Exposure</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">API keys with withdrawal risk</td>
               </tr>
               <tr>
-                <td className="p-4 sm:p-5 font-semibold text-slate-900 dark:text-neutral-100">Regulatory Audit Keys</td>
-                <td className="p-4 sm:p-5 font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">Asymmetric Read-Only Viewing Keys</td>
-                <td className="p-4 sm:p-5 text-slate-500">All data public to anyone</td>
-                <td className="p-4 sm:p-5 text-slate-500">Manual CSV export requests</td>
+                <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Regulatory Audit Keys</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Asymmetric Read-Only Viewing Keys</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">All data public to anyone</td>
+                <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Manual CSV export requests</td>
               </tr>
             </tbody>
           </table>
@@ -399,9 +399,9 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Interactive FAQ Accordion */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#1E2638]">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-neutral-100 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Frequently Asked Questions
           </h2>
           <p className="mt-2 text-base text-slate-600 dark:text-neutral-400">
@@ -415,21 +415,21 @@ export default function HowItWorksPage() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#131826] overflow-hidden transition"
+                className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] overflow-hidden transition"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
                   className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4"
                 >
-                  <span className="font-bold text-base sm:text-lg text-slate-900 dark:text-neutral-100">
+                  <span className="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                     {faq.q}
                   </span>
-                  <div className="p-1 rounded-lg bg-slate-100 dark:bg-[#1B2232] text-slate-600 dark:text-neutral-400">
+                  <div className="p-2 rounded-lg bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400">
                     {isOpen ? <FiChevronUp className="w-5 h-5" /> : <FiChevronDown className="w-5 h-5" />}
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="px-5 sm:px-6 pb-6 text-sm sm:text-base text-slate-600 dark:text-neutral-400 leading-relaxed border-t border-slate-100 dark:border-[#1E2638] pt-4">
+                  <div className="px-5 sm:px-6 pb-6 text-base text-slate-600 dark:text-neutral-400 leading-relaxed border-t border-slate-100 dark:border-[#21293D] pt-4">
                     {faq.a}
                   </div>
                 )}
@@ -441,25 +441,25 @@ export default function HowItWorksPage() {
 
       {/* Bottom CTA Banner */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="rounded-3xl border border-slate-200 dark:border-[#1E2638] bg-slate-900 text-white p-10 sm:p-14 text-center relative overflow-hidden">
+        <div className="rounded-3xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-[#0E121B] text-slate-900 dark:text-white p-10 sm:p-14 text-center relative overflow-hidden shadow-sm">
           <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight max-w-2xl mx-auto">
             Ready to Experience Confidential Web3 Finance?
           </h3>
-          <p className="mt-4 text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
+          <p className="mt-4 text-base text-slate-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed">
             Connect your wallet to start trading with zero MEV, deposit into protected yield tranches,
             or automate your workflow with Kudex Agent.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/app/overview"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-lg shadow-[#00E599]/20"
             >
               <span>Enter Kudex App</span>
               <FiArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/marketplace"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-neutral-200 border border-slate-700 font-semibold text-sm transition"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white dark:bg-[#161C2B] hover:bg-slate-200 dark:hover:bg-[#21293D] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D] font-bold text-base transition"
             >
               <span>Explore Marketplace</span>
             </Link>

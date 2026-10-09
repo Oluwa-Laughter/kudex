@@ -21,7 +21,7 @@ export function Badge({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-mono font-medium transition',
+        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-mono font-semibold transition',
         variants[variant],
         className
       )}

@@ -1,0 +1,335 @@
+'use client';
+
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export interface ProtocolOrder {
+  id: string;
+  makerAsset: string;
+  takerAsset: string;
+  makerAmount: string;
+  takerAmount: string;
+  status: 'PENDING' | 'MATCHING_SOLVER' | 'FILLED' | 'CANCELLED';
+  timestamp: number;
+  solver: string;
+  txHash?: string;
+  type: 'FOK' | 'IOC' | 'LIMIT';
+}
+
+export interface ShieldedNote {
+  id: string;
+  commitment: string;
+  nullifier: string;
+  amount: string;
+  asset: string;
+  timestamp: number;
+  status: 'SHIELDED' | 'UNSHIELDED';
+  recipient?: string;
+  txHash?: string;
+}
+
+export interface VaultPosition {
+  trancheId: 'senior' | 'mezzanine' | 'junior';
+  depositedAmount: number;
+  shares: number;
+  accruedYield: number;
+  lastDepositTimestamp: number;
+}
+
+export interface BridgeTransfer {
+  id: string;
+  originChain: string;
+  targetChain: string;
+  asset: string;
+  amount: string;
+  status: 'INITIATED' | 'RELAYING' | 'SETTLED';
+  timestamp: number;
+  txHash: string;
+  mode: 'Direct Deposit' | 'Shielded Note';
+}
+
+export interface AgentPolicy {
+  id: string;
+  name: string;
+  role: string;
+  status: 'ACTIVE' | 'STANDBY' | 'REVOKED';
+  spendCap: number;
+  spent: number;
+  ttlHours: number;
+  createdTimestamp: number;
+  executedActions: number;
+  lastAction: string;
+}
+
+export interface ViewingKey {
+  id: string;
+  auditor: string;
+  keyHash: string;
+  scope: string;
+  issuedAt: number;
+  validDays: number;
+  status: 'ACTIVE' | 'REVOKED';
+}
+
+interface ProtocolState {
+  // Orders
+  orders: ProtocolOrder[];
+  addOrder: (order: Omit<ProtocolOrder, 'id' | 'timestamp'>) => ProtocolOrder;
+  updateOrderStatus: (id: string, status: ProtocolOrder['status'], txHash?: string) => void;
+
+  // Shielded Notes
+  notes: ShieldedNote[];
+  addNote: (note: Omit<ShieldedNote, 'id' | 'timestamp'>) => ShieldedNote;
+  unshieldNote: (id: string) => void;
+
+  // Vault Positions
+  positions: {
+    senior: VaultPosition;
+    mezzanine: VaultPosition;
+    junior: VaultPosition;
+  };
+  depositToVault: (trancheId: 'senior' | 'mezzanine' | 'junior', amount: number) => void;
+  withdrawFromVault: (trancheId: 'senior' | 'mezzanine' | 'junior', amount: number) => void;
+
+  // Bridge Transfers
+  bridgeTransfers: BridgeTransfer[];
+  addBridgeTransfer: (transfer: Omit<BridgeTransfer, 'id' | 'timestamp'>) => BridgeTransfer;
+
+  // Agent Policies
+  agentPolicies: AgentPolicy[];
+  addAgentPolicy: (policy: Omit<AgentPolicy, 'id' | 'createdTimestamp' | 'spent' | 'executedActions' | 'lastAction'>) => AgentPolicy;
+  revokeAgentPolicy: (id: string) => void;
+
+  // Compliance Viewing Keys
+  viewingKeys: ViewingKey[];
+  addViewingKey: (key: Omit<ViewingKey, 'id' | 'issuedAt'>) => ViewingKey;
+  revokeViewingKey: (id: string) => void;
+
+  // Solvency Telemetry
+  riskScoreBps: number;
+  setRiskScoreBps: (score: number) => void;
+}
+
+export const useProtocolStore = create<ProtocolState>()(
+  persist(
+    (set, get) => ({
+      orders: [
+        {
+          id: 'ord-101',
+          makerAsset: 'pUSD',
+          takerAsset: 'wPOT',
+          makerAmount: '2,500.00',
+          takerAmount: '2,585.00',
+          status: 'FILLED',
+          timestamp: Date.now() - 3600000,
+          solver: '0x71Ae48...390b',
+          txHash: '0x8f4c...3e19',
+          type: 'FOK',
+        },
+      ],
+      addOrder: (newOrder) => {
+        const order: ProtocolOrder = {
+          ...newOrder,
+          id: `ord-${Date.now().toString().slice(-4)}`,
+          timestamp: Date.now(),
+        };
+        set((state) => ({ orders: [order, ...state.orders] }));
+        return order;
+      },
+      updateOrderStatus: (id, status, txHash) => {
+        set((state) => ({
+          orders: state.orders.map((o) =>
+            o.id === id ? { ...o, status, ...(txHash ? { txHash } : {}) } : o
+          ),
+        }));
+      },
+
+      notes: [
+        {
+          id: 'note-101',
+          commitment: '0x7a9c8b12f4d6e902a4b8c3d1e7f092384a5b6c7d',
+          nullifier: '0x3e19a4b8c7d6f5e4d3c2b1a0987654321fedcba9',
+          amount: '1,000.00',
+          asset: 'pUSD',
+          timestamp: Date.now() - 7200000,
+          status: 'SHIELDED',
+        },
+      ],
+      addNote: (newNote) => {
+        const note: ShieldedNote = {
+          ...newNote,
+          id: `note-${Date.now().toString().slice(-4)}`,
+          timestamp: Date.now(),
+        };
+        set((state) => ({ notes: [note, ...state.notes] }));
+        return note;
+      },
+      unshieldNote: (id) => {
+        set((state) => ({
+          notes: state.notes.map((n) =>
+            n.id === id ? { ...n, status: 'UNSHIELDED' as const } : n
+          ),
+        }));
+      },
+
+      positions: {
+        senior: {
+          trancheId: 'senior',
+          depositedAmount: 5000,
+          shares: 5000,
+          accruedYield: 42.5,
+          lastDepositTimestamp: Date.now() - 86400000,
+        },
+        mezzanine: {
+          trancheId: 'mezzanine',
+          depositedAmount: 0,
+          shares: 0,
+          accruedYield: 0,
+          lastDepositTimestamp: Date.now(),
+        },
+        junior: {
+          trancheId: 'junior',
+          depositedAmount: 0,
+          shares: 0,
+          accruedYield: 0,
+          lastDepositTimestamp: Date.now(),
+        },
+      },
+      depositToVault: (trancheId, amount) => {
+        set((state) => {
+          const current = state.positions[trancheId];
+          return {
+            positions: {
+              ...state.positions,
+              [trancheId]: {
+                ...current,
+                depositedAmount: current.depositedAmount + amount,
+                shares: current.shares + amount,
+                lastDepositTimestamp: Date.now(),
+              },
+            },
+          };
+        });
+      },
+      withdrawFromVault: (trancheId, amount) => {
+        set((state) => {
+          const current = state.positions[trancheId];
+          const newAmount = Math.max(0, current.depositedAmount - amount);
+          return {
+            positions: {
+              ...state.positions,
+              [trancheId]: {
+                ...current,
+                depositedAmount: newAmount,
+                shares: Math.max(0, current.shares - amount),
+              },
+            },
+          };
+        });
+      },
+
+      bridgeTransfers: [
+        {
+          id: 'brg-101',
+          originChain: 'Ethereum Sepolia',
+          targetChain: 'Kudex Settlement',
+          asset: 'USDC',
+          amount: '5,000.00',
+          status: 'SETTLED',
+          timestamp: Date.now() - 14400000,
+          txHash: '0x18f7...92ac',
+          mode: 'Direct Deposit',
+        },
+      ],
+      addBridgeTransfer: (transfer) => {
+        const item: BridgeTransfer = {
+          ...transfer,
+          id: `brg-${Date.now().toString().slice(-4)}`,
+          timestamp: Date.now(),
+        };
+        set((state) => ({ bridgeTransfers: [item, ...state.bridgeTransfers] }));
+        return item;
+      },
+
+      agentPolicies: [
+        {
+          id: 'agent-sentinel',
+          name: 'Kudex Sentinel',
+          role: 'Solvency & Invariant Surveillance',
+          status: 'ACTIVE',
+          spendCap: 10000,
+          spent: 2450,
+          ttlHours: 48,
+          createdTimestamp: Date.now() - 86400000,
+          executedActions: 142,
+          lastAction: 'Pre-flight invariant check verified',
+        },
+        {
+          id: 'agent-solver',
+          name: 'Solver Arbitrageur',
+          role: 'Zero-MEV RFQ Routing',
+          status: 'ACTIVE',
+          spendCap: 25000,
+          spent: 14800,
+          ttlHours: 24,
+          createdTimestamp: Date.now() - 43200000,
+          executedActions: 388,
+          lastAction: 'Settled atomic RFQ swap for 500 pUSD',
+        },
+      ],
+      addAgentPolicy: (newPolicy) => {
+        const item: AgentPolicy = {
+          ...newPolicy,
+          id: `agent-${Date.now().toString().slice(-4)}`,
+          createdTimestamp: Date.now(),
+          spent: 0,
+          executedActions: 0,
+          lastAction: 'Policy initialized',
+        };
+        set((state) => ({ agentPolicies: [item, ...state.agentPolicies] }));
+        return item;
+      },
+      revokeAgentPolicy: (id) => {
+        set((state) => ({
+          agentPolicies: state.agentPolicies.map((p) =>
+            p.id === id ? { ...p, status: 'REVOKED' as const } : p
+          ),
+        }));
+      },
+
+      viewingKeys: [
+        {
+          id: 'vk-01',
+          auditor: 'Financial Controller Compliance Desk',
+          keyHash: '0x7f1a8e92...bc41',
+          scope: 'Quarterly Settlement Audit',
+          issuedAt: Date.now() - 86400000 * 5,
+          validDays: 30,
+          status: 'ACTIVE',
+        },
+      ],
+      addViewingKey: (newKey) => {
+        const item: ViewingKey = {
+          ...newKey,
+          id: `vk-${Date.now().toString().slice(-4)}`,
+          issuedAt: Date.now(),
+        };
+        set((state) => ({ viewingKeys: [item, ...state.viewingKeys] }));
+        return item;
+      },
+      revokeViewingKey: (id) => {
+        set((state) => ({
+          viewingKeys: state.viewingKeys.map((k) =>
+            k.id === id ? { ...k, status: 'REVOKED' as const } : k
+          ),
+        }));
+      },
+
+      riskScoreBps: 1850,
+      setRiskScoreBps: (score) => set({ riskScoreBps: score }),
+    }),
+    {
+      name: 'kudex-protocol-storage',
+    }
+  )
+);

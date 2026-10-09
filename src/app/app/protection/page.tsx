@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FiActivity,
   FiShield,
@@ -10,13 +10,18 @@ import {
   FiDollarSign,
   FiLayers,
   FiRefreshCw,
+  FiSliders,
 } from 'react-icons/fi';
 import { RiShieldCheckLine } from 'react-icons/ri';
+import { formatUnits } from 'viem';
 import { useReadContract } from 'wagmi';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
+import { useProtocolStore } from '@/lib/protocol-store';
 
 export default function AppProtectionPage() {
+  const { riskScoreBps, positions } = useProtocolStore();
+
   const { data: riskScoreRaw } = useReadContract({
     address: CONTRACT_ADDRESSES.vault,
     abi: KUDEX_VAULT_ABI,
@@ -29,155 +34,184 @@ export default function AppProtectionPage() {
     functionName: 'isDefaulted',
   });
 
-  const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : 1850;
-  const isDefaulted = Boolean(isDefaultedRaw);
+  const { data: totalAssetsRaw } = useReadContract({
+    address: CONTRACT_ADDRESSES.vault,
+    abi: KUDEX_VAULT_ABI,
+    functionName: 'totalAssets',
+  });
 
+  const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : riskScoreBps;
+  const isDefaulted = Boolean(isDefaultedRaw);
   const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);
 
-  const restructuringEvents = [
-    {
-      id: 'daas-901',
-      date: 'Oct 04, 2026',
-      pool: 'Trade Receivables Facility',
-      drawdown: '$45,000 pUSD',
-      absorption: 'Junior Tranche (100% Absorbed)',
-      seniorImpact: '0.00% (Fully Protected)',
-      status: 'RESOLVED',
-    },
-    {
-      id: 'daas-900',
-      date: 'Sep 21, 2026',
-      pool: 'Hardware Infrastructure Debt',
-      drawdown: '$120,000 pUSD',
-      absorption: 'Junior + Protocol Reserve',
-      seniorImpact: '0.00% (Fully Protected)',
-      status: 'RESOLVED',
-    },
-  ];
+  // Interactive Solvency Stress-Test Simulator
+  const [stressDrawdownPct, setStressDrawdownPct] = useState(15);
+  const onChainAssets = totalAssetsRaw ? Number(formatUnits(totalAssetsRaw, 6)) : 0;
+  const storeCapital = Object.values(positions).reduce((acc, p) => acc + p.depositedAmount, 0);
+  const totalFacilityCapital = onChainAssets > 0 ? onChainAssets : (storeCapital > 0 ? storeCapital : 1000000);
+
+  // Dynamic proportional waterfall: 20% Junior First-Loss, 35% Mezzanine, 45% Senior Principal
+  const juniorCapital = totalFacilityCapital * 0.20;
+  const mezzanineCapital = totalFacilityCapital * 0.35;
+  const simulatedLoss = totalFacilityCapital * (stressDrawdownPct / 100);
+
+  const juniorLoss = Math.min(simulatedLoss, juniorCapital);
+  const remainingLossAfterJunior = Math.max(0, simulatedLoss - juniorCapital);
+  const mezzanineLoss = Math.min(remainingLossAfterJunior, mezzanineCapital);
+  const seniorLoss = Math.max(0, remainingLossAfterJunior - mezzanineCapital);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Workspace Header */}
-      <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-neutral-100">
+      <div className="pb-6 border-b border-slate-200 dark:border-[#21293D]">
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Risk Protection & Solvency Defense
         </h2>
-        <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
+        <p className="text-base text-slate-600 dark:text-slate-300 mt-1.5">
           Algorithmic debt solvency surveillance. Replaces sudden liquidations with structured risk amortization and capital protection.
         </p>
       </div>
 
       {/* Primary Solvency Telemetry Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-1 transition-colors duration-200">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-2 transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400">Solvency Health Factor</span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#00E599]/10 text-[#00E599] font-bold">
+            <span className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
+              Solvency Health Factor
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               SOLVENT
             </span>
           </div>
-          <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
+          <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             {healthFactor}x
           </div>
-          <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 pt-1">
+          <div className="text-xs text-slate-500 dark:text-slate-400 pt-1">
             Liquidation Floor Threshold: &lt; 1.15x
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-1 transition-colors duration-200">
+        <div className="p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-2 transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400">Real-Time Risk Index</span>
-            <span className="text-xs font-mono text-[#00E599]">18.50%</span>
+            <span className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
+              Risk Index Score
+            </span>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              {(riskScoreNum / 100).toFixed(2)}%
+            </span>
           </div>
-          <div className="text-3xl font-extrabold font-mono text-[#00E599] tabular-nums">
+          <div className="text-3xl sm:text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
             {riskScoreNum} / 10,000 bps
           </div>
-          <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 pt-1">
+          <div className="text-xs text-slate-500 dark:text-slate-400 pt-1">
             Max Risk Ceiling: 8,500 bps
           </div>
         </div>
 
-        <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-1 transition-colors duration-200">
+        <div className="p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-2 transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400">Protocol Solvency Reserve</span>
-            <span className="text-xs font-mono text-[#2E68FF]">BACKSTOP</span>
+            <span className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
+              Default Circuit Status
+            </span>
+            <span className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <RiShieldCheckLine className="w-4 h-4" />
+            </span>
           </div>
-          <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
-            $1,250,000 pUSD
+          <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+            {isDefaulted ? 'HALTED' : 'NORMAL'}
           </div>
-          <div className="text-xs font-mono text-[#00E599] pt-1">
-            100% Capital Provisioned
+          <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold pt-1">
+            Zero Solvency Breaches
           </div>
         </div>
       </div>
 
-      {/* DaaS Waterfall Mechanism & History */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Waterfall Explanation */}
-        <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
-          <div className="flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-[#21293D]">
-            <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
-            <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
-              Algorithmic Waterfall Engine
+      {/* Interactive Solvency Stress-Test Simulator */}
+      <div className="p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#21293D]">
+          <div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+              Interactive Waterfall Stress-Test Simulator
             </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              Simulate extreme market drawdowns to observe automated capital tranche absorption.
+            </p>
           </div>
-
-          <div className="space-y-4 text-xs font-mono">
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-1">
-              <span className="text-[#00E599] font-bold block uppercase">Tier 1: Senior Principal Shield</span>
-              <p className="text-slate-700 dark:text-neutral-300 font-sans text-xs">
-                Senior capital receives 100% priority payouts. No haircuts can be applied unless Junior and Mezzanine reserves are completely exhausted.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-1">
-              <span className="text-[#2E68FF] font-bold block uppercase">Tier 2: Mezzanine Buffer</span>
-              <p className="text-slate-700 dark:text-neutral-300 font-sans text-xs">
-                Mezzanine tranches absorb secondary variance, backed by DaaS reserve funds.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-1">
-              <span className="text-amber-500 dark:text-amber-400 font-bold block uppercase">Tier 3: Junior First-Loss Capital</span>
-              <p className="text-slate-700 dark:text-neutral-300 font-sans text-xs">
-                Junior depositors earn premium APY (22.8%) in exchange for absorbing shortfalls first during distressed market conditions.
-              </p>
-            </div>
+          <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+            <FiSliders className="w-4 h-4" />
+            <span>Simulate Risk</span>
           </div>
         </div>
 
-        {/* Restructuring Event Ledger */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-              <div className="flex items-center gap-2">
-                <FiRefreshCw className="w-4 h-4 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
-                  DaaS Restructuring Event Ledger
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-                Zero Flash Liquidations
-              </span>
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              Simulated Market Drawdown
+            </span>
+            <span className="text-2xl font-extrabold text-rose-600 dark:text-rose-400 tabular-nums">
+              -{stressDrawdownPct}% (${simulatedLoss.toLocaleString()})
+            </span>
+          </div>
 
-            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-2">
-              {restructuringEvents.map((evt) => (
-                <div key={evt.id} className="py-4 space-y-2 text-xs font-mono">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800 dark:text-neutral-200">{evt.pool}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#00E599]/10 text-[#00E599] font-bold">
-                      {evt.status}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-slate-500 dark:text-neutral-400 text-[11px]">
-                    <div>Drawdown: <span className="text-slate-800 dark:text-neutral-200 font-bold">{evt.drawdown}</span></div>
-                    <div>Senior Impact: <span className="text-[#00E599] font-bold">{evt.seniorImpact}</span></div>
-                    <div>Absorption: <span className="text-slate-700 dark:text-neutral-300">{evt.absorption}</span></div>
-                    <div>Date: <span className="text-slate-500 dark:text-neutral-400">{evt.date}</span></div>
-                  </div>
-                </div>
-              ))}
+          <input
+            type="range"
+            min="0"
+            max="40"
+            step="5"
+            value={stressDrawdownPct}
+            onChange={(e) => setStressDrawdownPct(Number(e.target.value))}
+            className="w-full accent-emerald-500 cursor-pointer h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
+          />
+
+          <div className="flex gap-2">
+            {[5, 10, 15, 25, 35].map((pct) => (
+              <button
+                key={pct}
+                onClick={() => setStressDrawdownPct(pct)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
+                  stressDrawdownPct === pct
+                    ? 'bg-emerald-500 text-slate-950 font-bold'
+                    : 'bg-slate-100 dark:bg-[#161C2B] text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                -{pct}%
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tranche Absorption Visualizer */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-4">
+          <div className="p-5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+            <div className="text-xs uppercase font-semibold text-purple-500">Junior Tranche</div>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">First-Loss Cushion</div>
+            <div className="text-sm font-semibold text-rose-500 mt-2">
+              Absorbs: -${juniorLoss.toLocaleString()}
+            </div>
+            <div className="text-xs text-slate-500 mt-1">
+              {juniorLoss >= juniorCapital ? '100% Depleted' : 'Absorbing Shock'}
+            </div>
+          </div>
+
+          <div className="p-5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+            <div className="text-xs uppercase font-semibold text-blue-500">Mezzanine Tranche</div>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">Secondary Buffer</div>
+            <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mt-2">
+              Absorbs: -${mezzanineLoss.toLocaleString()}
+            </div>
+            <div className="text-xs text-slate-500 mt-1">
+              {mezzanineLoss === 0 ? 'Zero Loss (Protected)' : 'Partial Cushion'}
+            </div>
+          </div>
+
+          <div className="p-5 rounded-xl border border-emerald-500/40 bg-emerald-500/5">
+            <div className="text-xs uppercase font-semibold text-emerald-600 dark:text-emerald-400">Senior Tranche</div>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">Principal Protection</div>
+            <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-2">
+              {seniorLoss === 0 ? '100% Capital Preserved ($0 Loss)' : `Haircut: -$${seniorLoss.toLocaleString()}`}
+            </div>
+            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+              Legal & Cryptographic Priority
             </div>
           </div>
         </div>
