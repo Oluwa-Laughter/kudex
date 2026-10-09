@@ -20,26 +20,26 @@ export function Navbar() {
               Protocol Pillars
             </Link>
             <Link
-              href="/dashboard/vaults"
-              className="hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+              href="/app/vaults"
+              className="hover:text-[#00E599] transition"
             >
-              RWA Vaults
+              Credit Vaults
             </Link>
             <Link
-              href="/dashboard/rfq"
-              className="hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+              href="/app/marketplace"
+              className="hover:text-[#00E599] transition"
             >
               RFQ Market
             </Link>
             <Link
-              href="/dashboard/governance"
-              className="hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+              href="/app/protection"
+              className="hover:text-[#00E599] transition"
             >
-              DaaS Sentinel
+              Risk Protection
             </Link>
             <Link
               href="/docs"
-              className="hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+              className="hover:text-[#00E599] transition"
             >
               Documentation
             </Link>
@@ -47,20 +47,20 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Portaldot Badge */}
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-900 bg-emerald-50/60 dark:bg-emerald-950/40 text-[11px] font-mono text-emerald-700 dark:text-emerald-400">
+          {/* Network Badge */}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#00E599]/30 bg-[#00E599]/10 text-xs font-mono text-[#00E599]">
             <FiShield className="w-3.5 h-3.5" />
-            <span>Portaldot V3.0 (8890)</span>
+            <span>Primary Ledger</span>
           </div>
 
           <ThemeToggle />
 
           <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-900 transition text-xs font-medium shadow-sm"
+            href="/app/overview"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] transition text-xs font-bold shadow-sm"
           >
             <FiTerminal className="w-3.5 h-3.5" />
-            <span>Launch Terminal</span>
+            <span>Launch App</span>
             <FiArrowUpRight className="w-3 h-3" />
           </Link>
         </div>

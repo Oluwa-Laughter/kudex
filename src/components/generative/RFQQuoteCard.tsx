@@ -88,10 +88,10 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
       </div>
 
       {hash && (
-        <div className="mb-3 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs flex items-center justify-between text-emerald-700 dark:text-emerald-300">
-          <div className="flex items-center gap-1.5">
-            <FiCheckCircle className="w-4 h-4" />
-            <span>{isConfirmed ? 'Settlement Confirmed' : 'Settling on Portaldot V3.0...'}</span>
+        <div className="mb-3 p-3 rounded-xl bg-[#00E599]/10 border border-[#00E599]/30 text-xs flex items-center justify-between text-[#00E599]">
+          <div className="flex items-center gap-2">
+            <FiCheckCircle className="w-4 h-4 text-[#00E599]" />
+            <span className="font-medium">{isConfirmed ? 'Settlement Confirmed' : 'Settling on Primary Ledger...'}</span>
           </div>
           <a
             href={`https://testnet.portaldot.world/explorer/tx/${hash}`}
@@ -100,7 +100,7 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
             className="flex items-center gap-1 font-mono hover:underline"
           >
             {truncateAddress(hash)}
-            <FiExternalLink className="w-3 h-3" />
+            <FiExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
       )}

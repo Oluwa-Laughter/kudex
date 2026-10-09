@@ -43,15 +43,15 @@ export function ShieldReceiptCard({ receipt }: ShieldReceiptCardProps) {
             <FiLock className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 font-mono">
-              Confidential ZK Note
+            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 font-mono">
+              Confidential Asset Note
             </span>
-            <p className="text-[11px] text-neutral-400">Groth16 Shielded Vault Commitment</p>
+            <p className="text-xs text-neutral-400">Encrypted Vault Settlement Note</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+        <div className="flex items-center gap-1.5 text-xs text-[#00E599] font-medium">
           <FiShield className="w-4 h-4" />
-          <span>On-Chain Shielded</span>
+          <span>Shielded On-Chain</span>
         </div>
       </div>
 

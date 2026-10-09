@@ -23,13 +23,13 @@ export function MetricCard({
 }: MetricCardProps) {
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 p-5 backdrop-blur-md animate-pulse">
+      <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-5 animate-pulse">
         <div className="flex items-center justify-between mb-4">
-          <div className="h-4 w-24 bg-neutral-200 dark:bg-neutral-800 rounded" />
-          <div className="h-8 w-8 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+          <div className="h-4 w-28 bg-[#161C2B] rounded" />
+          <div className="h-9 w-9 bg-[#161C2B] rounded-xl" />
         </div>
-        <div className="h-7 w-32 bg-neutral-200 dark:bg-neutral-800 rounded mb-2" />
-        <div className="h-3 w-16 bg-neutral-200 dark:bg-neutral-800 rounded" />
+        <div className="h-8 w-36 bg-[#161C2B] rounded mb-2" />
+        <div className="h-4 w-20 bg-[#161C2B] rounded" />
       </div>
     );
   }
@@ -37,27 +37,27 @@ export function MetricCard({
   const isPositive = (changeBps ?? 0) >= 0;
 
   return (
-    <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 p-5 backdrop-blur-md shadow-sm hover:border-emerald-500/40 transition group">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium text-neutral-500 font-mono uppercase tracking-wider">
+    <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-5.5 shadow-sm hover:border-[#00E599]/40 hover:bg-[#161C2B]/50 transition group">
+      <div className="flex items-center justify-between mb-3.5">
+        <span className="text-xs font-semibold text-neutral-400 font-mono uppercase tracking-wider">
           {title}
         </span>
-        <div className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 group-hover:bg-emerald-500/10 group-hover:text-emerald-500 transition">
+        <div className="p-2.5 rounded-xl bg-[#161C2B] text-neutral-300 group-hover:bg-[#00E599]/10 group-hover:text-[#00E599] transition border border-[#21293D]">
           <Icon className="w-4 h-4" />
         </div>
       </div>
 
       <div className="flex items-baseline justify-between">
-        <h3 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+        <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-100 font-mono tabular-nums">
           {value}
         </h3>
 
         {changeBps !== undefined && (
           <div
-            className={`flex items-center gap-1 text-xs font-mono font-medium ${
+            className={`flex items-center gap-1 text-xs font-mono font-medium tabular-nums ${
               isPositive
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-rose-600 dark:text-rose-400'
+                ? 'text-[#00E599]'
+                : 'text-rose-400'
             }`}
           >
             {isPositive ? (
@@ -71,7 +71,7 @@ export function MetricCard({
       </div>
 
       {subValue && (
-        <p className="mt-1 text-xs text-neutral-400 font-mono">
+        <p className="mt-2 text-sm text-neutral-400 font-sans leading-snug">
           {subValue}
         </p>
       )}

@@ -93,7 +93,7 @@ export async function POST(req: Request) {
         }
 
         const simToolCallId = `call_${Date.now()}_sim`;
-        dataStream.write(`0:${JSON.stringify(`Executing live Portaldot V3.0 RPC state simulation for ${amountUSDC} pUSD shield deposit into Kudex Vault.\n\n`)}\n`);
+        dataStream.write(`0:${JSON.stringify(`Executing live state simulation for ${amountUSDC} pUSD shield deposit into Kudex Vault.\n\n`)}\n`);
         dataStream.write(`9:${JSON.stringify({ toolCallId: simToolCallId, toolName: 'runPreFlightSimulation', args: { target: CONTRACT_ADDRESSES.vault, calldata: simulationOutcome.calldata, assetSymbol: 'pUSD', amount: amountUSDC } })}\n`);
         dataStream.write(`a:${JSON.stringify({ toolCallId: simToolCallId, result: simulationOutcome })}\n`);
         dataStream.write(`e:${JSON.stringify({ finishReason: 'tool-calls', usage: { promptTokens: 110, completionTokens: 75 } })}\n`);
@@ -134,9 +134,9 @@ export async function POST(req: Request) {
         }
 
         const formattedTVL = formatUnits(BigInt(totalAssetsStr), 6);
-        const healthStatus = isDefaultedBool ? 'DEFAULT_TRIGGERED' : 'SOLVENT (18.5% Risk)';
+        const healthStatus = isDefaultedBool ? 'RESTRUCTURING_ACTIVE' : 'HEALTHY (18.5% Risk Factor)';
 
-        dataStream.write(`0:${JSON.stringify(`Portaldot V3.0 Live Telemetry for Kudex Shielded Vault:\n- Total Assets: ${formattedTVL} pUSD\n- On-Chain Risk Score: ${riskScoreNum} / 10,000 bps\n- Protocol Health Status: ${healthStatus}\n\nAll RWA solvency invariants are confirmed valid.`)}\n`);
+        dataStream.write(`0:${JSON.stringify(`Live Telemetry for Kudex Shielded Vault:\n- Total Shielded Assets: ${formattedTVL} pUSD\n- On-Chain Risk Index: ${riskScoreNum} / 10,000 bps\n- Protocol Solvency Status: ${healthStatus}\n\nAll real-world asset solvency invariants verified.`)}\n`);
         dataStream.write(`e:${JSON.stringify({ finishReason: 'stop', usage: { promptTokens: 60, completionTokens: 40 } })}\n`);
         dataStream.write(`d:${JSON.stringify({ finishReason: 'stop', usage: { promptTokens: 60, completionTokens: 40 } })}\n`);
         return;
@@ -176,13 +176,13 @@ export async function POST(req: Request) {
           tokenOut,
           amountIn,
           estimatedReceive,
-          solver: '0xSolverPortaldotAlpha77',
+          solver: '0xInstitutionalSolverAlpha',
           estimatedGasPOT: '0.00014',
           maxSlippageBps: 50,
           routerAddress: CONTRACT_ADDRESSES.rfqMarket,
         };
 
-        dataStream.write(`0:${JSON.stringify(`I have queried Portaldot EVM cross-chain solvers and formulated an atomic RFQ swap quote.\n\n`)}\n`);
+        dataStream.write(`0:${JSON.stringify(`I have queried institutional solvers and formulated an atomic RFQ settlement quote.\n\n`)}\n`);
         dataStream.write(`9:${JSON.stringify({ toolCallId: quoteToolCallId, toolName: 'getRFQQuote', args: { tokenIn, tokenOut, amountIn, maxSlippageBps: 50 } })}\n`);
         dataStream.write(`a:${JSON.stringify({ toolCallId: quoteToolCallId, result: quoteResult })}\n`);
         dataStream.write(`e:${JSON.stringify({ finishReason: 'tool-calls', usage: { promptTokens: 120, completionTokens: 85 } })}\n`);
@@ -190,8 +190,8 @@ export async function POST(req: Request) {
         return;
       }
 
-      // Tool 4: Shield / ZK Note Deposit with Client-Side Commitment
-      if (lower.includes('shield') || lower.includes('deposit') || lower.includes('zk')) {
+      // Tool 4: Shield Note Deposit with Client-Side Commitment
+      if (lower.includes('shield') || lower.includes('deposit') || lower.includes('private')) {
         let amount = '250';
         const matchAmount = userContent.match(/(\d+(\.\d+)?)/);
         if (matchAmount) {
@@ -216,7 +216,7 @@ export async function POST(req: Request) {
           timestamp: Date.now(),
         };
 
-        dataStream.write(`0:${JSON.stringify(`Synthesized client-side Zero-Knowledge note commitment for Kudex Shielded Vault on Portaldot V3.0.\n\n`)}\n`);
+        dataStream.write(`0:${JSON.stringify(`Synthesized client-side confidential commitment note for Kudex Shielded Vault.\n\n`)}\n`);
         dataStream.write(`9:${JSON.stringify({ toolCallId: receiptToolCallId, toolName: 'shieldDepositReceipt', args: { amount, token: 'pUSD' } })}\n`);
         dataStream.write(`a:${JSON.stringify({ toolCallId: receiptToolCallId, result: shieldResult })}\n`);
         dataStream.write(`e:${JSON.stringify({ finishReason: 'tool-calls', usage: { promptTokens: 110, completionTokens: 75 } })}\n`);
@@ -225,7 +225,7 @@ export async function POST(req: Request) {
       }
 
       // Default Guidance
-      dataStream.write(`0:${JSON.stringify(`Kudex Sentinel standing by on Portaldot V3.0 EVM (Chain ID 8890).\n\nAvailable Live Directives:\n- "Simulate 500 pUSD vault shield deposit"\n- "Read live vault telemetry and TVL"\n- "Swap 200 pUSD for wPOT"\n- "Shield deposit 250 pUSD with ZK commitment"`)}\n`);
+      dataStream.write(`0:${JSON.stringify(`KUDEX AGENT standing by on the primary settlement network.\n\nAvailable Directives:\n- "Simulate 500 pUSD vault shield deposit"\n- "Read live vault telemetry and TVL"\n- "Swap 200 pUSD for wPOT"\n- "Shield deposit 250 pUSD with confidential commitment"`)}\n`);
       dataStream.write(`e:${JSON.stringify({ finishReason: 'stop', usage: { promptTokens: 40, completionTokens: 50 } })}\n`);
       dataStream.write(`d:${JSON.stringify({ finishReason: 'stop', usage: { promptTokens: 40, completionTokens: 50 } })}\n`);
     },

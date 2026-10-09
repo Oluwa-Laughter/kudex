@@ -24,10 +24,10 @@ export function VolumeChart() {
 
   if (!mounted || isLoading) {
     return (
-      <div className="h-72 w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 p-6 flex flex-col items-center justify-center gap-3">
-        <FiActivity className="w-6 h-6 text-emerald-500 animate-spin" />
-        <span className="text-xs font-mono text-neutral-400">
-          Querying Portaldot V3.0 On-Chain Event Logs...
+      <div className="h-72 w-full rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 flex flex-col items-center justify-center gap-3">
+        <FiActivity className="w-6 h-6 text-[#00E599] animate-spin" />
+        <span className="text-sm font-mono text-neutral-400">
+          Querying Real-Time Settlement Event Stream...
         </span>
       </div>
     );
@@ -52,22 +52,22 @@ export function VolumeChart() {
     : 'Live Stream Active (0.00 pUSD Indexed)';
 
   return (
-    <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-900/70 p-6 backdrop-blur-md shadow-sm">
+    <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 font-mono">
-              Portaldot Settlement Delivery
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-sm font-semibold uppercase tracking-wider text-neutral-400 font-mono">
+              Settlement Network Throughput
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <FiRadio className="w-3 h-3 animate-pulse" />
-              Live RPC getLogs
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#00E599]/10 text-[#00E599]">
+              <FiRadio className="w-3.5 h-3.5 animate-pulse" />
+              Live RPC Stream
             </span>
           </div>
-          <h4 className="text-xl font-bold font-mono text-neutral-900 dark:text-white">
+          <h4 className="text-2xl font-bold font-mono text-neutral-100 tabular-nums">
             {cumulativeDisplay}
           </h4>
-          <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+          <p className="text-sm font-mono text-neutral-400 mt-1">
             Indexed: {totalShieldEvents} Shield Notes | {totalSettlements} Atomic RFQ Settlements
           </p>
         </div>

@@ -46,8 +46,8 @@ export function Logo({ size = 'md', showSubtitle = true }: LogoProps) {
           KUDEX
         </span>
         {showSubtitle && (
-          <span className={`font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mt-0.5 ${dimensions.sub}`}>
-            PORTALDOT V3.0
+          <span className={`font-mono uppercase tracking-widest text-[#00E599] mt-0.5 ${dimensions.sub}`}>
+            SETTLEMENT NETWORK
           </span>
         )}
       </div>

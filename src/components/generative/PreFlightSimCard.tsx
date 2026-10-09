@@ -27,17 +27,17 @@ export function PreFlightSimCard({ simulation }: PreFlightSimCardProps) {
             )}
           </div>
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 font-mono">
-              Pre-Flight Invariant Simulation
+            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 font-mono">
+              Pre-Flight Solvency Simulation
             </span>
-            <p className="text-[11px] text-neutral-400">Portaldot V3.0 EVM State Diff Interceptor</p>
+            <p className="text-xs text-neutral-400">Zero-Loss State Diff Interceptor</p>
           </div>
         </div>
         <div
-          className={`px-2.5 py-1 rounded-full text-[11px] font-mono font-medium border ${
+          className={`px-3 py-1 rounded-full text-xs font-mono font-medium border ${
             simulation.isSafe
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-              : 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800'
+              ? 'bg-[#00E599]/10 text-[#00E599] border-[#00E599]/30'
+              : 'bg-rose-950/40 text-rose-400 border-rose-800'
           }`}
         >
           {simulation.isSafe ? 'PASS: Invariant Preserved' : 'FAIL: Risk Flagged'}

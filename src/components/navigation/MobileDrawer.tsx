@@ -10,27 +10,27 @@ import { ThemeToggle } from '@/components/brand/ThemeToggle';
 
 const navItems = [
   {
-    name: 'Overview & Copilot',
-    href: '/dashboard',
+    name: 'Overview & KUDEX AGENT',
+    href: '/app/overview',
     icon: FiGrid,
   },
   {
-    name: 'Confidential Vaults',
-    href: '/dashboard/vaults',
+    name: 'Credit Vaults',
+    href: '/app/vaults',
     icon: FiLayers,
   },
   {
     name: 'RFQ Orderbook',
-    href: '/dashboard/rfq',
+    href: '/app/marketplace',
     icon: FiRepeat,
   },
   {
-    name: 'Sentinel & DaaS Health',
-    href: '/dashboard/governance',
+    name: 'Risk Protection & DaaS',
+    href: '/app/protection',
     icon: FiActivity,
   },
   {
-    name: 'Technical Docs',
+    name: 'Documentation',
     href: '/docs',
     icon: FiBook,
   },
@@ -92,9 +92,9 @@ export function MobileDrawer() {
 
           <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800 space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-[#00E599]">
                 <FiShield className="w-3.5 h-3.5" />
-                <span>Portaldot V3.0 (8890)</span>
+                <span>Primary Ledger</span>
               </div>
               <ThemeToggle />
             </div>

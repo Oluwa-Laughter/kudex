@@ -43,6 +43,20 @@ const config: Config = {
         border: 'var(--border)',
         input: 'var(--input)',
         ring: 'var(--ring)',
+        canvas: '#06080D',
+        surface: {
+          DEFAULT: '#0E121B',
+          elevated: '#161C2B',
+        },
+        'border-subtle': '#21293D',
+        'accent-emerald': {
+          DEFAULT: '#00E599',
+          muted: 'rgba(0, 229, 153, 0.12)',
+        },
+        'accent-cobalt': {
+          DEFAULT: '#2E68FF',
+          muted: 'rgba(46, 104, 255, 0.12)',
+        },
         portaldot: {
           50: '#f0fdf4',
           100: '#dcfce7',

@@ -19,23 +19,23 @@ import {
 
 const navItems = [
   {
-    name: 'Overview & Copilot',
-    href: '/dashboard',
+    name: 'Overview & KUDEX AGENT',
+    href: '/app/overview',
     icon: FiGrid,
   },
   {
-    name: 'Confidential Vaults',
-    href: '/dashboard/vaults',
+    name: 'Credit Vaults',
+    href: '/app/vaults',
     icon: FiLayers,
   },
   {
     name: 'RFQ Orderbook',
-    href: '/dashboard/rfq',
+    href: '/app/marketplace',
     icon: FiRepeat,
   },
   {
-    name: 'Sentinel & DaaS Health',
-    href: '/dashboard/governance',
+    name: 'Risk Protection & DaaS',
+    href: '/app/protection',
     icon: FiActivity,
   },
 ];
