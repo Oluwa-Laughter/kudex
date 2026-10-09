@@ -22,7 +22,7 @@ import {
 import { RiExchangeFundsLine, RiShieldCheckLine, RiRobot2Line, RiBankCardLine } from 'react-icons/ri';
 
 export default function HowItWorksPage() {
-  const [activeTab, setActiveTab] = useState<'trading' | 'vaults' | 'transfers' | 'agent'>('trading');
+  const [activeTab, setActiveTab] = useState<'trading' | 'vaults' | 'transfers' | 'agent' | 'portaldot'>('trading');
   const [simStep, setSimStep] = useState(1);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -127,9 +127,37 @@ export default function HowItWorksPage() {
         action: 'Agent rebalanced portfolio for +1.4% yield gain',
       },
     ],
+    portaldot: [
+      {
+        step: 1,
+        title: 'Portaldot Substrate Layer',
+        desc: 'Portaldot maintains the underlying sovereign network consensus, native token (POT), fast block times, and enterprise-grade finality without requiring the chain to redefine itself into an EVM-only environment.',
+        action: 'Connected to Portaldot Substrate Consensus',
+      },
+      {
+        step: 2,
+        title: 'Revive Module EVM Execution',
+        desc: 'Portaldot 3.0 deploys the revive module, creating an EVM-compatible execution layer. Solidity contracts and Ethereum developer tools (viem, wagmi, MetaMask) run natively with zero emulation lag.',
+        action: 'Revive EVM module active: Solidity contracts executing',
+      },
+      {
+        step: 3,
+        title: 'Parallel ink! & EVM Coexistence',
+        desc: 'Developers choose between ink! and Solidity on the same chain. Kudex solvency vaults and orderbooks run on revive EVM while coexisting seamlessly with ink! modules. All block telemetry is verified on PortalScan.',
+        action: 'Coexistence verified on PortalScan (portalscan.portaldot.io)',
+      },
+    ],
   };
 
   const faqs = [
+    {
+      q: 'Does EVM compatibility require replacing Portaldot’s network architecture?',
+      a: 'No. EVM compatibility does not require replacing the underlying network architecture. Portaldot 3.0 introduces EVM-compatible execution through the revive module, extending smart contract execution capabilities while keeping Portaldot as the underlying network and protocol environment. The key architectural principle is coexistence: EVM Solidity execution and ink! contracts run in parallel on the same Portaldot network without requiring the network itself to become an EVM-based chain.',
+    },
+    {
+      q: 'How do EVM and Portaldot developers interact with Portaldot 3.0?',
+      a: 'For EVM developers, this provides a familiar path for deploying and interacting with Solidity contracts using standard tools (viem, wagmi, MetaMask, Rabby, Hardhat, Foundry) while operating within Portaldot’s existing network. For existing Portaldot developers, ink! remains available as another contract environment rather than being replaced. All transactions, extrinsics, and state updates can be inspected on PortalScan (portalscan.portaldot.io).',
+    },
     {
       q: 'Do I need to undergo complex KYC to trade or earn on Kudex?',
       a: 'No. Kudex is completely non-custodial and decentralized. You simply connect your web3 wallet to trade, earn yield, and send transfers immediately. If you represent an institutional entity needing compliance reports, you can generate viewing keys on demand.',
@@ -247,6 +275,18 @@ export default function HowItWorksPage() {
           >
             <RiRobot2Line className="w-4 h-4 text-emerald-500" />
             <span>Kudex Agent</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('portaldot'); setSimStep(1); }}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition ${
+              activeTab === 'portaldot'
+                ? 'bg-white dark:bg-[#161C2B] text-slate-900 dark:text-white shadow-md'
+                : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <FiCpu className="w-4 h-4 text-emerald-600 dark:text-[#00E599]" />
+            <span>Portaldot 3.0 Coexistence</span>
           </button>
         </div>
 

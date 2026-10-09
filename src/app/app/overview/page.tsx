@@ -429,7 +429,7 @@ export default function AppOverviewPage() {
                         <span>{copiedAddress === c.name ? 'Copied' : 'Copy'}</span>
                       </button>
                       <a
-                        href={`https://testnet.explorer.portaldot.io/address/${c.address}`}
+                        href={`https://portalscan.portaldot.io/account/${c.address}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 rounded-md text-slate-400 hover:text-emerald-500 transition"

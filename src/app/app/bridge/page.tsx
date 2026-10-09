@@ -15,6 +15,20 @@ import { useAccount, useBalance } from 'wagmi';
 import { formatUnits } from 'viem';
 import { truncateAddress } from '@/lib/utils';
 import { useProtocolStore, BridgeTransfer } from '@/lib/protocol-store';
+import { CustomSelect, SelectOption } from '@/components/ui/CustomSelect';
+
+const ORIGIN_CHAIN_OPTIONS: SelectOption[] = [
+  { value: 'Ethereum Sepolia', label: 'Ethereum Sepolia', description: 'Ethereum L1 Testnet' },
+  { value: 'Arbitrum Sepolia', label: 'Arbitrum Sepolia', description: 'Arbitrum L2 Testnet' },
+  { value: 'Base Sepolia', label: 'Base Sepolia', description: 'Base L2 Testnet' },
+  { value: 'Polygon Amoy', label: 'Polygon Amoy', description: 'Polygon PoS Testnet' },
+];
+
+const ASSET_OPTIONS: SelectOption[] = [
+  { value: 'USDC', label: 'USDC' },
+  { value: 'ETH', label: 'ETH' },
+  { value: 'USDT', label: 'USDT' },
+];
 
 export default function AppBridgePage() {
   const { isConnected, address } = useAccount();
@@ -110,23 +124,18 @@ export default function AppBridgePage() {
                 <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
                   Origin Network
                 </label>
-                <select
+                <CustomSelect
+                  options={ORIGIN_CHAIN_OPTIONS}
                   value={originChain}
-                  onChange={(e) => setOriginChain(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-bold text-sm text-slate-900 dark:text-white outline-none"
-                >
-                  <option value="Ethereum Sepolia">Ethereum Sepolia</option>
-                  <option value="Arbitrum Sepolia">Arbitrum Sepolia</option>
-                  <option value="Base Sepolia">Base Sepolia</option>
-                  <option value="Polygon Amoy">Polygon Amoy</option>
-                </select>
+                  onChange={setOriginChain}
+                />
               </div>
 
               <div>
                 <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
                   Destination
                 </label>
-                <div className="px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-[#161C2B] font-bold text-sm text-emerald-600 dark:text-emerald-400 flex items-center">
+                <div className="h-[46px] px-4 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-[#161C2B] font-bold text-sm text-emerald-600 dark:text-emerald-400 flex items-center">
                   {targetChain}
                 </div>
               </div>
@@ -162,7 +171,7 @@ export default function AppBridgePage() {
                 ))}
               </div>
 
-              <div className="flex rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-hidden focus-within:border-emerald-500">
+              <div className="relative flex rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-visible focus-within:border-emerald-500">
                 <input
                   type="number"
                   value={amount}
@@ -170,15 +179,13 @@ export default function AppBridgePage() {
                   placeholder="0.00"
                   className="flex-1 px-4 py-3.5 bg-transparent font-bold text-xl text-slate-900 dark:text-white outline-none tabular-nums"
                 />
-                <select
+                <CustomSelect
+                  variant="input-addon"
+                  options={ASSET_OPTIONS}
                   value={asset}
-                  onChange={(e) => setAsset(e.target.value)}
-                  className="px-4 py-3.5 bg-slate-100 dark:bg-[#21293D] text-slate-900 dark:text-white font-bold text-sm outline-none border-l border-slate-200 dark:border-[#21293D]"
-                >
-                  <option value="USDC">USDC</option>
-                  <option value="ETH">ETH</option>
-                  <option value="USDT">USDT</option>
-                </select>
+                  onChange={setAsset}
+                  buttonClassName="py-3.5 rounded-r-xl"
+                />
               </div>
             </div>
 

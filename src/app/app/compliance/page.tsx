@@ -15,6 +15,25 @@ import {
 import { RiShieldCheckLine } from 'react-icons/ri';
 import { truncateAddress } from '@/lib/utils';
 import { useProtocolStore, ViewingKey } from '@/lib/protocol-store';
+import { CustomSelect, SelectOption } from '@/components/ui/CustomSelect';
+
+const SCOPE_OPTIONS: SelectOption[] = [
+  {
+    value: 'Full Settlement & Solvency Audit',
+    label: 'Full Settlement & Solvency Audit',
+    description: 'Complete inspection of notes, swaps, and solvency invariant metrics',
+  },
+  {
+    value: 'Contractor Payroll Disbursements Only',
+    label: 'Contractor Payroll Disbursements Only',
+    description: 'Restricted viewing to employee and vendor disbursement streams',
+  },
+  {
+    value: 'Credit Facility Debt Amortization Only',
+    label: 'Credit Facility Debt Amortization Only',
+    description: 'Read-only access to senior debt tranche repayment schedules',
+  },
+];
 
 export default function AppCompliancePage() {
   const { viewingKeys, addViewingKey, revokeViewingKey, orders, notes } = useProtocolStore();
@@ -159,15 +178,11 @@ export default function AppCompliancePage() {
               <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
                 Audit Scope
               </label>
-              <select
+              <CustomSelect
+                options={SCOPE_OPTIONS}
                 value={scope}
-                onChange={(e) => setScope(e.target.value)}
-                className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-slate-900 dark:text-white font-medium text-sm outline-none"
-              >
-                <option value="Full Settlement & Solvency Audit">Full Settlement & Solvency Audit</option>
-                <option value="Contractor Payroll Disbursements Only">Contractor Payroll Disbursements Only</option>
-                <option value="Credit Facility Debt Amortization Only">Credit Facility Debt Amortization Only</option>
-              </select>
+                onChange={setScope}
+              />
             </div>
 
             <div>

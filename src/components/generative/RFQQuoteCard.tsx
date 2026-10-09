@@ -94,7 +94,7 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
             <span className="font-medium">{isConfirmed ? 'Settlement Confirmed' : 'Settling on Primary Ledger...'}</span>
           </div>
           <a
-            href={`https://testnet.portaldot.world/explorer/tx/${hash}`}
+            href={`https://portalscan.portaldot.io/extrinsic/${hash}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1 font-mono hover:underline"

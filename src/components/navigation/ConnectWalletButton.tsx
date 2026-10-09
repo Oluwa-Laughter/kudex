@@ -57,8 +57,8 @@ export function ConnectWalletButton() {
 
   if (isConnected && address) {
     const explorerUrl = chain?.blockExplorers?.default?.url
-      ? `${chain.blockExplorers.default.url}/address/${address}`
-      : `https://testnet.explorer.portaldot.io/address/${address}`;
+      ? `${chain.blockExplorers.default.url}/account/${address}`
+      : `https://portalscan.portaldot.io/account/${address}`;
 
     return (
       <div className="relative" ref={dropdownRef}>

@@ -14,6 +14,25 @@ import {
 } from 'react-icons/fi';
 import { RiRobot2Line } from 'react-icons/ri';
 import { useProtocolStore, AgentPolicy } from '@/lib/protocol-store';
+import { CustomSelect, SelectOption } from '@/components/ui/CustomSelect';
+
+const ROLE_OPTIONS: SelectOption[] = [
+  {
+    value: 'Arbitrage & RFQ Execution',
+    label: 'Arbitrage & RFQ Execution',
+    description: 'High-frequency cross-venue solver quotes and fills',
+  },
+  {
+    value: 'Solvency Invariant Surveillance',
+    label: 'Solvency Invariant Surveillance',
+    description: '24/7 on-chain vault risk metrics & telemetry watcher',
+  },
+  {
+    value: 'Automated Yield Compounding',
+    label: 'Automated Yield Compounding',
+    description: 'Auto-harvests yields and rolls senior credit tranches',
+  },
+];
 
 export default function AppAgentsPage() {
   const { agentPolicies, addAgentPolicy, revokeAgentPolicy } = useProtocolStore();
@@ -110,15 +129,11 @@ export default function AppAgentsPage() {
                 <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
                   Execution Role
                 </label>
-                <select
+                <CustomSelect
+                  options={ROLE_OPTIONS}
                   value={newAgentRole}
-                  onChange={(e) => setNewAgentRole(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-slate-900 dark:text-white font-medium text-sm outline-none"
-                >
-                  <option value="Arbitrage & RFQ Execution">Arbitrage & RFQ Execution</option>
-                  <option value="Solvency Invariant Surveillance">Solvency Invariant Surveillance</option>
-                  <option value="Automated Yield Compounding">Automated Yield Compounding</option>
-                </select>
+                  onChange={setNewAgentRole}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

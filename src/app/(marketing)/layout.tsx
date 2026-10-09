@@ -232,21 +232,21 @@ export default function MarketingLayout({
       {/* Institutional Corporate Footer */}
       <footer className="border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mt-24 transition-colors duration-200">
         <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
             {/* Col 1: Brand & Status */}
-            <div className="md:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-4">
               <Logo size="md" />
               <p className="text-sm text-slate-600 dark:text-neutral-400 max-w-sm leading-relaxed">
-                Autonomous confidential settlement network and agent-native RFQ marketplace.
-                Engineered for institutional privacy, fractionalized RWA yield, and automated debt solvency.
+                Autonomous confidential settlement network and agent-native RFQ marketplace on Portaldot 3.0.
+                Dual-execution support via the revive module with native ink! contract coexistence.
               </p>
-              <div className="pt-2 flex items-center gap-3">
+              <div className="pt-2 flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-700 dark:text-neutral-300">
                   <span className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse" />
-                  <span>Network Operational</span>
+                  <span>Portaldot 3.0 Live</span>
                 </div>
                 <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-                  Avg Latency: <span className="text-slate-800 dark:text-neutral-300 font-semibold">180ms</span>
+                  Revive EVM: <span className="text-emerald-600 dark:text-[#00E599] font-semibold">Operational</span>
                 </div>
               </div>
             </div>
@@ -333,6 +333,70 @@ export default function MarketingLayout({
                     className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
                   >
                     <span>GitHub Repository</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 5: Portaldot 3.0 Network */}
+            <div>
+              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
+                Portaldot 3.0
+              </h5>
+              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
+                <li>
+                  <a
+                    href="https://portalscan.portaldot.io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1 text-emerald-600 dark:text-[#00E599] font-medium"
+                  >
+                    <span>PortalScan Explorer</span>
+                    <FiExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://portaldot-dev.readthedocs.io/en/latest/index.html"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
+                  >
+                    <span>Developer Docs</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/portaldotVolunteer/DeveloperPlatform"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
+                  >
+                    <span>Developer Platform</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.portaldot.world/protocol/modules/application-engines"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
+                  >
+                    <span>Application Engines</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.portaldot.world/ecosystem#projects"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
+                  >
+                    <span>Ecosystem Projects</span>
                     <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
                   </a>
                 </li>

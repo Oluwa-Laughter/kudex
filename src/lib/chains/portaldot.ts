@@ -16,8 +16,8 @@ export const portaldotTestnet = defineChain({
   },
   blockExplorers: {
     default: {
-      name: 'Portaldot Explorer',
-      url: 'https://testnet.portaldot.world/explorer',
+      name: 'PortalScan',
+      url: 'https://portalscan.portaldot.io',
     },
   },
   contracts: {

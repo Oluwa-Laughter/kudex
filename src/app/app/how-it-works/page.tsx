@@ -15,12 +15,13 @@ import {
   FiChevronUp,
   FiPlay,
   FiSliders,
+  FiExternalLink,
 } from 'react-icons/fi';
 import { RiExchangeFundsLine, RiShieldCheckLine, RiRobot2Line, RiBankCardLine } from 'react-icons/ri';
 
 export default function AppHowItWorksPage() {
   const [depositAmount, setDepositAmount] = useState(5000);
-  const [activeTab, setActiveTab] = useState<'quickstart' | 'yield' | 'privacy'>('quickstart');
+  const [activeTab, setActiveTab] = useState<'quickstart' | 'yield' | 'privacy' | 'architecture'>('quickstart');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Yield calculations
@@ -48,6 +49,14 @@ export default function AppHowItWorksPage() {
     {
       q: 'How does Kudex Agent work safely without stealing my keys?',
       a: 'Kudex Agent uses bounded delegation session keys. You define a maximum daily spending cap, permitted actions, and an expiration timestamp. The agent cannot withdraw funds outside of your whitelist, and you can revoke its permissions instantly with one click.',
+    },
+    {
+      q: 'Does EVM compatibility require replacing Portaldot’s underlying network architecture?',
+      a: 'No. EVM compatibility does not require replacing the underlying network architecture. Portaldot 3.0 introduces EVM-compatible execution through the revive module, extending smart contract execution capabilities while keeping Portaldot as the underlying Substrate protocol environment. EVM Solidity execution and native ink! contracts run in parallel on the same Portaldot network without requiring the network itself to become an EVM chain.',
+    },
+    {
+      q: 'Where can I inspect contract execution and block state?',
+      a: 'All blocks, extrinsics, and state transitions are indexed on PortalScan (https://portalscan.portaldot.io). Developers can also consult the official Portaldot documentation (https://portaldot-dev.readthedocs.io/en/latest/index.html) and developer platform repository.',
     },
   ];
 
@@ -111,6 +120,18 @@ export default function AppHowItWorksPage() {
         >
           <FiShield className="w-4 h-4" />
           <span>Privacy & Solvency</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('architecture')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
+            activeTab === 'architecture'
+              ? 'bg-[#00E599] text-[#06080D] font-bold shadow-sm'
+              : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161C2B]'
+          }`}
+        >
+          <FiCpu className="w-4 h-4" />
+          <span>Portaldot 3.0 Architecture</span>
         </button>
       </div>
 
@@ -389,6 +410,113 @@ export default function AppHowItWorksPage() {
                   <span>Auditors can verify without withdrawing funds</span>
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: Portaldot 3.0 Architecture & Coexistence */}
+      {activeTab === 'architecture' && (
+        <div className="space-y-6">
+          <div className="p-8 sm:p-10 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm space-y-6">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] text-xs font-mono font-bold mb-3 border border-emerald-500/20">
+                PORTALDOT 3.0 DUAL EXECUTION
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                EVM & ink! Parallel Coexistence
+              </h3>
+              <p className="mt-3 text-base text-slate-600 dark:text-neutral-400 leading-relaxed">
+                EVM compatibility does not require replacing the underlying network architecture.
+                Portaldot 3.0 introduces EVM-compatible execution through the <span className="font-semibold text-slate-900 dark:text-white">revive module</span>,
+                extending smart contract execution capabilities while maintaining Portaldot as the underlying Substrate protocol environment.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <div className="p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-[#161C2B]/60 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+                  EVM
+                </div>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Revive Module EVM Execution
+                </h4>
+                <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
+                  Solidity contracts deployable using standard Ethereum tooling (viem, wagmi, MetaMask, Rabby, Hardhat, Foundry). Provides a seamless path for EVM developers without forcing the network to become an EVM chain.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]/60 space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-[#21293D] text-slate-900 dark:text-white flex items-center justify-center font-mono font-bold text-sm">
+                  ink!
+                </div>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Native Substrate Execution
+                </h4>
+                <p className="text-sm text-slate-600 dark:text-neutral-300 leading-relaxed">
+                  For existing Portaldot developers, ink! remains available rather than being phased out. Different execution models operate concurrently on the same protocol, allowing protocols to choose their ideal execution environment.
+                </p>
+              </div>
+            </div>
+
+            {/* Official Network Resources Links */}
+            <div className="pt-4 border-t border-slate-100 dark:border-[#21293D]">
+              <div className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 font-semibold mb-4">
+                Official Portaldot 3.0 Resources & Telemetry
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <a
+                  href="https://portalscan.portaldot.io"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
+                >
+                  <div className="text-xs text-slate-500 dark:text-neutral-400">Canonical Explorer</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
+                    <span>PortalScan</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+                  </div>
+                </a>
+
+                <a
+                  href="https://portaldot-dev.readthedocs.io/en/latest/index.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
+                >
+                  <div className="text-xs text-slate-500 dark:text-neutral-400">Documentation</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
+                    <span>Dev Docs</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+                  </div>
+                </a>
+
+                <a
+                  href="https://www.portaldot.world/protocol/modules/application-engines"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
+                >
+                  <div className="text-xs text-slate-500 dark:text-neutral-400">Protocol Spec</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
+                    <span>Engines</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+                  </div>
+                </a>
+
+                <a
+                  href="https://www.portaldot.world/ecosystem#projects"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
+                >
+                  <div className="text-xs text-slate-500 dark:text-neutral-400">Directory</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
+                    <span>Ecosystem</span>
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
