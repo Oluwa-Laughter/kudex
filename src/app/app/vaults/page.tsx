@@ -277,9 +277,26 @@ export default function AppVaultsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
-                Amount (pUSD)
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
+                  Amount (pUSD)
+                </label>
+                <div className="flex items-center gap-1.5">
+                  {[25, 50, 75, 100].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => {
+                        const baseBal = activeTab === 'DEPOSIT' ? 10000 : vaultDetails[selectedVault].userDeposit || 5000;
+                        setDepositAmount((baseBal * (pct / 100)).toFixed(2));
+                      }}
+                      className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300 hover:border-emerald-500 transition"
+                    >
+                      {pct === 100 ? 'MAX' : `${pct}%`}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="flex rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-hidden focus-within:border-emerald-500">
                 <input
                   type="number"

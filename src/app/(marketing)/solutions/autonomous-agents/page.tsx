@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import {
   FiCpu,
   FiZap,
@@ -20,11 +22,27 @@ export default function AutonomousAgentsPage() {
   const [maxSpend, setMaxSpend] = useState(2500);
   const [ttlHours, setTtlHours] = useState(12);
   const [whitelistedRouter, setWhitelistedRouter] = useState('Kudex RFQ Solver Router');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (containerRef.current) {
+        gsap.from(containerRef.current.querySelectorAll('.agent-anim'), {
+          opacity: 0,
+          y: 24,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'power3.out',
+        });
+      }
+    },
+    { scope: containerRef }
+  );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div ref={containerRef} className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
       {/* Breadcrumb Header */}
-      <div className="flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
+      <div className="agent-anim flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition">
           Home
         </Link>

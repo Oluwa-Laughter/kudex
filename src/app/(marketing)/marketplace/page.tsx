@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import {
   FiSearch,
   FiFilter,
@@ -12,8 +14,11 @@ import {
   FiLayers,
   FiCheckCircle,
   FiExternalLink,
+  FiZap,
+  FiLock,
+  FiDollarSign,
 } from 'react-icons/fi';
-import { RiExchangeFundsLine } from 'react-icons/ri';
+import { RiExchangeFundsLine, RiShieldCheckLine } from 'react-icons/ri';
 
 export default function PublicMarketplacePage() {
   const [filterGrade, setFilterGrade] = useState<'ALL' | 'AAA' | 'BBB' | 'EQUITY'>('ALL');
@@ -82,10 +87,27 @@ export default function PublicMarketplacePage() {
     return matchesGrade && matchesSearch;
   });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (containerRef.current) {
+        gsap.from(containerRef.current.querySelectorAll('.market-anim'), {
+          opacity: 0,
+          y: 24,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: 'power3.out',
+        });
+      }
+    },
+    { scope: containerRef }
+  );
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div ref={containerRef} className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
       {/* Breadcrumb Header */}
-      <div className="flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
+      <div className="market-anim flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition">
           Home
         </Link>
@@ -94,7 +116,7 @@ export default function PublicMarketplacePage() {
       </div>
 
       {/* Hero Header */}
-      <div className="max-w-4xl space-y-4 mb-12">
+      <div className="market-anim max-w-4xl space-y-4 mb-12">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-sm font-semibold text-[#00E599]">
           <RiExchangeFundsLine className="w-4 h-4" />
           <span>TRANCHE & LIQUIDITY DISCOVERY</span>
@@ -280,6 +302,129 @@ export default function PublicMarketplacePage() {
           </table>
         </div>
       </div>
+
+      {/* Waterfall Capital Structure Section */}
+      <div className="market-anim mb-16">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
+            <FiLayers className="w-3.5 h-3.5" />
+            <span>TRANCHE CAPITAL WATERFALL</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Algorithmic Protection Across Three Tranche Tiers
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2">
+            Capital flows through a strict liquidation waterfall. Senior principal is shielded by subordinated tranches, ensuring stable institutions and aggressive yield seekers are accurately incentivized.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-7 rounded-2xl border border-emerald-500/30 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl" />
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20">
+                Grade AAA
+              </span>
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">First-Priority Claim</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Senior Protected Tranche</h3>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Legal and cryptographic claim priority on all underlying real-world assets. Protected from the first 25% of any facility loss.
+            </p>
+            <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex justify-between items-baseline">
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 uppercase">Target APY</span>
+              <span className="text-xl font-mono font-bold text-emerald-600 dark:text-[#00E599]">8.00% – 9.50%</span>
+            </div>
+          </div>
+
+          <div className="p-7 rounded-2xl border border-blue-500/30 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl" />
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] border border-blue-500/20">
+                Grade BBB
+              </span>
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">Subordinated Buffer</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Mezzanine Growth Tranche</h3>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Provides an intermediate cushion between junior first-loss and senior lenders. Balances high recurring interest with subordinate risk.
+            </p>
+            <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex justify-between items-baseline">
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 uppercase">Target APY</span>
+              <span className="text-xl font-mono font-bold text-blue-600 dark:text-[#2E68FF]">13.50% – 16.00%</span>
+            </div>
+          </div>
+
+          <div className="p-7 rounded-2xl border border-amber-500/30 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl" />
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                Grade EQUITY
+              </span>
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">First-Loss Absorption</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Junior First-Loss Tranche</h3>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Captures maximum facility yield and residual protocol profits in exchange for absorbing any initial default volatility.
+            </p>
+            <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex justify-between items-baseline">
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 uppercase">Target APY</span>
+              <span className="text-xl font-mono font-bold text-amber-600 dark:text-amber-400">20.00% – 25.00%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Confidential RFQ Protocol Section */}
+      <div className="market-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-blue-600 dark:text-[#2E68FF] mb-3">
+            <FiZap className="w-3.5 h-3.5" />
+            <span>OFF-CHAIN RFQ SOLVER ENGINE</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Why RFQ Outperforms Automated Market Makers
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
+            Standard AMMs force traders to broadcast intents into public mempools where front-running bots steal basis points. Kudex uses private cryptographic RFQs matched atomically.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">01 / ENCRYPTED INTENT</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Zero Pre-Trade Leakage</div>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Order size and price limit stay completely private from public mempool sniffers.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">02 / SOLVER AUCTION</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Competitive Tight Quotes</div>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Solvers bid aggressively to fill trades, offering spreads as low as 1 to 4 basis points.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">03 / ATOMIC SETTLEMENT</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Guaranteed Execution</div>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Trade executes in a single block with 100% price guarantee or reverts with zero penalty.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">04 / SHIELDED RECEIPT</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Confidential Balances</div>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Settled tokens are held in private notes, preventing wallet address tracking.
+            </p>
+          </div>
+        </div>
+      </div>
+
 
       {/* CTA Box */}
       <div className="p-10 rounded-3xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-gradient-to-r dark:from-[#0E121B] dark:to-[#161C2B] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">

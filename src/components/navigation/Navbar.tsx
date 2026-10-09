@@ -9,7 +9,7 @@ import { FiArrowUpRight, FiShield, FiTerminal } from 'react-icons/fi';
 export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-950/70 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Logo size="md" />
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-neutral-600 dark:text-neutral-400">

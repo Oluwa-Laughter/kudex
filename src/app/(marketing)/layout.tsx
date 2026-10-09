@@ -66,7 +66,7 @@ export default function MarketingLayout({
 
       {/* Main Navigation Header */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 dark:bg-[#06080D]/85 border-b border-slate-200 dark:border-[#21293D] transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 h-20 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Logo size="md" />
 
@@ -231,7 +231,7 @@ export default function MarketingLayout({
 
       {/* Institutional Corporate Footer */}
       <footer className="border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mt-24 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
             {/* Col 1: Brand & Status */}
             <div className="md:col-span-2 space-y-4">

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import {
   FiArrowRight,
   FiShield,
@@ -23,6 +25,22 @@ export default function HowItWorksPage() {
   const [activeTab, setActiveTab] = useState<'trading' | 'vaults' | 'transfers' | 'agent'>('trading');
   const [simStep, setSimStep] = useState(1);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (pageRef.current) {
+        gsap.from(pageRef.current.querySelectorAll('.hiw-anim'), {
+          opacity: 0,
+          y: 26,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: 'power3.out',
+        });
+      }
+    },
+    { scope: pageRef }
+  );
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);
@@ -135,9 +153,9 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div ref={pageRef} className="min-h-screen">
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 text-center">
+      <section className="hiw-anim w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 pt-16 pb-20 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-sm font-semibold text-slate-700 dark:text-neutral-300 mb-6">
           <span className="w-2.5 h-2.5 rounded-full bg-[#00E599] animate-pulse" />
           <span>Interactive Protocol Guide</span>
@@ -171,7 +189,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* 4 Core Pillars Modular Tabs */}
-      <section id="simulator" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <section id="simulator" className="hiw-anim w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Explore Kudex Core Capabilities
@@ -342,7 +360,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Comparison Grid: Kudex vs Traditional DeFi vs CeFi */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
+      <section className="hiw-anim w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-20 border-t border-slate-200 dark:border-[#21293D]">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             How Kudex Compares
@@ -399,7 +417,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Interactive FAQ Accordion */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200 dark:border-[#21293D]">
+      <section className="hiw-anim w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-20 border-t border-slate-200 dark:border-[#21293D]">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Frequently Asked Questions
@@ -409,7 +427,7 @@ export default function HowItWorksPage() {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-w-4xl mx-auto">
           {faqs.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
@@ -440,7 +458,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="hiw-anim w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-20">
         <div className="rounded-3xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-[#0E121B] text-slate-900 dark:text-white p-10 sm:p-14 text-center relative overflow-hidden shadow-sm">
           <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight max-w-2xl mx-auto">
             Ready to Experience Confidential Web3 Finance?

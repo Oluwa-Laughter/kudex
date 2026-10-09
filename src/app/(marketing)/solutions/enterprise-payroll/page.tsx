@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import {
   FiLock,
   FiShield,
@@ -19,15 +21,31 @@ import { RiShieldCheckLine } from 'react-icons/ri';
 export default function EnterprisePayrollPage() {
   const [recipientCount, setRecipientCount] = useState(25);
   const [avgDisbursement, setAvgDisbursement] = useState(4500);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (containerRef.current) {
+        gsap.from(containerRef.current.querySelectorAll('.sol-anim'), {
+          opacity: 0,
+          y: 24,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'power3.out',
+        });
+      }
+    },
+    { scope: containerRef }
+  );
 
   const totalPayroll = recipientCount * avgDisbursement;
   const privacyFactor = '100% Zero Leakage';
   const estimatedGasPot = (recipientCount * 0.00012).toFixed(5);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div ref={containerRef} className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
       {/* Breadcrumb Header */}
-      <div className="flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
+      <div className="sol-anim flex items-center gap-2 text-sm font-mono text-slate-500 dark:text-neutral-400 mb-6">
         <Link href="/" className="hover:text-slate-900 dark:hover:text-white transition">
           Home
         </Link>

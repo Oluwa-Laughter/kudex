@@ -117,9 +117,33 @@ export default function AppBridgePage() {
 
             {/* Asset and Amount */}
             <div>
-              <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 block mb-2">
-                Bridge Amount
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
+                  Bridge Amount
+                </label>
+                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                  Available: <span className="font-semibold text-slate-800 dark:text-slate-200">10,000.00 {asset}</span>
+                </span>
+              </div>
+
+              {/* Quick Fill Percentage Buttons */}
+              <div className="flex items-center gap-2 mb-2.5">
+                {[25, 50, 75, 100].map((pct) => (
+                  <button
+                    key={pct}
+                    type="button"
+                    onClick={() => {
+                      const total = 10000;
+                      const calculated = ((total * pct) / 100).toFixed(2);
+                      setAmount(calculated);
+                    }}
+                    className="flex-1 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] border border-slate-200 dark:border-[#21293D] text-xs font-mono font-bold text-slate-700 dark:text-slate-300 transition"
+                  >
+                    {pct === 100 ? 'MAX' : `${pct}%`}
+                  </button>
+                ))}
+              </div>
+
               <div className="flex rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-hidden focus-within:border-emerald-500">
                 <input
                   type="number"
