@@ -99,19 +99,19 @@ export default function AppCompliancePage() {
   return (
     <div className="space-y-8">
       {/* Workspace Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#21293D]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-neutral-100">
+          <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
             Compliance & Auditor Viewing Keys
           </h2>
-          <p className="text-sm text-neutral-400 mt-1">
+          <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
             Generate asymmetric read-only viewing keys for regulatory audit without disclosing balances publicly.
           </p>
         </div>
 
         <button
           onClick={handleDownloadReport}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#161C2B] hover:bg-[#21293D] text-neutral-200 border border-[#21293D] text-xs font-semibold font-mono transition"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D] text-xs font-semibold font-mono transition"
         >
           <FiDownload className="w-4 h-4 text-[#00E599]" />
           <span>Export Audit Proof (JSON)</span>
@@ -120,17 +120,17 @@ export default function AppCompliancePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Key Generator Form */}
-        <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl border border-[#21293D] bg-[#0E121B] shadow-xl space-y-6">
-          <div className="flex items-center gap-2 pb-4 border-b border-[#21293D]">
+        <div className="lg:col-span-5 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
+          <div className="flex items-center gap-2 pb-4 border-b border-slate-200 dark:border-[#21293D]">
             <FiKey className="w-5 h-5 text-[#00E599]" />
-            <h3 className="text-base font-bold font-mono text-neutral-100">
+            <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
               Generate Auditor Viewing Key
             </h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                 Auditor Entity or Authority Name
               </label>
               <input
@@ -138,12 +138,12 @@ export default function AppCompliancePage() {
                 value={auditorName}
                 onChange={(e) => setAuditorName(e.target.value)}
                 placeholder="e.g. PwC, Ernst & Young, Tax Counsel"
-                className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
               />
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-mono text-neutral-400 mb-2">
+              <div className="flex justify-between text-xs font-mono text-slate-500 dark:text-neutral-400 mb-2">
                 <span>Key Expiration Period:</span>
                 <span className="text-[#00E599] font-bold">{validDays} Days</span>
               </div>
@@ -154,7 +154,7 @@ export default function AppCompliancePage() {
                 step="7"
                 value={validDays}
                 onChange={(e) => setValidDays(Number(e.target.value))}
-                className="w-full accent-[#00E599] bg-[#161C2B] rounded-lg cursor-pointer"
+                className="w-full accent-[#00E599] bg-slate-200 dark:bg-[#161C2B] rounded-lg cursor-pointer"
               />
             </div>
 
@@ -168,20 +168,20 @@ export default function AppCompliancePage() {
           </div>
 
           {generatedKey && (
-            <div className="p-4 rounded-xl bg-[#161C2B] border border-[#00E599]/40 space-y-2">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-[#00E599]/40 space-y-2">
               <span className="text-xs font-mono text-[#00E599] uppercase font-bold block">
                 Issued Viewing Key:
               </span>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#06080D] font-mono text-[11px] text-neutral-200 break-all">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-100 dark:bg-[#06080D] font-mono text-[11px] text-slate-800 dark:text-neutral-200 break-all border border-slate-200 dark:border-[#21293D]">
                 <span>{generatedKey}</span>
                 <button
                   onClick={copyKey}
-                  className="ml-2 p-1 text-neutral-400 hover:text-white"
+                  className="ml-2 p-1 text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white"
                 >
                   {copiedKey ? <FiCheck className="w-4 h-4 text-[#00E599]" /> : <FiCopy className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400">
                 Provide this key to your certified auditor. It confers read-only decryption rights.
               </p>
             </div>
@@ -190,36 +190,36 @@ export default function AppCompliancePage() {
 
         {/* Active Viewing Keys Table */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 shadow-sm">
-            <div className="flex items-center justify-between pb-4 border-b border-[#21293D]">
+          <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
               <div className="flex items-center gap-2">
-                <RiShieldCheckLine className="w-4 h-4 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-neutral-100">
+                <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
+                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Active Auditor Key Disclosures
                 </h3>
               </div>
-              <span className="text-xs font-mono text-neutral-400">
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
                 Cryptographic Access Log
               </span>
             </div>
 
-            <div className="divide-y divide-[#21293D] mt-2">
+            <div className="divide-y divide-slate-100 dark:divide-[#21293D] mt-2">
               {activeKeys.map((item) => (
                 <div key={item.id} className="py-4 flex items-center justify-between text-xs font-mono">
                   <div>
-                    <div className="font-bold text-neutral-200">{item.auditor}</div>
-                    <div className="text-neutral-400 text-[11px] mt-0.5">
+                    <div className="font-bold text-slate-800 dark:text-neutral-200">{item.auditor}</div>
+                    <div className="text-slate-500 dark:text-neutral-400 text-[11px] mt-0.5">
                       Scope: {item.scope} | Hash: {item.keyHash}
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <span className="text-[#00E599] block font-bold">{item.status}</span>
-                      <span className="text-neutral-500 text-[10px] block">Expires in {item.expiresIn}</span>
+                      <span className="text-slate-400 dark:text-neutral-500 text-[10px] block">Expires in {item.expiresIn}</span>
                     </div>
                     <button
                       onClick={() => handleRevokeKey(item.id)}
-                      className="p-1.5 rounded-lg text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                      className="p-1.5 rounded-lg text-slate-400 dark:text-neutral-500 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition"
                       title="Revoke Key"
                     >
                       <FiTrash2 className="w-4 h-4" />
@@ -230,11 +230,11 @@ export default function AppCompliancePage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl border border-[#21293D] bg-[#0E121B] space-y-2">
-            <h4 className="text-sm font-bold font-mono text-neutral-100">
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-2 transition-colors duration-200">
+            <h4 className="text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
               Audit Invariant Verifiability
             </h4>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
               Viewing keys permit mathematical verification of balances, inflows, and outflows
               without revealing counterparty addresses or linking multiple independent transactions.
             </p>

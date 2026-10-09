@@ -66,12 +66,12 @@ export default function AppAgentsPage() {
   return (
     <div className="space-y-8">
       {/* Workspace Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#21293D]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-[#21293D]">
         <div>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-neutral-100">
+          <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
             Kudex Agent Fleet & Session Policies
           </h2>
-          <p className="text-sm text-neutral-400 mt-1">
+          <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
             Delegate bounded trading authority to autonomous agents. Enforce strict spending caps with zero-popup execution.
           </p>
         </div>
@@ -83,9 +83,9 @@ export default function AppAgentsPage() {
       </div>
 
       {revokedId && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/40 text-xs font-mono text-rose-300 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/40 text-xs font-mono text-rose-600 dark:text-rose-300 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiAlertOctagon className="w-4 h-4 text-rose-400" />
+            <FiAlertOctagon className="w-4 h-4 text-rose-500 dark:text-rose-400" />
             <span>Session policy revoked! Agent authority frozen on-chain.</span>
           </div>
           <span className="font-bold">REVOKED</span>
@@ -99,21 +99,21 @@ export default function AppAgentsPage() {
             key={agent.id}
             className={`p-6 rounded-2xl border transition flex flex-col justify-between space-y-6 ${
               agent.status === 'ACTIVE'
-                ? 'border-[#21293D] bg-[#0E121B] hover:border-[#00E599]/40'
-                : 'border-rose-900/40 bg-[#0E121B]/60 opacity-80'
+                ? 'border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] hover:border-[#00E599]/50 shadow-sm'
+                : 'border-rose-200 dark:border-rose-900/40 bg-white/60 dark:bg-[#0E121B]/60 opacity-80'
             }`}
           >
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#21293D]">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#21293D]">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-[#161C2B] text-[#00E599] border border-[#21293D]">
+                  <div className="p-2 rounded-xl bg-slate-100 dark:bg-[#161C2B] text-[#00E599] border border-slate-200 dark:border-[#21293D]">
                     <RiRobot2Line className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold font-mono text-neutral-100">
+                    <h3 className="text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
                       {agent.name}
                     </h3>
-                    <p className="text-[11px] text-neutral-400">{agent.role}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400">{agent.role}</p>
                   </div>
                 </div>
                 <span
@@ -121,8 +121,8 @@ export default function AppAgentsPage() {
                     agent.status === 'ACTIVE'
                       ? 'bg-[#00E599]/10 text-[#00E599]'
                       : agent.status === 'STANDBY'
-                      ? 'bg-blue-500/10 text-blue-400'
-                      : 'bg-rose-500/10 text-rose-400'
+                      ? 'bg-blue-500/10 text-blue-500 dark:text-blue-400'
+                      : 'bg-rose-500/10 text-rose-500 dark:text-rose-400'
                   }`}
                 >
                   {agent.status}
@@ -130,40 +130,40 @@ export default function AppAgentsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-4 text-xs font-mono">
-                <div className="p-2.5 rounded-xl bg-[#161C2B] border border-[#21293D]">
-                  <span className="text-neutral-400 block text-[10px] uppercase">Spend Ceiling</span>
-                  <span className="font-bold text-neutral-100 mt-0.5 block">{agent.spendCap}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+                  <span className="text-slate-500 dark:text-neutral-400 block text-[10px] uppercase">Spend Ceiling</span>
+                  <span className="font-bold text-slate-900 dark:text-neutral-100 mt-0.5 block">{agent.spendCap}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#161C2B] border border-[#21293D]">
-                  <span className="text-neutral-400 block text-[10px] uppercase">Utilized</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+                  <span className="text-slate-500 dark:text-neutral-400 block text-[10px] uppercase">Utilized</span>
                   <span className="font-bold text-[#00E599] mt-0.5 block">{agent.spent}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#161C2B] border border-[#21293D]">
-                  <span className="text-neutral-400 block text-[10px] uppercase">TTL Remaining</span>
-                  <span className="font-bold text-neutral-100 mt-0.5 block">{agent.ttlRemaining}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+                  <span className="text-slate-500 dark:text-neutral-400 block text-[10px] uppercase">TTL Remaining</span>
+                  <span className="font-bold text-slate-900 dark:text-neutral-100 mt-0.5 block">{agent.ttlRemaining}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#161C2B] border border-[#21293D]">
-                  <span className="text-neutral-400 block text-[10px] uppercase">Actions</span>
-                  <span className="font-bold text-neutral-100 mt-0.5 block">{agent.executedActions}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+                  <span className="text-slate-500 dark:text-neutral-400 block text-[10px] uppercase">Actions</span>
+                  <span className="font-bold text-slate-900 dark:text-neutral-100 mt-0.5 block">{agent.executedActions}</span>
                 </div>
               </div>
 
-              <div className="pt-4 text-xs font-mono text-neutral-400">
-                <span className="text-neutral-500 block text-[10px] uppercase">Latest Execution:</span>
-                <span className="text-neutral-300 mt-0.5 block font-sans text-xs">
+              <div className="pt-4 text-xs font-mono text-slate-500 dark:text-neutral-400">
+                <span className="text-slate-400 dark:text-neutral-500 block text-[10px] uppercase">Latest Execution:</span>
+                <span className="text-slate-700 dark:text-neutral-300 mt-0.5 block font-sans text-xs">
                   {agent.lastAction}
                 </span>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#21293D] flex items-center justify-between">
-              <span className="text-xs font-mono text-neutral-500">
+            <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex items-center justify-between">
+              <span className="text-xs font-mono text-slate-400 dark:text-neutral-500">
                 Session Policy Bound
               </span>
               {agent.status !== 'REVOKED' ? (
                 <button
                   onClick={() => handleRevoke(agent.id)}
-                  className="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-mono transition"
+                  className="px-3 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-mono transition"
                 >
                   Revoke Policy
                 </button>
@@ -176,12 +176,12 @@ export default function AppAgentsPage() {
       </div>
 
       {/* Session Security Architecture */}
-      <div className="p-8 rounded-2xl border border-[#21293D] bg-[#0E121B] space-y-4">
-        <div className="flex items-center gap-2 text-sm font-bold font-mono text-neutral-100">
+      <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-4 transition-colors duration-200">
+        <div className="flex items-center gap-2 text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
           <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
           <span>Zero-Popup Session Architecture</span>
         </div>
-        <p className="text-xs text-neutral-400 leading-relaxed max-w-4xl">
+        <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed max-w-4xl">
           Kudex session policies grant bounded operational keys restricted by exact spending limits,
           validity expirations, and contract target whitelists. The agent can never exceed authorized funds,
           divert capital to non-whitelisted contracts, or continue executing after session expiration.

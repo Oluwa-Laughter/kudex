@@ -107,7 +107,7 @@ export function CopilotTerminal() {
         for (const line of lines) {
           if (!line.trim()) continue;
 
-          // Vercel AI SDK Data Stream protocol
+          // Streaming data protocol
           // 0: text content
           if (line.startsWith('0:')) {
             try {
@@ -187,16 +187,16 @@ export function CopilotTerminal() {
   };
 
   return (
-    <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] shadow-lg flex flex-col h-[650px] overflow-hidden">
+    <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-lg flex flex-col h-[650px] overflow-hidden transition-colors duration-200">
       {/* Terminal Header */}
-      <div className="px-5 py-4 border-b border-[#21293D] flex items-center justify-between bg-[#161C2B]/50">
+      <div className="px-5 py-4 border-b border-slate-200 dark:border-[#21293D] flex items-center justify-between bg-slate-50 dark:bg-[#161C2B]/50">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-xl bg-[#00E599]/10 text-[#00E599]">
             <RiRobot2Line className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold font-mono text-neutral-100">
+              <span className="text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
                 KUDEX AGENT
               </span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-mono bg-[#00E599]/10 text-[#00E599]">
@@ -204,14 +204,14 @@ export function CopilotTerminal() {
                 ACTIVE
               </span>
             </div>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-slate-500 dark:text-neutral-400">
               Autonomous Settlement & Solvency Intelligence
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#161C2B] text-xs font-mono text-neutral-400 border border-[#21293D]">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 dark:bg-[#161C2B] text-xs font-mono text-slate-600 dark:text-neutral-400 border border-slate-200 dark:border-[#21293D]">
             <FiTerminal className="w-3.5 h-3.5 text-[#00E599]" />
             <span>Real-Time Execution</span>
           </div>
@@ -238,7 +238,7 @@ export function CopilotTerminal() {
                 className={`max-w-[85%] rounded-2xl p-4 text-sm font-sans leading-relaxed ${
                   isUser
                     ? 'bg-[#2E68FF] text-white rounded-tr-none'
-                    : 'bg-[#161C2B] text-neutral-200 rounded-tl-none border border-[#21293D]'
+                    : 'bg-slate-100 dark:bg-[#161C2B] text-slate-800 dark:text-neutral-200 rounded-tl-none border border-slate-200 dark:border-[#21293D]'
                 }`}
               >
                 {/* Text Content */}
@@ -303,7 +303,7 @@ export function CopilotTerminal() {
             <div className="w-8 h-8 rounded-xl bg-[#00E599]/10 text-[#00E599] flex items-center justify-center flex-shrink-0 border border-[#00E599]/20">
               <FiCpu className="w-4 h-4" />
             </div>
-            <div className="p-3.5 rounded-2xl bg-[#161C2B] border border-[#21293D] text-sm font-mono text-neutral-300 flex items-center gap-2.5">
+            <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-sm font-mono text-slate-800 dark:text-neutral-300 flex items-center gap-2.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[#00E599] animate-ping" />
               <span>KUDEX AGENT synthesizing intent & solver routes...</span>
             </div>
@@ -312,15 +312,15 @@ export function CopilotTerminal() {
       </div>
 
       {/* Suggested Quick Prompt Pills */}
-      <div className="px-5 py-3 border-t border-[#21293D] bg-[#0E121B] flex items-center gap-2 overflow-x-auto">
-        <span className="text-xs font-mono text-neutral-400 flex-shrink-0 uppercase">Suggested:</span>
+      <div className="px-5 py-3 border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] flex items-center gap-2 overflow-x-auto">
+        <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 flex-shrink-0 uppercase">Suggested:</span>
         {QUICK_PROMPTS.map((qp) => {
           const Icon = qp.icon;
           return (
             <button
               key={qp.label}
               onClick={() => sendMessage(qp.label)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs text-neutral-300 hover:text-white hover:border-[#00E599] transition flex-shrink-0"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white hover:border-[#00E599] transition flex-shrink-0"
             >
               <Icon className="w-3.5 h-3.5 text-[#00E599]" />
               <span>{qp.label}</span>
@@ -332,13 +332,13 @@ export function CopilotTerminal() {
       {/* Input Box */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t border-[#21293D] bg-[#0E121B] flex items-center gap-3"
+        className="p-4 border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] flex items-center gap-3"
       >
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask KUDEX AGENT to route quotes, simulate safety, or protect vault assets..."
-          className="flex-1 px-4 py-3 rounded-xl border border-[#21293D] bg-[#161C2B] text-sm focus:outline-none focus:ring-2 focus:ring-[#00E599]/40 text-neutral-100 placeholder:text-neutral-500"
+          className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-sm focus:outline-none focus:ring-2 focus:ring-[#00E599]/40 text-slate-900 dark:text-neutral-100 placeholder:text-slate-400 dark:placeholder:text-neutral-500"
         />
         <button
           type="submit"

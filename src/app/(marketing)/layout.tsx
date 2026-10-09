@@ -16,6 +16,7 @@ import {
   FiX,
   FiActivity,
   FiLock,
+  FiBook,
 } from 'react-icons/fi';
 
 export default function MarketingLayout({
@@ -49,10 +50,10 @@ export default function MarketingLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-[#06080D] text-neutral-100 flex flex-col selection:bg-[#00E599]/30 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#06080D] text-slate-900 dark:text-neutral-100 flex flex-col transition-colors duration-200 selection:bg-[#00E599]/30 selection:text-white">
       {/* Top Banner Ribbon */}
-      <div className="bg-[#0E121B] border-b border-[#21293D] py-2 px-4 text-center text-xs font-mono text-neutral-400">
-        <span className="text-[#00E599] font-medium mr-2">CONFIDENTIAL SETTLEMENT</span>
+      <div className="bg-slate-100 dark:bg-[#0E121B] border-b border-slate-200 dark:border-[#21293D] py-2 px-4 text-center text-xs font-mono text-slate-600 dark:text-neutral-400 transition-colors duration-200">
+        <span className="text-[#00E599] font-bold mr-2">CONFIDENTIAL SETTLEMENT</span>
         <span>Zero-leakage institutional settlement and autonomous RFQ liquidity</span>
         <Link
           href="/app/overview"
@@ -64,13 +65,13 @@ export default function MarketingLayout({
       </div>
 
       {/* Main Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#06080D]/85 border-b border-[#21293D]">
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 dark:bg-[#06080D]/85 border-b border-slate-200 dark:border-[#21293D] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-10">
             <Logo size="md" />
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-300">
+            <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-neutral-300">
               {/* Solutions Dropdown */}
               <div
                 className="relative"
@@ -79,7 +80,7 @@ export default function MarketingLayout({
               >
                 <button
                   onClick={() => setSolutionsOpen(!solutionsOpen)}
-                  className="flex items-center gap-1.5 hover:text-white transition py-2"
+                  className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white transition py-2"
                 >
                   <span>Solutions</span>
                   <FiChevronDown
@@ -91,7 +92,7 @@ export default function MarketingLayout({
 
                 {solutionsOpen && (
                   <div className="absolute top-full left-0 w-80 pt-2 z-50">
-                    <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] shadow-2xl p-2.5 backdrop-blur-xl">
+                    <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-2xl p-2.5 backdrop-blur-xl">
                       {solutions.map((item) => {
                         const Icon = item.icon;
                         return (
@@ -99,16 +100,16 @@ export default function MarketingLayout({
                             key={item.href}
                             href={item.href}
                             onClick={() => setSolutionsOpen(false)}
-                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#161C2B] transition group"
+                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-[#161C2B] transition group"
                           >
-                            <div className="p-2 rounded-lg bg-[#161C2B] text-[#00E599] group-hover:bg-[#00E599]/15 transition border border-[#21293D]">
+                            <div className="p-2 rounded-lg bg-slate-100 dark:bg-[#161C2B] text-[#00E599] group-hover:bg-[#00E599]/15 transition border border-slate-200 dark:border-[#21293D]">
                               <Icon className="w-4 h-4" />
                             </div>
                             <div>
-                              <div className="text-sm font-semibold text-neutral-100 group-hover:text-[#00E599] transition">
+                              <div className="text-sm font-semibold text-slate-900 dark:text-neutral-100 group-hover:text-[#00E599] transition">
                                 {item.title}
                               </div>
-                              <div className="text-xs text-neutral-400 leading-snug mt-0.5">
+                              <div className="text-xs text-slate-500 dark:text-neutral-400 leading-snug mt-0.5">
                                 {item.desc}
                               </div>
                             </div>
@@ -122,8 +123,8 @@ export default function MarketingLayout({
 
               <Link
                 href="/marketplace"
-                className={`hover:text-white transition ${
-                  pathname === '/marketplace' ? 'text-[#00E599]' : ''
+                className={`hover:text-slate-900 dark:hover:text-white transition ${
+                  pathname === '/marketplace' ? 'text-[#00E599] font-bold' : ''
                 }`}
               >
                 Marketplace
@@ -131,26 +132,17 @@ export default function MarketingLayout({
 
               <Link
                 href="/bridge"
-                className={`hover:text-white transition ${
-                  pathname === '/bridge' ? 'text-[#00E599]' : ''
+                className={`hover:text-slate-900 dark:hover:text-white transition ${
+                  pathname === '/bridge' ? 'text-[#00E599] font-bold' : ''
                 }`}
               >
                 Bridge
               </Link>
 
               <Link
-                href="/pricing"
-                className={`hover:text-white transition ${
-                  pathname === '/pricing' ? 'text-[#00E599]' : ''
-                }`}
-              >
-                Pricing & Fees
-              </Link>
-
-              <Link
                 href="/docs"
-                className={`hover:text-white transition ${
-                  pathname === '/docs' ? 'text-[#00E599]' : ''
+                className={`hover:text-slate-900 dark:hover:text-white transition ${
+                  pathname === '/docs' ? 'text-[#00E599] font-bold' : ''
                 }`}
               >
                 Documentation
@@ -163,7 +155,7 @@ export default function MarketingLayout({
             <ThemeToggle />
             <Link
               href="/app/overview"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-semibold text-sm transition shadow-lg shadow-[#00E599]/15 group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-lg shadow-[#00E599]/15 group"
             >
               <span>Launch App</span>
               <FiArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -175,7 +167,7 @@ export default function MarketingLayout({
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-[#0E121B] border border-[#21293D] text-neutral-300"
+              className="p-2 rounded-xl bg-white dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300"
             >
               {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
             </button>
@@ -184,44 +176,39 @@ export default function MarketingLayout({
 
         {/* Mobile Nav Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-[#21293D] bg-[#0E121B] px-4 pt-3 pb-6 space-y-3">
-            <div className="text-xs font-mono uppercase text-neutral-400 px-3 pt-2">Solutions</div>
+          <div className="md:hidden border-b border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] px-4 pt-3 pb-6 space-y-3">
+            <div className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 px-3 pt-2 font-semibold">
+              Solutions
+            </div>
             {solutions.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-neutral-200 hover:bg-[#161C2B]"
+                className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
               >
                 {item.title}
               </Link>
             ))}
-            <div className="border-t border-[#21293D] my-2" />
+            <div className="border-t border-slate-200 dark:border-[#21293D] my-2" />
             <Link
               href="/marketplace"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-neutral-200 hover:bg-[#161C2B]"
+              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
             >
               Marketplace
             </Link>
             <Link
               href="/bridge"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-neutral-200 hover:bg-[#161C2B]"
+              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
             >
               Bridge
             </Link>
             <Link
-              href="/pricing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-neutral-200 hover:bg-[#161C2B]"
-            >
-              Pricing & Fees
-            </Link>
-            <Link
               href="/docs"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-neutral-200 hover:bg-[#161C2B]"
+              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
             >
               Documentation
             </Link>
@@ -229,7 +216,7 @@ export default function MarketingLayout({
               <Link
                 href="/app/overview"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#00E599] text-[#06080D] font-semibold text-sm"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#00E599] text-[#06080D] font-bold text-sm"
               >
                 <span>Launch App</span>
                 <FiArrowRight className="w-4 h-4" />
@@ -243,50 +230,50 @@ export default function MarketingLayout({
       <main className="flex-1">{children}</main>
 
       {/* Institutional Corporate Footer */}
-      <footer className="border-t border-[#21293D] bg-[#0E121B] mt-24">
+      <footer className="border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mt-24 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
             {/* Col 1: Brand & Status */}
             <div className="md:col-span-2 space-y-4">
               <Logo size="md" />
-              <p className="text-sm text-neutral-400 max-w-sm leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-neutral-400 max-w-sm leading-relaxed">
                 Autonomous confidential settlement network and agent-native RFQ marketplace.
                 Engineered for institutional privacy, fractionalized RWA yield, and automated debt solvency.
               </p>
               <div className="pt-2 flex items-center gap-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-300">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-700 dark:text-neutral-300">
                   <span className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse" />
                   <span>Network Operational</span>
                 </div>
-                <div className="text-xs font-mono text-neutral-400">
-                  Avg Latency: <span className="text-neutral-300 font-semibold">180ms</span>
+                <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+                  Avg Latency: <span className="text-slate-800 dark:text-neutral-300 font-semibold">180ms</span>
                 </div>
               </div>
             </div>
 
             {/* Col 2: Solutions */}
             <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-neutral-400 mb-4 font-semibold">
+              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
                 Solutions
               </h5>
-              <ul className="space-y-2.5 text-sm text-neutral-400">
+              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
                 <li>
-                  <Link href="/solutions/enterprise-payroll" className="hover:text-white transition">
+                  <Link href="/solutions/enterprise-payroll" className="hover:text-slate-900 dark:hover:text-white transition">
                     Enterprise Payroll
                   </Link>
                 </li>
                 <li>
-                  <Link href="/solutions/credit-tranches" className="hover:text-white transition">
+                  <Link href="/solutions/credit-tranches" className="hover:text-slate-900 dark:hover:text-white transition">
                     Credit Tranches & DaaS
                   </Link>
                 </li>
                 <li>
-                  <Link href="/solutions/autonomous-agents" className="hover:text-white transition">
+                  <Link href="/solutions/autonomous-agents" className="hover:text-slate-900 dark:hover:text-white transition">
                     Autonomous Agents
                   </Link>
                 </li>
                 <li>
-                  <Link href="/marketplace" className="hover:text-white transition">
+                  <Link href="/marketplace" className="hover:text-slate-900 dark:hover:text-white transition">
                     Tranche Discovery
                   </Link>
                 </li>
@@ -295,33 +282,28 @@ export default function MarketingLayout({
 
             {/* Col 3: Platform */}
             <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-neutral-400 mb-4 font-semibold">
+              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
                 Platform
               </h5>
-              <ul className="space-y-2.5 text-sm text-neutral-400">
+              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
                 <li>
-                  <Link href="/app/overview" className="hover:text-white transition">
+                  <Link href="/app/overview" className="hover:text-slate-900 dark:hover:text-white transition">
                     Portfolio Workspace
                   </Link>
                 </li>
                 <li>
-                  <Link href="/app/settlement" className="hover:text-white transition">
+                  <Link href="/app/settlement" className="hover:text-slate-900 dark:hover:text-white transition">
                     Shielded Transfers
                   </Link>
                 </li>
                 <li>
-                  <Link href="/bridge" className="hover:text-white transition">
+                  <Link href="/bridge" className="hover:text-slate-900 dark:hover:text-white transition">
                     Cross-Chain Gateway
                   </Link>
                 </li>
                 <li>
-                  <Link href="/app/compliance" className="hover:text-white transition">
+                  <Link href="/app/compliance" className="hover:text-slate-900 dark:hover:text-white transition">
                     Audit & Viewing Keys
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white transition">
-                    Protocol Fee Schedule
                   </Link>
                 </li>
               </ul>
@@ -329,18 +311,18 @@ export default function MarketingLayout({
 
             {/* Col 4: Resources */}
             <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-neutral-400 mb-4 font-semibold">
+              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
                 Resources
               </h5>
-              <ul className="space-y-2.5 text-sm text-neutral-400">
+              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
                 <li>
-                  <Link href="/docs" className="hover:text-white transition">
-                    Technical Specs
+                  <Link href="/docs" className="hover:text-slate-900 dark:hover:text-white transition">
+                    Protocol Guides & FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link href="/docs" className="hover:text-white transition">
-                    SDK Reference
+                  <Link href="/app/docs" className="hover:text-slate-900 dark:hover:text-white transition">
+                    User Knowledge Base
                   </Link>
                 </li>
                 <li>
@@ -348,22 +330,17 @@ export default function MarketingLayout({
                     href="https://github.com/Oluwa-Laughter/kudex"
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:text-white transition inline-flex items-center gap-1"
+                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
                   >
                     <span>GitHub Repository</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
                   </a>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-white transition">
-                    Auditor SaaS
-                  </Link>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-[#21293D] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-400">
+          <div className="mt-12 pt-8 border-t border-slate-200 dark:border-[#21293D] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500 dark:text-neutral-400">
             <div>
               © {new Date().getFullYear()} Kudex Protocol. Autonomous Confidential Settlement Layer.
             </div>

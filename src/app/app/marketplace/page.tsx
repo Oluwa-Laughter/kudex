@@ -85,11 +85,11 @@ export default function AppMarketplacePage() {
   return (
     <div className="space-y-8">
       {/* Workspace Header */}
-      <div className="pb-2 border-b border-[#21293D]">
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-neutral-100">
+      <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
           Agent-Native RFQ Orderbook & Solver Desk
         </h2>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
           Off-chain quote formulation with block-atomic on-chain settlement.
           Zero mempool front-running and MEV immunization.
         </p>
@@ -97,19 +97,19 @@ export default function AppMarketplacePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Order Submission Desk */}
-        <div className="lg:col-span-5 p-6 rounded-2xl border border-[#21293D] bg-[#0E121B] shadow-xl space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-[#21293D]">
+        <div className="lg:col-span-5 p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
             <div className="flex items-center gap-2">
               <RiExchangeFundsLine className="w-5 h-5 text-[#00E599]" />
-              <h3 className="text-base font-bold font-mono text-neutral-100">
+              <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
                 Submit RFQ Intent
               </h3>
             </div>
-            <div className="flex rounded-lg bg-[#161C2B] p-1 border border-[#21293D]">
+            <div className="flex rounded-lg bg-slate-100 dark:bg-[#161C2B] p-1 border border-slate-200 dark:border-[#21293D]">
               <button
                 onClick={() => setOrderType('FOK')}
                 className={`px-3 py-1 rounded text-xs font-mono font-medium transition ${
-                  orderType === 'FOK' ? 'bg-[#00E599] text-[#06080D] font-bold' : 'text-neutral-400'
+                  orderType === 'FOK' ? 'bg-[#00E599] text-[#06080D] font-bold' : 'text-slate-600 dark:text-neutral-400'
                 }`}
               >
                 Instant Solver
@@ -117,7 +117,7 @@ export default function AppMarketplacePage() {
               <button
                 onClick={() => setOrderType('LIMIT')}
                 className={`px-3 py-1 rounded text-xs font-mono font-medium transition ${
-                  orderType === 'LIMIT' ? 'bg-[#00E599] text-[#06080D] font-bold' : 'text-neutral-400'
+                  orderType === 'LIMIT' ? 'bg-[#00E599] text-[#06080D] font-bold' : 'text-slate-600 dark:text-neutral-400'
                 }`}
               >
                 Limit Order
@@ -127,18 +127,18 @@ export default function AppMarketplacePage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                 You Pay
               </label>
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-[#161C2B] border border-[#21293D]">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
                 <input
                   type="number"
                   value={amountIn}
                   onChange={(e) => setAmountIn(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-transparent text-lg font-mono font-bold text-neutral-100 focus:outline-none"
+                  className="w-full bg-transparent text-lg font-mono font-bold text-slate-900 dark:text-neutral-100 focus:outline-none"
                 />
-                <span className="px-3 py-1 rounded-lg bg-[#0E121B] text-xs font-mono font-bold text-neutral-200 border border-[#21293D]">
+                <span className="px-3 py-1 rounded-lg bg-white dark:bg-[#0E121B] text-xs font-mono font-bold text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D]">
                   {tokenIn}
                 </span>
               </div>
@@ -150,24 +150,24 @@ export default function AppMarketplacePage() {
                   setTokenIn(tokenOut);
                   setTokenOut(tokenIn);
                 }}
-                className="p-2 rounded-xl bg-[#161C2B] border border-[#21293D] text-neutral-400 hover:text-[#00E599] transition"
+                className="p-2 rounded-xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-600 dark:text-neutral-400 hover:text-[#00E599] transition"
               >
                 <FiRepeat className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+              <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                 You Receive (Estimated Target)
               </label>
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-[#161C2B] border border-[#21293D]">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
                 <input
                   type="text"
                   readOnly
                   value={(parseFloat(amountIn || '0') * 1.034).toFixed(4)}
                   className="w-full bg-transparent text-lg font-mono font-bold text-[#00E599] focus:outline-none cursor-default"
                 />
-                <span className="px-3 py-1 rounded-lg bg-[#0E121B] text-xs font-mono font-bold text-neutral-200 border border-[#21293D]">
+                <span className="px-3 py-1 rounded-lg bg-white dark:bg-[#0E121B] text-xs font-mono font-bold text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D]">
                   {tokenOut}
                 </span>
               </div>
@@ -175,9 +175,9 @@ export default function AppMarketplacePage() {
 
             {/* Slippage Selector */}
             <div>
-              <div className="flex justify-between text-xs font-mono text-neutral-400 mb-2">
+              <div className="flex justify-between text-xs font-mono text-slate-500 dark:text-neutral-400 mb-2">
                 <span>Max Execution Slippage:</span>
-                <span className="text-neutral-200 font-bold">{(slippageBps / 100).toFixed(2)}%</span>
+                <span className="text-slate-800 dark:text-neutral-200 font-bold">{(slippageBps / 100).toFixed(2)}%</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[10, 50, 100].map((bps) => (
@@ -187,7 +187,7 @@ export default function AppMarketplacePage() {
                     className={`py-1.5 rounded-lg text-xs font-mono transition border ${
                       slippageBps === bps
                         ? 'bg-[#00E599]/10 text-[#00E599] border-[#00E599]/40 font-bold'
-                        : 'bg-[#161C2B] text-neutral-400 border-[#21293D]'
+                        : 'bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-[#21293D]'
                     }`}
                   >
                     {(bps / 100).toFixed(2)}%
@@ -225,15 +225,15 @@ export default function AppMarketplacePage() {
 
         {/* Orderbook & Recent Solver Fills */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 shadow-sm">
-            <div className="flex items-center justify-between pb-4 border-b border-[#21293D]">
+          <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
               <div className="flex items-center gap-2">
                 <FiClock className="w-4 h-4 text-[#00E599]" />
-                <h3 className="text-base font-bold font-mono text-neutral-100">
+                <h3 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Active RFQ Orders & Solver Matches
                 </h3>
               </div>
-              <span className="text-xs font-mono text-neutral-400">
+              <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
                 Block-Atomic Fills
               </span>
             </div>
@@ -241,7 +241,7 @@ export default function AppMarketplacePage() {
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-left font-mono text-xs">
                 <thead>
-                  <tr className="border-b border-[#21293D] text-neutral-400">
+                  <tr className="border-b border-slate-200 dark:border-[#21293D] text-slate-500 dark:text-neutral-400">
                     <th className="pb-3">ORDER ID</th>
                     <th className="pb-3">OFFER</th>
                     <th className="pb-3">RECEIVE</th>
@@ -249,23 +249,23 @@ export default function AppMarketplacePage() {
                     <th className="pb-3">STATUS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#21293D] text-neutral-300">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#21293D] text-slate-700 dark:text-neutral-300">
                   {activeOrders.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-[#161C2B]/40 transition">
-                      <td className="py-3.5 font-bold text-neutral-200">{ord.id}</td>
-                      <td className="py-3.5 text-neutral-100 font-semibold tabular-nums">
+                    <tr key={ord.id} className="hover:bg-slate-50 dark:hover:bg-[#161C2B]/40 transition">
+                      <td className="py-3.5 font-bold text-slate-800 dark:text-neutral-200">{ord.id}</td>
+                      <td className="py-3.5 text-slate-900 dark:text-neutral-100 font-semibold tabular-nums">
                         {ord.makerAmount} {ord.makerAsset}
                       </td>
                       <td className="py-3.5 text-[#00E599] font-semibold tabular-nums">
                         {ord.takerAmount} {ord.takerAsset}
                       </td>
-                      <td className="py-3.5 text-neutral-400">{ord.solver}</td>
+                      <td className="py-3.5 text-slate-500 dark:text-neutral-400">{ord.solver}</td>
                       <td className="py-3.5">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                             ord.status === 'FILLED'
                               ? 'bg-[#00E599]/10 text-[#00E599]'
-                              : 'bg-amber-500/10 text-amber-400 animate-pulse'
+                              : 'bg-amber-500/10 text-amber-500 dark:text-amber-400 animate-pulse'
                           }`}
                         >
                           {ord.status}
@@ -279,16 +279,16 @@ export default function AppMarketplacePage() {
           </div>
 
           {/* Solvers Health & Execution Guarantee */}
-          <div className="p-6 rounded-2xl border border-[#21293D] bg-[#0E121B] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors duration-200">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-[#00E599]/10 text-[#00E599] border border-[#00E599]/20">
                 <FiShield className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-sm font-bold text-neutral-100 font-mono">
+                <div className="text-sm font-bold text-slate-900 dark:text-neutral-100 font-mono">
                   MEV-Proof Invariant Guarantee
                 </div>
-                <div className="text-xs text-neutral-400 mt-0.5">
+                <div className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
                   Solvers settle via signed intents. Orders can never be front-run or sandwiched in the public mempool.
                 </div>
               </div>

@@ -24,9 +24,9 @@ export function VolumeChart() {
 
   if (!mounted || isLoading) {
     return (
-      <div className="h-72 w-full rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 flex flex-col items-center justify-center gap-3">
+      <div className="h-72 w-full rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 flex flex-col items-center justify-center gap-3 transition-colors duration-200">
         <FiActivity className="w-6 h-6 text-[#00E599] animate-spin" />
-        <span className="text-sm font-mono text-neutral-400">
+        <span className="text-sm font-mono text-slate-500 dark:text-neutral-400">
           Querying Real-Time Settlement Event Stream...
         </span>
       </div>
@@ -52,35 +52,35 @@ export function VolumeChart() {
     : 'Live Stream Active (0.00 pUSD Indexed)';
 
   return (
-    <div className="rounded-2xl border border-[#21293D] bg-[#0E121B] p-6 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-sm transition-colors duration-200">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-sm font-semibold uppercase tracking-wider text-neutral-400 font-mono">
+            <span className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-neutral-400 font-mono">
               Settlement Network Throughput
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#00E599]/10 text-[#00E599]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#00E599]/10 text-emerald-700 dark:text-[#00E599]">
               <FiRadio className="w-3.5 h-3.5 animate-pulse" />
               Live RPC Stream
             </span>
           </div>
-          <h4 className="text-2xl font-bold font-mono text-neutral-100 tabular-nums">
+          <h4 className="text-2xl font-bold font-mono text-slate-900 dark:text-neutral-100 tabular-nums">
             {cumulativeDisplay}
           </h4>
-          <p className="text-sm font-mono text-neutral-400 mt-1">
+          <p className="text-sm font-mono text-slate-500 dark:text-neutral-400 mt-1">
             Indexed: {totalShieldEvents} Shield Notes | {totalSettlements} Atomic RFQ Settlements
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-100 dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
           {(['7D', '30D', 'ALL'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTimeframe(t)}
               className={`px-3 py-1 rounded-lg text-xs font-mono font-medium transition ${
                 timeframe === t
-                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
-                  : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
+                  ? 'bg-white dark:bg-[#0E121B] text-slate-900 dark:text-white shadow-sm font-bold'
+                  : 'text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-neutral-200'
               }`}
             >
               {t}
@@ -94,8 +94,8 @@ export function VolumeChart() {
           <AreaChart data={seriesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="volumeGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#00E599" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#00E599" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <XAxis
@@ -119,15 +119,15 @@ export function VolumeChart() {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 shadow-xl text-xs font-mono">
-                      <div className="flex items-center gap-1.5 text-neutral-400 mb-1">
+                    <div className="rounded-xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-3 shadow-xl text-xs font-mono">
+                      <div className="flex items-center gap-1.5 text-slate-500 dark:text-neutral-400 mb-1">
                         <FiCalendar className="w-3.5 h-3.5" />
                         <span>{data.day} On-Chain Settlement</span>
                       </div>
-                      <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                      <p className="text-sm font-bold text-emerald-600 dark:text-[#00E599]">
                         ${data.volume.toLocaleString()} pUSD
                       </p>
-                      <p className="text-[11px] text-neutral-500 mt-1">
+                      <p className="text-[11px] text-slate-500 dark:text-neutral-400 mt-1">
                         Est. Gas: {data.potGas} POT
                       </p>
                     </div>
@@ -139,7 +139,7 @@ export function VolumeChart() {
             <Area
               type="monotone"
               dataKey="volume"
-              stroke="#10b981"
+              stroke="#00E599"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#volumeGrad)"

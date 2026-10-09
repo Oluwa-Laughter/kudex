@@ -91,17 +91,17 @@ export default function AppSettlementPage() {
   return (
     <div className="space-y-8">
       {/* Workspace Header */}
-      <div className="pb-2 border-b border-[#21293D]">
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-neutral-100">
+      <div className="pb-2 border-b border-slate-200 dark:border-[#21293D]">
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-neutral-100">
           Confidential Settlement & Shielded Invoicing
         </h2>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-slate-600 dark:text-neutral-400 mt-1">
           Mint and redeem encrypted commitment notes. Execute private peer-to-peer transfers with zero public ledger exposure.
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-[#21293D] gap-2 overflow-x-auto pb-1">
+      <div className="flex border-b border-slate-200 dark:border-[#21293D] gap-2 overflow-x-auto pb-1">
         {[
           { key: 'SHIELD', label: 'Shield Deposit', icon: FiLock },
           { key: 'UNSHIELD', label: 'Redeem Note', icon: FiKey },
@@ -115,8 +115,8 @@ export default function AppSettlementPage() {
               onClick={() => setActiveTab(tab.key as any)}
               className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-sm font-medium transition border-b-2 font-mono whitespace-nowrap ${
                 activeTab === tab.key
-                  ? 'border-[#00E599] text-[#00E599] bg-[#0E121B]'
-                  : 'border-transparent text-neutral-400 hover:text-neutral-200'
+                  ? 'border-[#00E599] text-[#00E599] bg-white dark:bg-[#0E121B]'
+                  : 'border-transparent text-slate-500 dark:text-neutral-400 hover:text-slate-800 dark:hover:text-neutral-200'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -129,42 +129,42 @@ export default function AppSettlementPage() {
       {/* Tab Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Interactive Desk Form */}
-        <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl border border-[#21293D] bg-[#0E121B] shadow-xl space-y-6">
+        <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
           {activeTab === 'SHIELD' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold font-mono text-neutral-100">
+                <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Shield Assets into Confidential Pool
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                   Transforms public token balance into client-side encrypted commitment notes.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Deposit Amount (pUSD)
                 </label>
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-[#161C2B] border border-[#21293D]">
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
                   <input
                     type="number"
                     value={shieldAmount}
                     onChange={(e) => setShieldAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full bg-transparent text-lg font-mono font-bold text-neutral-100 focus:outline-none"
+                    className="w-full bg-transparent text-lg font-mono font-bold text-slate-900 dark:text-neutral-100 focus:outline-none"
                   />
-                  <span className="px-3 py-1 rounded-lg bg-[#0E121B] text-xs font-mono font-bold text-neutral-200 border border-[#21293D]">
+                  <span className="px-3 py-1 rounded-lg bg-white dark:bg-[#0E121B] text-xs font-mono font-bold text-slate-800 dark:text-neutral-200 border border-slate-200 dark:border-[#21293D]">
                     pUSD
                   </span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#161C2B] border border-[#21293D] space-y-2 text-xs font-mono text-neutral-300">
+              <div className="p-4 rounded-xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2 text-xs font-mono text-slate-700 dark:text-neutral-300">
                 <div className="flex items-center gap-2 text-[#00E599] font-bold">
                   <FiShield className="w-4 h-4" />
                   <span>Client-Side Cryptographic Commitment</span>
                 </div>
-                <p className="text-neutral-400 font-sans text-[11px]">
+                <p className="text-slate-500 dark:text-neutral-400 font-sans text-[11px]">
                   A secret nullifier and commitment pair will be synthesized locally in your browser.
                   The public mempool observer sees only an encrypted state update.
                 </p>
@@ -188,16 +188,16 @@ export default function AppSettlementPage() {
           {activeTab === 'UNSHIELD' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold font-mono text-neutral-100">
+                <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Redeem Confidential Note
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                   Provide your private nullifier to withdraw shielded funds into a destination wallet.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Secret Nullifier Identifier
                 </label>
                 <input
@@ -205,12 +205,12 @@ export default function AppSettlementPage() {
                   value={unshieldNullifier}
                   onChange={(e) => setUnshieldNullifier(e.target.value)}
                   placeholder="0x..."
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Destination Recipient Address
                 </label>
                 <input
@@ -218,7 +218,7 @@ export default function AppSettlementPage() {
                   value={unshieldRecipient}
                   onChange={(e) => setUnshieldRecipient(e.target.value)}
                   placeholder="0x..."
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
@@ -235,33 +235,33 @@ export default function AppSettlementPage() {
           {activeTab === 'TRANSFER' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold font-mono text-neutral-100">
+                <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Private Peer-to-Peer Transfer
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                   Transfer commitment notes to another party without exposing identities or amounts on-chain.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Recipient Public Identity / Key
                 </label>
                 <input
                   type="text"
                   placeholder="0x..."
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Transfer Amount (pUSD)
                 </label>
                 <input
                   type="number"
                   placeholder="0.00"
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-lg font-mono font-bold text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-lg font-mono font-bold text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
@@ -275,16 +275,16 @@ export default function AppSettlementPage() {
           {activeTab === 'INVOICE' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold font-mono text-neutral-100">
+                <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-neutral-100">
                   Create Encrypted Corporate Invoice
                 </h3>
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
                   Generate a cryptographic payment request with encrypted reference metadata.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Client / Payor Identity
                 </label>
                 <input
@@ -292,31 +292,31 @@ export default function AppSettlementPage() {
                   value={invoiceRecipient}
                   onChange={(e) => setInvoiceRecipient(e.target.value)}
                   placeholder="0x..."
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs font-mono text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Invoice Amount (pUSD)
                 </label>
                 <input
                   type="number"
                   value={invoiceAmount}
                   onChange={(e) => setInvoiceAmount(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-lg font-mono font-bold text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-lg font-mono font-bold text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-neutral-400 mb-2">
+                <label className="block text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 mb-2">
                   Encrypted Invoice Memo / Reference
                 </label>
                 <input
                   type="text"
                   value={invoiceMemo}
                   onChange={(e) => setInvoiceMemo(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-xs text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs text-slate-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-[#00E599]/40"
                 />
               </div>
 
@@ -336,44 +336,44 @@ export default function AppSettlementPage() {
           {generatedReceipt ? (
             <ShieldReceiptCard receipt={generatedReceipt} />
           ) : invoiceGenerated ? (
-            <div className="p-6 rounded-2xl border border-[#21293D] bg-[#0E121B] space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#21293D]">
+            <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-4 transition-colors duration-200">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#21293D]">
                 <span className="font-mono text-xs font-bold text-[#00E599] px-2 py-0.5 rounded bg-[#00E599]/10">
                   {invoiceGenerated.ref}
                 </span>
-                <span className="text-xs font-mono text-amber-400 uppercase font-bold">
+                <span className="text-xs font-mono text-amber-500 dark:text-amber-400 uppercase font-bold">
                   {invoiceGenerated.status}
                 </span>
               </div>
               <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between text-neutral-400">
+                <div className="flex justify-between text-slate-500 dark:text-neutral-400">
                   <span>Payor Address:</span>
-                  <span className="text-neutral-200">{invoiceGenerated.recipient}</span>
+                  <span className="text-slate-800 dark:text-neutral-200">{invoiceGenerated.recipient}</span>
                 </div>
-                <div className="flex justify-between text-neutral-400">
+                <div className="flex justify-between text-slate-500 dark:text-neutral-400">
                   <span>Due Amount:</span>
                   <span className="text-xl font-bold text-[#00E599] tabular-nums">
                     ${invoiceGenerated.amount} pUSD
                   </span>
                 </div>
-                <div className="flex justify-between text-neutral-400">
+                <div className="flex justify-between text-slate-500 dark:text-neutral-400">
                   <span>Encrypted Memo:</span>
-                  <span className="text-neutral-200">{invoiceGenerated.memo}</span>
+                  <span className="text-slate-800 dark:text-neutral-200">{invoiceGenerated.memo}</span>
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-[#161C2B] border border-[#21293D] text-[11px] font-mono text-neutral-400 break-all">
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-[11px] font-mono text-slate-600 dark:text-neutral-400 break-all">
                 <span>Decryption Key: {invoiceGenerated.encryptedKey}</span>
               </div>
             </div>
           ) : (
-            <div className="p-8 rounded-2xl border border-[#21293D] bg-[#0E121B] text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#161C2B] text-neutral-400 flex items-center justify-center mx-auto border border-[#21293D]">
+            <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] text-center space-y-3 transition-colors duration-200">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-[#161C2B] text-slate-500 dark:text-neutral-400 flex items-center justify-center mx-auto border border-slate-200 dark:border-[#21293D]">
                 <FiLock className="w-6 h-6 text-[#00E599]" />
               </div>
-              <h4 className="text-base font-bold font-mono text-neutral-200">
+              <h4 className="text-base font-bold font-mono text-slate-900 dark:text-neutral-200">
                 Confidential Ledger Standing By
               </h4>
-              <p className="text-xs text-neutral-400 max-w-sm mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 max-w-sm mx-auto leading-relaxed">
                 Initiate a shield deposit, invoice request, or note redemption. Generated cryptographic
                 commitments and receipt notes will display here.
               </p>
@@ -381,12 +381,12 @@ export default function AppSettlementPage() {
           )}
 
           {/* Privacy Security Guarantee */}
-          <div className="p-6 rounded-2xl border border-[#21293D] bg-[#0E121B] space-y-3">
-            <div className="flex items-center gap-2 text-sm font-bold font-mono text-neutral-100">
+          <div className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-3 transition-colors duration-200">
+            <div className="flex items-center gap-2 text-sm font-bold font-mono text-slate-900 dark:text-neutral-100">
               <RiShieldCheckLine className="w-5 h-5 text-[#00E599]" />
               <span>Zero Mempool Leakage Guarantee</span>
             </div>
-            <p className="text-xs text-neutral-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
               Every commitment generated by Kudex is cryptographically salted.
               Network validators and external observers can never determine the deposit balance,
               transaction participants, or internal corporate invoice details.

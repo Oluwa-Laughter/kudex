@@ -14,7 +14,7 @@ export async function simulatePreFlightTransaction(
   assetSymbol: string,
   amount: string
 ): Promise<SimulationResult> {
-  // Intercepts call via eth_call state override and Portaldot V3.0 EVM tracer
+  // Intercepts call via eth_call state override and Portaldot EVM tracer
   const targetLower = target.toLowerCase();
   const isSuspect = targetLower === '0x0000000000000000000000000000000000000000';
 

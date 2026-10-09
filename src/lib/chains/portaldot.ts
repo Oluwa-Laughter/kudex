@@ -2,7 +2,7 @@ import { defineChain } from 'viem';
 
 export const portaldotTestnet = defineChain({
   id: 8890,
-  name: 'Portaldot V3.0 Testnet',
+  name: 'Portaldot Testnet',
   nativeCurrency: {
     name: 'Portaldot Token',
     symbol: 'POT',

@@ -9,7 +9,7 @@ const getEnvAddress = (key: string, defaultAddress?: `0x${string}`): `0x${string
   throw new Error(`Missing required environment configuration: ${key}. Please configure this in your .env.local file.`);
 };
 
-// Canonical Portaldot V3.0 EVM Deployments
+// Canonical Portaldot EVM Deployments
 const vaultAddress = getEnvAddress(
   'NEXT_PUBLIC_VAULT_ADDRESS',
   '0x39a04aA367a783637172DEb547849cb151909e74'
