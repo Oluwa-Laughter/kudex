@@ -232,7 +232,7 @@ export default function MarketingLayout({
       {/* Institutional Corporate Footer */}
       <footer className="border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mt-24 transition-colors duration-200">
         <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Col 1: Brand & Status */}
             <div className="lg:col-span-2 space-y-4">
               <Logo size="md" />
@@ -326,79 +326,14 @@ export default function MarketingLayout({
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="https://github.com/Oluwa-Laughter/kudex"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
-                  >
-                    <span>GitHub Repository</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 5: Portaldot 3.0 Network */}
-            <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
-                Portaldot 3.0
-              </h5>
-              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
-                <li>
-                  <a
-                    href="https://portalscan.portaldot.io"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1 text-emerald-600 dark:text-[#00E599] font-medium"
-                  >
-                    <span>PortalScan Explorer</span>
-                    <FiExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  <Link href="/solutions/credit-tranches" className="hover:text-slate-900 dark:hover:text-white transition">
+                    Solvency Invariants
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="https://portaldot-dev.readthedocs.io/en/latest/index.html"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
-                  >
-                    <span>Developer Docs</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/portaldotVolunteer/DeveloperPlatform"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
-                  >
-                    <span>Developer Platform</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.portaldot.world/protocol/modules/application-engines"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
-                  >
-                    <span>Application Engines</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.portaldot.world/ecosystem#projects"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-slate-900 dark:hover:text-white transition inline-flex items-center gap-1"
-                  >
-                    <span>Ecosystem Projects</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
-                  </a>
+                  <Link href="/app/compliance" className="hover:text-slate-900 dark:hover:text-white transition">
+                    Audit & Viewing Keys
+                  </Link>
                 </li>
               </ul>
             </div>

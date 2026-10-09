@@ -56,7 +56,7 @@ export default function AppHowItWorksPage() {
     },
     {
       q: 'Where can I inspect contract execution and block state?',
-      a: 'All blocks, extrinsics, and state transitions are indexed on PortalScan (https://portalscan.portaldot.io). Developers can also consult the official Portaldot documentation (https://portaldot-dev.readthedocs.io/en/latest/index.html) and developer platform repository.',
+      a: 'All blocks, extrinsics, and state transitions are verified on-chain via the Portaldot network. Kudex smart contracts emit standard EVM events and zero-knowledge state updates, allowing complete institutional audibility without plaintext leakage.',
     },
   ];
 
@@ -459,63 +459,43 @@ export default function AppHowItWorksPage() {
               </div>
             </div>
 
-            {/* Official Network Resources Links */}
+            {/* Official Portaldot 3.0 Architecture Capabilities */}
             <div className="pt-4 border-t border-slate-100 dark:border-[#21293D]">
               <div className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 font-semibold mb-4">
-                Official Portaldot 3.0 Resources & Telemetry
+                Portaldot 3.0 Architecture Capabilities
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <a
-                  href="https://portalscan.portaldot.io"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
-                >
-                  <div className="text-xs text-slate-500 dark:text-neutral-400">Canonical Explorer</div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                    <span>PortalScan</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
-                  </div>
-                </a>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+                  <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">Revive Module</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">EVM Execution</div>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
+                    Solidity runtime running in parallel with ink! contracts.
+                  </p>
+                </div>
 
-                <a
-                  href="https://portaldot-dev.readthedocs.io/en/latest/index.html"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
-                >
-                  <div className="text-xs text-slate-500 dark:text-neutral-400">Documentation</div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                    <span>Dev Docs</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
-                  </div>
-                </a>
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+                  <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">DHSA Sharding</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">256 Shards • 10k TPS</div>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
+                    Dynamic heterogeneous sharding for sub-second confirmation.
+                  </p>
+                </div>
 
-                <a
-                  href="https://www.portaldot.world/protocol/modules/application-engines"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
-                >
-                  <div className="text-xs text-slate-500 dark:text-neutral-400">Protocol Spec</div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                    <span>Engines</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
-                  </div>
-                </a>
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+                  <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">Asset Engine Layer</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">Physical RWA Engine</div>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
+                    Direct on-chain standardization of real-world collateral.
+                  </p>
+                </div>
 
-                <a
-                  href="https://www.portaldot.world/ecosystem#projects"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 bg-slate-50 dark:bg-[#161C2B] transition group"
-                >
-                  <div className="text-xs text-slate-500 dark:text-neutral-400">Directory</div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                    <span>Ecosystem</span>
-                    <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
-                  </div>
-                </a>
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
+                  <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">LAO NPoS Consensus</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">Deterministic Finality</div>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1">
+                    Linear attenuation offset staking with dynamic inflation reduction.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

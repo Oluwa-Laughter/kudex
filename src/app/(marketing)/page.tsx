@@ -1007,94 +1007,68 @@ export default function MarketingHomePage() {
           </div>
         </div>
 
-        {/* Live Ecosystem & Developer Grounding Strip */}
+        {/* Kudex & Portaldot 3.0 Architecture Grounding Strip */}
         <div className="p-8 sm:p-10 rounded-3xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#0E121B] shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200 dark:border-[#21293D]">
             <div>
               <div className="text-xs font-mono uppercase text-emerald-600 dark:text-[#00E599] font-bold">
-                CANONICAL PROTOCOL TELEMETRY
+                CANONICAL PROTOCOL ARCHITECTURE
               </div>
               <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-1">
-                Portaldot Network Infrastructure & Explorers
+                Portaldot 3.0 Native Execution & Sharded Scaling
               </h4>
             </div>
             <div className="flex items-center gap-3">
-              <a
-                href="https://portalscan.portaldot.io"
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/how-it-works"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] hover:bg-emerald-500/20 text-xs font-mono font-bold transition border border-emerald-500/20"
               >
-                <span>PortalScan Live</span>
-                <FiExternalLink className="w-3.5 h-3.5" />
-              </a>
+                <span>Explore Protocol Specs</span>
+                <FiArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6">
-            <a
-              href="https://portalscan.portaldot.io"
-              target="_blank"
-              rel="noreferrer"
-              className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 transition group"
-            >
-              <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Block Explorer</div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                <span>PortalScan</span>
-                <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 pt-6">
+            <div className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+              <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">Revive EVM Engine</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                Parallel Execution
               </div>
-              <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 truncate">
-                portalscan.portaldot.io
-              </div>
-            </a>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 leading-relaxed">
+                Full Solidity compatibility running concurrently alongside native Substrate ink! contracts.
+              </p>
+            </div>
 
-            <a
-              href="https://portaldot-dev.readthedocs.io/en/latest/index.html"
-              target="_blank"
-              rel="noreferrer"
-              className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 transition group"
-            >
-              <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Developer Docs</div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                <span>Portaldot Dev</span>
-                <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+              <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">DHSA Sharding</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                256 Shards • 10k TPS
               </div>
-              <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 truncate">
-                ReadTheDocs Spec
-              </div>
-            </a>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 leading-relaxed">
+                Dynamic heterogeneous sharding delivering sub-second finality for institutional RFQ order flow.
+              </p>
+            </div>
 
-            <a
-              href="https://www.portaldot.world/protocol/modules/application-engines"
-              target="_blank"
-              rel="noreferrer"
-              className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 transition group"
-            >
-              <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Protocol Spec</div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                <span>Application Engines</span>
-                <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+              <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">Asset Engine Layer</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                Standardized RWA
               </div>
-              <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 truncate">
-                portaldot.world/protocol
-              </div>
-            </a>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 leading-relaxed">
+                Direct integration with Portaldot physical asset digitization for structured credit tranches.
+              </p>
+            </div>
 
-            <a
-              href="https://www.portaldot.world/ecosystem#projects"
-              target="_blank"
-              rel="noreferrer"
-              className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] hover:border-emerald-500 transition group"
-            >
-              <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Ecosystem</div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-500 flex items-center justify-between">
-                <span>Verified Projects</span>
-                <FiExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500" />
+            <div className="p-4 rounded-2xl bg-white dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D]">
+              <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-bold">Access Layer Keys</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                Zero-Leak Privacy
               </div>
-              <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 truncate">
-                portaldot.world/ecosystem
-              </div>
-            </a>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 leading-relaxed">
+                Client-side cryptographic viewing keys & bounded session keys for autonomous solver fleets.
+              </p>
+            </div>
           </div>
         </div>
       </section>
