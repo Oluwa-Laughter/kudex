@@ -210,31 +210,37 @@ export default function AppHowItWorksPage() {
               Select or slide your deposit amount to see projected 1-year earnings across our 3 risk tiers.
             </p>
 
-            {/* Slider and Presets */}
+            {/* Input and Presets */}
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-base font-semibold text-slate-700 dark:text-neutral-300">
                   Simulated Deposit Amount
                 </span>
-                <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-[#00E599] tabular-nums">
-                  ${depositAmount.toLocaleString()} pUSD
+                <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+                  Min: $500 | Max: $50,000
                 </span>
               </div>
 
-              <input
-                type="range"
-                min="500"
-                max="50000"
-                step="500"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(Number(e.target.value))}
-                className="w-full accent-[#00E599] cursor-pointer h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
-              />
+              <div className="relative flex items-center rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] overflow-hidden focus-within:border-[#00E599] transition">
+                <span className="pl-4 text-xl font-bold text-slate-500 dark:text-neutral-400 font-mono">$</span>
+                <input
+                  type="number"
+                  min="500"
+                  max="50000"
+                  step="500"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(Math.max(0, Number(e.target.value)))}
+                  className="w-full px-2 py-4 bg-transparent font-bold text-2xl font-mono text-slate-900 dark:text-white outline-none tabular-nums"
+                  placeholder="5000"
+                />
+                <span className="pr-4 text-sm font-mono font-bold text-emerald-600 dark:text-[#00E599]">pUSD</span>
+              </div>
 
               <div className="flex flex-wrap gap-2.5 pt-1">
-                {[1000, 5000, 10000, 25000].map((amt) => (
+                {[1000, 5000, 10000, 25000, 50000].map((amt) => (
                   <button
                     key={amt}
+                    type="button"
                     onClick={() => setDepositAmount(amt)}
                     className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
                       depositAmount === amt

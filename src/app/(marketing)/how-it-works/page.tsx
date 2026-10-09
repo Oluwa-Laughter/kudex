@@ -221,7 +221,7 @@ export default function HowItWorksPage() {
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <FiShield className="w-4 h-4 text-[#2E68FF]" />
+            <FiShield className="w-4 h-4 text-emerald-600 dark:text-[#00E599]" />
             <span>Protected Yield</span>
           </button>
 
@@ -329,7 +329,7 @@ export default function HowItWorksPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Privacy Status:</span>
-                    <span className="text-[#2E68FF] font-semibold">Zero Mempool Leakage</span>
+                    <span className="text-emerald-600 dark:text-[#00E599] font-semibold">Zero Mempool Leakage</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Solvency Invariant:</span>

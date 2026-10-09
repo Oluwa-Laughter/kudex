@@ -153,64 +153,76 @@ export default function AppProtectionPage() {
             </span>
           </div>
 
-          <input
-            type="range"
-            min="0"
-            max="40"
-            step="5"
-            value={stressDrawdownPct}
-            onChange={(e) => setStressDrawdownPct(Number(e.target.value))}
-            className="w-full accent-emerald-500 cursor-pointer h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg"
-          />
+          {/* Form Input with Preset Quick Buttons (No Slider / No Radio Fill) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="relative flex-1">
+              <input
+                type="number"
+                min="0"
+                max="50"
+                value={stressDrawdownPct}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setStressDrawdownPct(Math.min(50, Math.max(0, isNaN(val) ? 0 : val)));
+                }}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-mono font-bold text-lg text-slate-900 dark:text-white outline-none focus:border-[#00E599] tabular-nums"
+                placeholder="Drawdown %"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-sm text-slate-400 dark:text-neutral-500 font-semibold">
+                % Drawdown
+              </span>
+            </div>
 
-          <div className="flex gap-2">
-            {[5, 10, 15, 25, 35].map((pct) => (
-              <button
-                key={pct}
-                onClick={() => setStressDrawdownPct(pct)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                  stressDrawdownPct === pct
-                    ? 'bg-emerald-500 text-slate-950 font-bold'
-                    : 'bg-slate-100 dark:bg-[#161C2B] text-slate-700 dark:text-slate-300'
-                }`}
-              >
-                -{pct}%
-              </button>
-            ))}
+            <div className="grid grid-cols-5 gap-2">
+              {[5, 10, 15, 25, 35].map((pct) => (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => setStressDrawdownPct(pct)}
+                  className={`py-3 px-3 rounded-xl text-xs font-mono font-bold transition border ${
+                    stressDrawdownPct === pct
+                      ? 'bg-[#00E599] text-[#06080D] border-[#00E599] shadow-sm'
+                      : 'bg-slate-100 dark:bg-[#161C2B] text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-[#21293D] hover:bg-slate-200 dark:hover:bg-[#21293D]'
+                  }`}
+                >
+                  -{pct}%
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Tranche Absorption Visualizer */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-4">
           <div className="p-5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
-            <div className="text-xs uppercase font-semibold text-purple-500">Junior Tranche</div>
+            <div className="text-xs uppercase font-mono font-bold text-emerald-600 dark:text-[#00E599]">Junior Tranche</div>
             <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">First-Loss Cushion</div>
-            <div className="text-sm font-semibold text-rose-500 mt-2">
+            <div className="text-sm font-semibold text-rose-500 mt-2 font-mono">
               Absorbs: -${juniorLoss.toLocaleString()}
             </div>
-            <div className="text-xs text-slate-500 mt-1">
+            <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 font-mono">
               {juniorLoss >= juniorCapital ? '100% Depleted' : 'Absorbing Shock'}
             </div>
           </div>
 
           <div className="p-5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B]">
-            <div className="text-xs uppercase font-semibold text-blue-500">Mezzanine Tranche</div>
+            <div className="text-xs uppercase font-mono font-bold text-emerald-600 dark:text-[#00E599]">Mezzanine Tranche</div>
             <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">Secondary Buffer</div>
-            <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mt-2">
+            <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mt-2 font-mono">
               Absorbs: -${mezzanineLoss.toLocaleString()}
             </div>
-            <div className="text-xs text-slate-500 mt-1">
+            <div className="text-xs text-slate-500 dark:text-neutral-400 mt-1 font-mono">
               {mezzanineLoss === 0 ? 'Zero Loss (Protected)' : 'Partial Cushion'}
             </div>
           </div>
 
-          <div className="p-5 rounded-xl border border-emerald-500/40 bg-emerald-500/5">
-            <div className="text-xs uppercase font-semibold text-emerald-600 dark:text-emerald-400">Senior Tranche</div>
+          <div className="p-5 rounded-xl border border-[#00E599]/40 bg-emerald-500/5">
+            <div className="text-xs uppercase font-mono font-bold text-emerald-600 dark:text-[#00E599]">Senior Tranche</div>
             <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">Principal Protection</div>
-            <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-2">
+            <div className="text-sm font-bold text-emerald-600 dark:text-[#00E599] mt-2 font-mono">
               {seniorLoss === 0 ? '100% Capital Preserved ($0 Loss)' : `Haircut: -$${seniorLoss.toLocaleString()}`}
             </div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+            <div className="text-xs text-emerald-600 dark:text-[#00E599] font-semibold mt-1">
               Legal & Cryptographic Priority
             </div>
           </div>

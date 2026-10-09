@@ -80,12 +80,12 @@ export default function PublicBridgePage() {
           Home
         </Link>
         <span>/</span>
-        <span className="text-[#2E68FF] font-semibold">Cross-Chain Gateway</span>
+        <span className="text-emerald-600 dark:text-[#00E599] font-semibold">Cross-Chain Gateway</span>
       </div>
 
       {/* Hero Header */}
       <div className="bridge-anim max-w-4xl space-y-4 mb-14">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-sm font-semibold text-[#2E68FF]">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-sm font-semibold text-emerald-600 dark:text-[#00E599]">
           <RiRouteLine className="w-4 h-4" />
           <span>CROSS-CHAIN CAPITAL GATEWAY</span>
         </div>
@@ -99,7 +99,7 @@ export default function PublicBridgePage() {
         <div className="pt-2 flex flex-wrap items-center gap-4">
           <Link
             href="/app/bridge"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#2E68FF] hover:bg-[#2557d6] text-white font-bold text-base transition shadow-md shadow-[#2E68FF]/20"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-md shadow-[#00E599]/20"
           >
             <span>Launch Bridge Workspace</span>
             <FiArrowRight className="w-4 h-4" />
@@ -116,7 +116,7 @@ export default function PublicBridgePage() {
       {/* 3 Core Bridging Capabilities */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         <div className="bridge-anim p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-4 shadow-sm">
-          <div className="w-12 h-12 rounded-xl bg-[#2E68FF]/10 text-[#2E68FF] flex items-center justify-center border border-[#2E68FF]/20">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center border border-emerald-500/20">
             <FiZap className="w-6 h-6" />
           </div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white">Zero-Delay Solver Fills</h3>
@@ -164,7 +164,7 @@ export default function PublicBridgePage() {
       {/* 4-Step Settlement Architecture */}
       <div className="bridge-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
         <div className="max-w-3xl mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-[#2E68FF] mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
             <FiGlobe className="w-3.5 h-3.5" />
             <span>CROSS-CHAIN LIFECYCLE</span>
           </div>
@@ -178,7 +178,7 @@ export default function PublicBridgePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
-            <div className="w-9 h-9 rounded-lg bg-[#2E68FF]/10 text-[#2E68FF] flex items-center justify-center font-mono font-bold text-sm">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
               01
             </div>
             <h4 className="text-lg font-bold text-slate-900 dark:text-white">Broadcast Deposit Intent</h4>
@@ -188,7 +188,7 @@ export default function PublicBridgePage() {
           </div>
 
           <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
-            <div className="w-9 h-9 rounded-lg bg-[#2E68FF]/10 text-[#2E68FF] flex items-center justify-center font-mono font-bold text-sm">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
               02
             </div>
             <h4 className="text-lg font-bold text-slate-900 dark:text-white">Solver Fill Race</h4>
@@ -261,6 +261,104 @@ export default function PublicBridgePage() {
         </div>
       </div>
 
+      {/* NEW SECTION 1: SOLVER SLASHING PROTOCOL & CAPITAL SECURITY BOUNDS */}
+      <div className="bridge-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
+            <FiShield className="w-3.5 h-3.5" />
+            <span>SOLVER ECONOMIC SECURITY</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Solver Slashing Protocol & Capital Security Bounds
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
+            Every cross-chain transaction executed by a Kudex solver is backed by on-chain staked capital.
+            Rigorous mathematical bounds ensure funds are guaranteed even in the event of solver downtime or failure.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiDollarSign className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">150% Bonded Collateral</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Solvers must lock a minimum of 150% of the intent value in audited staking contracts before broadcasting fill commitments.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiClock className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Deterministic Timeout Fallback</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              If a solver claims an intent but fails to deliver destination assets within 120 seconds, their bond is automatically slashed and routed to the user.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiCheckCircle className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Non-Custodial Escrow Safety</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Original assets never enter third-party custodial wallets. Origin funds remain locked in autonomous contracts until atomic verification is finalized.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW SECTION 2: CROSS-ROLLUP MESSAGE PASSING & GAS SUBSIDIES */}
+      <div className="bridge-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
+            <FiLayers className="w-3.5 h-3.5" />
+            <span>INFRASTRUCTURE ARCHITECTURE</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Cross-Rollup Message Passing & Automated Gas Subsidies
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
+            Bridging into Kudex eliminates the friction of destination gas acquisition. Every bridged transfer
+            automatically provisions native settlement gas alongside the confidential credit note.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiZap className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Automated Gas Fueling</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              First-time cross-chain transfers arrive with bundled execution gas on the Kudex ledger, removing the need for pre-existing native tokens.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiRepeat className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Rollup State Verification</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Optimistic and zero-knowledge rollup state roots are continuously indexed to guarantee sub-second receipt proofs without centralized relays.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold text-sm">
+              <FiLock className="w-5 h-5" />
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Atomic Note Invariants</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Confidential notes are verified mathematically prior to destination commitment inscription, ensuring flawless conservation of value.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Institutional CTA Box */}
       <div className="bridge-anim p-10 rounded-3xl border border-slate-200 dark:border-[#21293D] bg-slate-100 dark:bg-gradient-to-r dark:from-[#0E121B] dark:to-[#161C2B] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
         <div>
@@ -271,7 +369,7 @@ export default function PublicBridgePage() {
         </div>
         <Link
           href="/app/bridge"
-          className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-[#2E68FF] hover:bg-[#2557d6] text-white font-bold text-base transition shadow-md shadow-[#2E68FF]/20 flex-shrink-0"
+          className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-base transition shadow-md shadow-[#00E599]/20 flex-shrink-0"
         >
           <span>Open Bridge App</span>
           <FiArrowRight className="w-4 h-4" />

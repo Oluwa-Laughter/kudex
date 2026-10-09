@@ -174,7 +174,7 @@ export default function PublicMarketplacePage() {
                       t.grade === 'AAA'
                         ? 'bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20'
                         : t.grade === 'BBB'
-                        ? 'bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] border border-blue-500/20'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20'
                         : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                     }`}
                   >
@@ -337,10 +337,10 @@ export default function PublicMarketplacePage() {
             </div>
           </div>
 
-          <div className="p-7 rounded-2xl border border-blue-500/30 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl" />
+          <div className="p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] hover:border-[#00E599]/40 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden transition">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#00E599]/5 rounded-full blur-2xl" />
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] border border-blue-500/20">
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-[#00E599]/10 text-emerald-600 dark:text-[#00E599] border border-[#00E599]/20">
                 Grade BBB
               </span>
               <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">Subordinated Buffer</span>
@@ -351,14 +351,14 @@ export default function PublicMarketplacePage() {
             </p>
             <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex justify-between items-baseline">
               <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 uppercase">Target APY</span>
-              <span className="text-xl font-mono font-bold text-blue-600 dark:text-[#2E68FF]">13.50% – 16.00%</span>
+              <span className="text-xl font-mono font-bold text-slate-900 dark:text-white">13.50% – 16.00%</span>
             </div>
           </div>
 
-          <div className="p-7 rounded-2xl border border-amber-500/30 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl" />
+          <div className="p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] hover:border-[#00E599]/40 bg-white dark:bg-[#0E121B] space-y-4 shadow-sm relative overflow-hidden transition">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#00E599]/5 rounded-full blur-2xl" />
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-[#00E599]/10 text-emerald-600 dark:text-[#00E599] border border-[#00E599]/20">
                 Grade EQUITY
               </span>
               <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">First-Loss Absorption</span>
@@ -369,7 +369,7 @@ export default function PublicMarketplacePage() {
             </p>
             <div className="pt-3 border-t border-slate-200 dark:border-[#21293D] flex justify-between items-baseline">
               <span className="text-xs font-mono text-slate-500 dark:text-neutral-400 uppercase">Target APY</span>
-              <span className="text-xl font-mono font-bold text-amber-600 dark:text-amber-400">20.00% – 25.00%</span>
+              <span className="text-xl font-mono font-bold text-emerald-600 dark:text-[#00E599]">20.00% – 25.00%</span>
             </div>
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function PublicMarketplacePage() {
       {/* Confidential RFQ Protocol Section */}
       <div className="market-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
         <div className="max-w-3xl mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] text-xs font-mono font-bold text-blue-600 dark:text-[#2E68FF] mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00E599]/10 text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
             <FiZap className="w-3.5 h-3.5" />
             <span>OFF-CHAIN RFQ SOLVER ENGINE</span>
           </div>
@@ -392,7 +392,7 @@ export default function PublicMarketplacePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
-            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">01 / ENCRYPTED INTENT</div>
+            <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-semibold">01 / ENCRYPTED INTENT</div>
             <div className="text-base font-bold text-slate-900 dark:text-white">Zero Pre-Trade Leakage</div>
             <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
               Order size and price limit stay completely private from public mempool sniffers.
@@ -400,7 +400,7 @@ export default function PublicMarketplacePage() {
           </div>
 
           <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
-            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">02 / SOLVER AUCTION</div>
+            <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-semibold">02 / SOLVER AUCTION</div>
             <div className="text-base font-bold text-slate-900 dark:text-white">Competitive Tight Quotes</div>
             <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
               Solvers bid aggressively to fill trades, offering spreads as low as 1 to 4 basis points.
@@ -408,7 +408,7 @@ export default function PublicMarketplacePage() {
           </div>
 
           <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
-            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">03 / ATOMIC SETTLEMENT</div>
+            <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-semibold">03 / ATOMIC SETTLEMENT</div>
             <div className="text-base font-bold text-slate-900 dark:text-white">Guaranteed Execution</div>
             <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
               Trade executes in a single block with 100% price guarantee or reverts with zero penalty.
@@ -416,11 +416,101 @@ export default function PublicMarketplacePage() {
           </div>
 
           <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
-            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">04 / SHIELDED RECEIPT</div>
+            <div className="text-xs font-mono text-emerald-600 dark:text-[#00E599] font-semibold">04 / SHIELDED RECEIPT</div>
             <div className="text-base font-bold text-slate-900 dark:text-white">Confidential Balances</div>
             <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
               Settled tokens are held in private notes, preventing wallet address tracking.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW SECTION 1: SECONDARY MARKET LIQUIDITY & INSTANT EXIT */}
+      <div className="market-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00E599]/10 text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
+            <RiExchangeFundsLine className="w-3.5 h-3.5" />
+            <span>SECONDARY TRANCHE LIQUIDITY</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Instant Secondary Exit Routes & Orderbook Depth
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
+            Institutional allocators do not need to lock capital until facility maturity. Kudex supports liquid secondary trading: swap yield notes (kUSDp) on the private RFQ orderbook or redeem instantly via continuous buffer pools.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-10 h-10 rounded-lg bg-[#00E599]/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold">
+              01
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Private Limit Orderbooks</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Place limit or market orders for tokenized credit notes with zero mempool footprint. Other institutions fill size atomically.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-10 h-10 rounded-lg bg-[#00E599]/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold">
+              02
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Reserve Buffer Redemptions</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Each facility maintains an audited 10-15% liquid buffer, enabling immediate redemptions back to base stablecoins.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-3">
+            <div className="w-10 h-10 rounded-lg bg-[#00E599]/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-mono font-bold">
+              03
+            </div>
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">Zero Lockup Penalties</h4>
+            <p className="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed">
+              Accrued interest is calculated continuous per block. Exit anytime and retain 100% of earned yield.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* NEW SECTION 2: UNDERWRITING STANDARDS & ORIGINATOR REGISTRY */}
+      <div className="market-anim rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-8 sm:p-10 mb-16 shadow-sm">
+        <div className="max-w-3xl mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00E599]/10 text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
+            <RiShieldCheckLine className="w-3.5 h-3.5" />
+            <span>ORIGINATOR VERIFICATION STANDARD</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Audited Originators & Bankruptcy-Remote Legal Security
+          </h2>
+          <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
+            Every credit facility listed on Kudex is vetted against institutional credit standards. Real-world assets are held in ring-fenced legal structures with daily oracle validation.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">LEGAL ENFORCEABILITY</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Bankruptcy-Remote SPVs</div>
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">Isolated from originator corporate liabilities.</p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">OVERCOLLATERALIZATION</div>
+            <div className="text-base font-bold text-emerald-600 dark:text-[#00E599]">125% – 150% Baseline</div>
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">Buffer cushion protecting Senior principal.</p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">VALUATION ORACLES</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white">Continuous Verification</div>
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">Independent third-party asset audits verified on-chain.</p>
+          </div>
+
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2">
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400 font-semibold">SOLVENCY CEILING</div>
+            <div className="text-base font-bold text-emerald-600 dark:text-[#00E599]">Automated Haircuts</div>
+            <p className="text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">Zero flash liquidations; junior equity absorbs shocks first.</p>
           </div>
         </div>
       </div>
