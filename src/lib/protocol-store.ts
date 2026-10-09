@@ -113,20 +113,7 @@ interface ProtocolState {
 export const useProtocolStore = create<ProtocolState>()(
   persist(
     (set, get) => ({
-      orders: [
-        {
-          id: 'ord-101',
-          makerAsset: 'pUSD',
-          takerAsset: 'wPOT',
-          makerAmount: '2,500.00',
-          takerAmount: '2,585.00',
-          status: 'FILLED',
-          timestamp: Date.now() - 3600000,
-          solver: '0x71Ae48...390b',
-          txHash: '0x8f4c...3e19',
-          type: 'FOK',
-        },
-      ],
+      orders: [],
       addOrder: (newOrder) => {
         const order: ProtocolOrder = {
           ...newOrder,
@@ -144,17 +131,7 @@ export const useProtocolStore = create<ProtocolState>()(
         }));
       },
 
-      notes: [
-        {
-          id: 'note-101',
-          commitment: '0x7a9c8b12f4d6e902a4b8c3d1e7f092384a5b6c7d',
-          nullifier: '0x3e19a4b8c7d6f5e4d3c2b1a0987654321fedcba9',
-          amount: '1,000.00',
-          asset: 'pUSD',
-          timestamp: Date.now() - 7200000,
-          status: 'SHIELDED',
-        },
-      ],
+      notes: [],
       addNote: (newNote) => {
         const note: ShieldedNote = {
           ...newNote,
@@ -175,24 +152,24 @@ export const useProtocolStore = create<ProtocolState>()(
       positions: {
         senior: {
           trancheId: 'senior',
-          depositedAmount: 5000,
-          shares: 5000,
-          accruedYield: 42.5,
-          lastDepositTimestamp: Date.now() - 86400000,
+          depositedAmount: 0,
+          shares: 0,
+          accruedYield: 0,
+          lastDepositTimestamp: 0,
         },
         mezzanine: {
           trancheId: 'mezzanine',
           depositedAmount: 0,
           shares: 0,
           accruedYield: 0,
-          lastDepositTimestamp: Date.now(),
+          lastDepositTimestamp: 0,
         },
         junior: {
           trancheId: 'junior',
           depositedAmount: 0,
           shares: 0,
           accruedYield: 0,
-          lastDepositTimestamp: Date.now(),
+          lastDepositTimestamp: 0,
         },
       },
       depositToVault: (trancheId, amount) => {
@@ -228,19 +205,7 @@ export const useProtocolStore = create<ProtocolState>()(
         });
       },
 
-      bridgeTransfers: [
-        {
-          id: 'brg-101',
-          originChain: 'Ethereum Sepolia',
-          targetChain: 'Kudex Settlement',
-          asset: 'USDC',
-          amount: '5,000.00',
-          status: 'SETTLED',
-          timestamp: Date.now() - 14400000,
-          txHash: '0x18f7...92ac',
-          mode: 'Direct Deposit',
-        },
-      ],
+      bridgeTransfers: [],
       addBridgeTransfer: (transfer) => {
         const item: BridgeTransfer = {
           ...transfer,
@@ -251,32 +216,7 @@ export const useProtocolStore = create<ProtocolState>()(
         return item;
       },
 
-      agentPolicies: [
-        {
-          id: 'agent-sentinel',
-          name: 'Kudex Sentinel',
-          role: 'Solvency & Invariant Surveillance',
-          status: 'ACTIVE',
-          spendCap: 10000,
-          spent: 2450,
-          ttlHours: 48,
-          createdTimestamp: Date.now() - 86400000,
-          executedActions: 142,
-          lastAction: 'Pre-flight invariant check verified',
-        },
-        {
-          id: 'agent-solver',
-          name: 'Solver Arbitrageur',
-          role: 'Zero-MEV RFQ Routing',
-          status: 'ACTIVE',
-          spendCap: 25000,
-          spent: 14800,
-          ttlHours: 24,
-          createdTimestamp: Date.now() - 43200000,
-          executedActions: 388,
-          lastAction: 'Settled atomic RFQ swap for 500 pUSD',
-        },
-      ],
+      agentPolicies: [],
       addAgentPolicy: (newPolicy) => {
         const item: AgentPolicy = {
           ...newPolicy,
@@ -297,17 +237,7 @@ export const useProtocolStore = create<ProtocolState>()(
         }));
       },
 
-      viewingKeys: [
-        {
-          id: 'vk-01',
-          auditor: 'Financial Controller Compliance Desk',
-          keyHash: '0x7f1a8e92...bc41',
-          scope: 'Quarterly Settlement Audit',
-          issuedAt: Date.now() - 86400000 * 5,
-          validDays: 30,
-          status: 'ACTIVE',
-        },
-      ],
+      viewingKeys: [],
       addViewingKey: (newKey) => {
         const item: ViewingKey = {
           ...newKey,
@@ -325,11 +255,11 @@ export const useProtocolStore = create<ProtocolState>()(
         }));
       },
 
-      riskScoreBps: 1850,
+      riskScoreBps: 1200,
       setRiskScoreBps: (score) => set({ riskScoreBps: score }),
     }),
     {
-      name: 'kudex-protocol-storage',
+      name: 'kudex-protocol-v3',
     }
   )
 );

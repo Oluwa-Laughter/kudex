@@ -245,7 +245,7 @@ export default function HowItWorksPage() {
                 : 'text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <RiRobot2Line className="w-4 h-4 text-purple-500" />
+            <RiRobot2Line className="w-4 h-4 text-emerald-500" />
             <span>Kudex Agent</span>
           </button>
         </div>

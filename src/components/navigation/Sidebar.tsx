@@ -17,6 +17,14 @@ import {
   FiBook,
 } from 'react-icons/fi';
 
+import {
+  RiRouteLine,
+  RiRobot2Line,
+  RiShieldCheckLine,
+  RiBankCardLine,
+  RiExchangeFundsLine,
+} from 'react-icons/ri';
+
 const navItems = [
   {
     name: 'Overview & KUDEX AGENT',
@@ -29,14 +37,34 @@ const navItems = [
     icon: FiLayers,
   },
   {
+    name: 'Confidential Settlement',
+    href: '/app/settlement',
+    icon: RiBankCardLine,
+  },
+  {
     name: 'RFQ Orderbook',
     href: '/app/marketplace',
     icon: FiRepeat,
   },
   {
+    name: 'Cross-Chain Bridge',
+    href: '/app/bridge',
+    icon: RiRouteLine,
+  },
+  {
     name: 'Risk Protection',
     href: '/app/protection',
     icon: FiActivity,
+  },
+  {
+    name: 'Agent Fleet Policies',
+    href: '/app/agents',
+    icon: RiRobot2Line,
+  },
+  {
+    name: 'Compliance Viewing Keys',
+    href: '/app/compliance',
+    icon: RiShieldCheckLine,
   },
 ];
 

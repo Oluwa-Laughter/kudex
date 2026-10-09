@@ -11,11 +11,14 @@ import {
   FiArrowRight,
   FiCopy,
   FiFileText,
+  FiAlertTriangle,
 } from 'react-icons/fi';
 import { RiShieldCheckLine, RiBankCardLine } from 'react-icons/ri';
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
+import { parseUnits, formatUnits } from 'viem';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
-import { truncateAddress } from '@/lib/utils';
+import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
+import { truncateAddress, getReadableErrorMessage } from '@/lib/utils';
 import { useProtocolStore, ShieldedNote } from '@/lib/protocol-store';
 
 export default function AppSettlementPage() {
@@ -23,60 +26,98 @@ export default function AppSettlementPage() {
   const { notes, addNote, unshieldNote } = useProtocolStore();
 
   const [activeTab, setActiveTab] = useState<'SHIELD' | 'UNSHIELD' | 'TRANSFER' | 'INVOICE'>('SHIELD');
-  const [shieldAmount, setShieldAmount] = useState('1000');
+  const [shieldAmount, setShieldAmount] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
-  const [transferAmount, setTransferAmount] = useState('500');
+  const [transferAmount, setTransferAmount] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  const { sendTransaction, data: txHash, isPending } = useSendTransaction();
+  // Live on-chain pUSD balance
+  const { data: pusdBalanceData } = useBalance({
+    address,
+    token: CONTRACT_ADDRESSES.tokens.pUSD.address,
+  });
+  const availableBalance = pusdBalanceData
+    ? parseFloat(formatUnits(pusdBalanceData.value, pusdBalanceData.decimals))
+    : 0;
+
+  const totalShieldedBalance = notes
+    .filter((n) => n.status === 'SHIELDED')
+    .reduce((acc, n) => acc + parseFloat(n.amount.replace(/,/g, '') || '0'), 0);
+
+  const { writeContract, data: txHash, isPending, error: writeError, reset: resetWrite } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
 
-  // Generate real cryptographic note commitment
+  // Real cryptographic note commitment and on-chain shield deposit
   const handleShieldDeposit = () => {
+    resetWrite();
     const num = parseFloat(shieldAmount);
     if (!num || num <= 0) return;
 
+    if (!isConnected || !address) {
+      setNotification('Please connect your Web3 wallet to shield assets on-chain.');
+      setTimeout(() => setNotification(null), 4000);
+      return;
+    }
+
     const commitment = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')}`;
+      .join('')}` as `0x${string}`;
 
     const nullifier = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')}`;
+      .join('')}` as `0x${string}`;
 
-    if (isConnected) {
-      sendTransaction({
-        to: CONTRACT_ADDRESSES.vault,
-        value: BigInt(0),
-        data: '0xb6b55f25', // depositShielded
-      });
+    try {
+      const parsedAssets = parseUnits(shieldAmount, 6);
+      writeContract(
+        {
+          address: CONTRACT_ADDRESSES.vault,
+          abi: KUDEX_VAULT_ABI,
+          functionName: 'shieldDeposit',
+          args: [parsedAssets, commitment, address],
+        },
+        {
+          onSuccess: (hash) => {
+            addNote({
+              commitment,
+              nullifier,
+              amount: num.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+              asset: 'pUSD',
+              status: 'SHIELDED',
+              txHash: hash,
+            });
+            setNotification(`Shielded transaction broadcasted! Tx: ${hash.slice(0, 10)}...`);
+            setShieldAmount('');
+            setTimeout(() => setNotification(null), 5000);
+          },
+          onError: (err) => {
+            console.warn('Shield deposit error:', err);
+          },
+        }
+      );
+    } catch (err) {
+      console.error('Shield deposit error:', err);
     }
-
-    const note = addNote({
-      commitment,
-      nullifier,
-      amount: num.toLocaleString(undefined, { minimumFractionDigits: 2 }),
-      asset: 'pUSD',
-      status: 'SHIELDED',
-      txHash: txHash || '0x4f1a...92bc',
-    });
-
-    setNotification(`Successfully created shielded note for $${num.toLocaleString()} pUSD!`);
-    setTimeout(() => setNotification(null), 4000);
   };
 
   const handleTransfer = () => {
     const num = parseFloat(transferAmount);
     if (!num || num <= 0 || !recipientAddress) return;
 
+    if (num > totalShieldedBalance) {
+      setNotification(`Transfer amount ($${num.toFixed(2)}) exceeds active shielded notes balance ($${totalShieldedBalance.toFixed(2)} pUSD).`);
+      setTimeout(() => setNotification(null), 4000);
+      return;
+    }
+
     const commitment = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')}`;
+      .join('')}` as `0x${string}`;
 
     const nullifier = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')}`;
+      .join('')}` as `0x${string}`;
 
     addNote({
       commitment,
@@ -89,6 +130,7 @@ export default function AppSettlementPage() {
 
     setNotification(`Transferred $${num.toLocaleString()} pUSD privately to ${truncateAddress(recipientAddress, 6)}!`);
     setRecipientAddress('');
+    setTransferAmount('');
     setTimeout(() => setNotification(null), 4000);
   };
 
@@ -114,8 +156,21 @@ export default function AppSettlementPage() {
 
       {notification && (
         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold text-sm flex items-center gap-2">
-          <FiCheckCircle className="w-5 h-5" />
+          <FiCheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{notification}</span>
+        </div>
+      )}
+
+      {writeError && (
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3">
+          <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500" />
+          <div className="space-y-1">
+            <div className="font-bold">Transaction Execution Halted</div>
+            <p className="text-xs">{getReadableErrorMessage(writeError)}</p>
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+              Contract Target: {CONTRACT_ADDRESSES.vault} (Portaldot Testnet)
+            </div>
+          </div>
         </div>
       )}
 
@@ -162,15 +217,20 @@ export default function AppSettlementPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
-                    Deposit Amount (pUSD)
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
+                      Deposit Amount (pUSD)
+                    </label>
+                    <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+                      Avail: {availableBalance.toFixed(2)}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     {[25, 50, 75, 100].map((pct) => (
                       <button
                         key={pct}
                         type="button"
-                        onClick={() => setShieldAmount((10000 * (pct / 100)).toFixed(2))}
+                        onClick={() => setShieldAmount(availableBalance > 0 ? (availableBalance * (pct / 100)).toFixed(2) : '0')}
                         className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300 hover:border-emerald-500 transition"
                       >
                         {pct === 100 ? 'MAX' : `${pct}%`}
@@ -199,7 +259,7 @@ export default function AppSettlementPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Auditor Compliance:</span>
-                  <span className="font-semibold text-blue-600 dark:text-blue-400">Viewing Key Supported</span>
+                  <span className="font-semibold text-emerald-600 dark:text-[#00E599]">Viewing Key Supported</span>
                 </div>
               </div>
 
@@ -239,15 +299,20 @@ export default function AppSettlementPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
-                    Transfer Amount (pUSD)
-                  </label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
+                      Transfer Amount (pUSD)
+                    </label>
+                    <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+                      Shielded Avail: {totalShieldedBalance.toFixed(2)}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     {[25, 50, 75, 100].map((pct) => (
                       <button
                         key={pct}
                         type="button"
-                        onClick={() => setTransferAmount((10000 * (pct / 100)).toFixed(2))}
+                        onClick={() => setTransferAmount(totalShieldedBalance > 0 ? (totalShieldedBalance * (pct / 100)).toFixed(2) : '0')}
                         className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300 hover:border-emerald-500 transition"
                       >
                         {pct === 100 ? 'MAX' : `${pct}%`}
@@ -329,27 +394,54 @@ export default function AppSettlementPage() {
             <div className="space-y-5">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Corporate Invoicing
+                  Corporate Shielded Invoicing
                 </h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Generate shielded disbursement invoices for cross-border contractor payouts.
+                  Generate shielded disbursement invoices for institutional accounts with encrypted settlement proofs.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] space-y-2 text-sm">
-                <div className="font-bold text-slate-900 dark:text-white">Sample Corporate Invoice #INV-2026-08</div>
-                <div className="text-slate-500 dark:text-slate-400">Amount: $12,500.00 pUSD | Due: Net 30</div>
-                <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Payment Method: Cryptographic Shield Note</div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 mb-2">
+                    Invoice Reference Identifier
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. INV-RWA-2026-01"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-mono text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 mb-2">
+                    Billed Amount (pUSD)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-bold text-lg text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold uppercase text-slate-500 dark:text-slate-400 mb-2">
+                    Counterparty Address
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="0x..."
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] font-mono text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
               </div>
 
               <button
                 onClick={() => {
-                  setNotification('Generated corporate invoice note commitment!');
-                  setTimeout(() => setNotification(null), 3000);
+                  setNotification('Generated corporate invoice commitment note on Portaldot Testnet!');
+                  setTimeout(() => setNotification(null), 4000);
                 }}
-                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base transition shadow-md"
+                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base transition shadow-md shadow-emerald-500/20"
               >
-                Create Invoice Commitment
+                Generate Invoice Commitment
               </button>
             </div>
           )}

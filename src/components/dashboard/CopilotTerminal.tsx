@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useAccount } from 'wagmi';
 import { RFQQuoteCard } from '@/components/generative/RFQQuoteCard';
 import { PreFlightSimCard } from '@/components/generative/PreFlightSimCard';
 import { ShieldReceiptCard } from '@/components/generative/ShieldReceiptCard';
@@ -37,6 +38,7 @@ const QUICK_PROMPTS = [
 ];
 
 export function CopilotTerminal() {
+  const { address } = useAccount();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'init-1',
@@ -85,6 +87,7 @@ export function CopilotTerminal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+          userAddress: address,
         }),
       });
 

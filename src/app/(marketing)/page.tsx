@@ -56,14 +56,14 @@ export default function MarketingHomePage() {
     functionName: 'riskScore',
   });
 
-  const displayTVL = totalAssetsRaw
-    ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString()}`
-    : '$18,450,000';
+  const displayTVL = totalAssetsRaw && totalAssetsRaw > BigInt(0)
+    ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '$0.00';
 
   const totalVolumeBigInt = protocolEvents?.totalVolumeBigInt ?? BigInt(0);
   const displayVolume = totalVolumeBigInt > BigInt(0)
     ? `$${formatDisplayBalance(totalVolumeBigInt, 6, 2)}`
-    : '$2,840,000';
+    : '$0.00';
 
   const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : 1200;
   const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);

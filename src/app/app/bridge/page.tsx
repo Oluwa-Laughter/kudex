@@ -11,7 +11,8 @@ import {
   FiZap,
 } from 'react-icons/fi';
 import { RiRouteLine } from 'react-icons/ri';
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
+import { formatUnits } from 'viem';
 import { truncateAddress } from '@/lib/utils';
 import { useProtocolStore, BridgeTransfer } from '@/lib/protocol-store';
 
@@ -22,13 +23,28 @@ export default function AppBridgePage() {
   const [originChain, setOriginChain] = useState('Ethereum Sepolia');
   const [targetChain, setTargetChain] = useState('Kudex Settlement');
   const [asset, setAsset] = useState('USDC');
-  const [amount, setAmount] = useState('1000');
+  const [amount, setAmount] = useState('');
   const [isBridging, setIsBridging] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Live user balance for selected origin asset
+  const { data: balanceData } = useBalance({
+    address,
+  });
+
+  const availableBalance = balanceData
+    ? parseFloat(formatUnits(balanceData.value, balanceData.decimals))
+    : 0;
 
   const handleInitiateBridge = () => {
     const num = parseFloat(amount);
     if (!num || num <= 0) return;
+
+    if (!isConnected) {
+      setNotification('Please connect your Web3 wallet to execute bridge transfers.');
+      setTimeout(() => setNotification(null), 4000);
+      return;
+    }
 
     setIsBridging(true);
     setTimeout(() => {
@@ -47,7 +63,8 @@ export default function AppBridgePage() {
         mode: 'Direct Deposit',
       });
 
-      setNotification(`Bridge transfer of $${num.toLocaleString()} ${asset} completed into Kudex!`);
+      setNotification(`Bridge transfer of ${num.toLocaleString()} ${asset} relayed into Kudex!`);
+      setAmount('');
       setTimeout(() => setNotification(null), 4000);
     }, 1200);
   };
@@ -76,7 +93,7 @@ export default function AppBridgePage() {
         <div className="lg:col-span-6 p-7 sm:p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-xl space-y-6 transition-colors duration-200">
           <div className="flex items-center justify-between pb-5 border-b border-slate-200 dark:border-[#21293D]">
             <div className="flex items-center gap-2.5">
-              <RiRouteLine className="w-6 h-6 text-blue-500" />
+              <RiRouteLine className="w-6 h-6 text-emerald-500" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Bridge Liquidity
               </h3>
@@ -118,12 +135,14 @@ export default function AppBridgePage() {
             {/* Asset and Amount */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
-                  Bridge Amount
-                </label>
-                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                  Available: <span className="font-semibold text-slate-800 dark:text-slate-200">10,000.00 {asset}</span>
-                </span>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold uppercase text-slate-500 dark:text-slate-400">
+                    Bridge Amount
+                  </label>
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    Avail: {availableBalance.toFixed(4)}
+                  </span>
+                </div>
               </div>
 
               {/* Quick Fill Percentage Buttons */}
@@ -133,8 +152,7 @@ export default function AppBridgePage() {
                     key={pct}
                     type="button"
                     onClick={() => {
-                      const total = 10000;
-                      const calculated = ((total * pct) / 100).toFixed(2);
+                      const calculated = availableBalance > 0 ? ((availableBalance * pct) / 100).toFixed(4) : '0';
                       setAmount(calculated);
                     }}
                     className="flex-1 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] border border-slate-200 dark:border-[#21293D] text-xs font-mono font-bold text-slate-700 dark:text-slate-300 transition"
@@ -192,7 +210,7 @@ export default function AppBridgePage() {
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Recent Bridge Transfers
               </h3>
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20">
                 {bridgeTransfers.length} Transfers
               </span>
             </div>

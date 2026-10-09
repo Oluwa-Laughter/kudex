@@ -16,9 +16,31 @@ const publicClient = createPublicClient({
 });
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON payload' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const { messages, userAddress } = body || {};
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return new Response(JSON.stringify({ error: 'Messages array is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   const latestMessage = messages[messages.length - 1];
-  const userContent = latestMessage?.content || '';
+  const userContent = typeof latestMessage?.content === 'string' ? latestMessage.content : '';
+
+  const sanitizedUserAddress =
+    typeof userAddress === 'string' && /^0x[a-fA-F0-9]{40}$/.test(userAddress)
+      ? (userAddress as `0x${string}`)
+      : ('0x0000000000000000000000000000000000000001' as `0x${string}`);
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
@@ -32,7 +54,6 @@ export async function POST(req: Request) {
           amountUSDC = matchAmount[1];
         }
 
-        const dummyUser = '0x3Fe157482810EbA0bA3b40049454Fe98c813a1B9' as `0x${string}`;
         const commitment = (`0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
           .map((b) => b.toString(16).padStart(2, '0'))
           .join('')}`) as `0x${string}`;
@@ -46,14 +67,14 @@ export async function POST(req: Request) {
             address: CONTRACT_ADDRESSES.vault,
             abi: KUDEX_VAULT_ABI,
             functionName: 'shieldDeposit',
-            args: [parsedAssets, commitment, dummyUser],
-            account: dummyUser,
+            args: [parsedAssets, commitment, sanitizedUserAddress],
+            account: sanitizedUserAddress,
           });
 
           const calldata = encodeFunctionData({
             abi: KUDEX_VAULT_ABI,
             functionName: 'shieldDeposit',
-            args: [parsedAssets, commitment, dummyUser],
+            args: [parsedAssets, commitment, sanitizedUserAddress],
           });
 
           simulationOutcome = {
@@ -74,7 +95,7 @@ export async function POST(req: Request) {
           const calldata = encodeFunctionData({
             abi: KUDEX_VAULT_ABI,
             functionName: 'shieldDeposit',
-            args: [parsedAssets, commitment, dummyUser],
+            args: [parsedAssets, commitment, sanitizedUserAddress],
           });
 
           simulationOutcome = {

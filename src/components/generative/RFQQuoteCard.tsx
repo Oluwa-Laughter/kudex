@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { FiArrowRight, FiShield, FiZap, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
-import { truncateAddress } from '@/lib/utils';
+import { truncateAddress, getReadableErrorMessage } from '@/lib/utils';
 
 export interface RFQQuoteProps {
   quote: {
@@ -106,8 +106,10 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
       )}
 
       {error && (
-        <div className="mb-3 p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-600 dark:text-rose-400">
-          {error.message.slice(0, 120)}...
+        <div className="mb-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-600 dark:text-rose-400 space-y-1">
+          <div className="font-bold">Solver Execution Halted</div>
+          <p>{getReadableErrorMessage(error)}</p>
+          <div className="font-mono text-neutral-500">Router Target: {quote.routerAddress}</div>
         </div>
       )}
 

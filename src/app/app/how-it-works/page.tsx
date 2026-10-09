@@ -134,7 +134,7 @@ export default function AppHowItWorksPage() {
             </div>
 
             <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] flex items-center justify-center font-bold text-base mb-4 border border-blue-500/20">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-bold text-base mb-4 border border-emerald-500/20">
                 2
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -146,7 +146,7 @@ export default function AppHowItWorksPage() {
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D]">
                 <Link
                   href="/app/bridge"
-                  className="text-sm font-semibold text-blue-600 dark:text-[#2E68FF] hover:underline inline-flex items-center gap-1.5"
+                  className="text-sm font-semibold text-emerald-600 dark:text-[#00E599] hover:underline inline-flex items-center gap-1.5"
                 >
                   <span>Open Bridge Gateway</span>
                   <FiArrowRight className="w-3.5 h-3.5" />
@@ -176,7 +176,7 @@ export default function AppHowItWorksPage() {
             </div>
 
             <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-base mb-4 border border-purple-500/20">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center font-bold text-base mb-4 border border-emerald-500/20">
                 4
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -188,7 +188,7 @@ export default function AppHowItWorksPage() {
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#21293D]">
                 <Link
                   href="/app/agents"
-                  className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1.5"
+                  className="text-sm font-semibold text-emerald-600 dark:text-[#00E599] hover:underline inline-flex items-center gap-1.5"
                 >
                   <span>Configure Agent</span>
                   <FiArrowRight className="w-3.5 h-3.5" />
@@ -292,19 +292,19 @@ export default function AppHowItWorksPage() {
                   <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mt-2">
                     14.20% APY
                   </div>
-                  <div className="text-sm text-blue-600 dark:text-[#2E68FF] font-semibold mt-1">
+                  <div className="text-sm text-emerald-600 dark:text-[#00E599] font-semibold mt-1">
                     Balanced Risk / Return
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-200 dark:border-[#21293D]">
                     <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Projected 1-Yr Profit:</div>
-                    <div className="text-2xl font-bold font-mono text-blue-600 dark:text-[#2E68FF] tabular-nums mt-0.5">
+                    <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white tabular-nums mt-0.5">
                       +${Number(mezzanineReturn).toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <Link
                   href="/app/vaults"
-                  className="mt-6 block w-full py-3 text-center rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition shadow-sm"
+                  className="mt-6 block w-full py-3 text-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#21293D] dark:hover:bg-[#2c364f] text-slate-900 dark:text-white font-bold text-sm transition shadow-sm"
                 >
                   Deposit Mezzanine
                 </Link>
@@ -319,19 +319,19 @@ export default function AppHowItWorksPage() {
                   <div className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mt-2">
                     22.80% APY
                   </div>
-                  <div className="text-sm text-purple-600 dark:text-purple-400 font-semibold mt-1">
+                  <div className="text-sm text-emerald-600 dark:text-[#00E599] font-semibold mt-1">
                     First-Loss Max Return
                   </div>
                   <div className="mt-5 pt-3 border-t border-slate-200 dark:border-[#21293D]">
                     <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">Projected 1-Yr Profit:</div>
-                    <div className="text-2xl font-bold font-mono text-purple-600 dark:text-purple-400 tabular-nums mt-0.5">
+                    <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white tabular-nums mt-0.5">
                       +${Number(juniorReturn).toLocaleString()}
                     </div>
                   </div>
                 </div>
                 <Link
                   href="/app/vaults"
-                  className="mt-6 block w-full py-3 text-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition shadow-sm"
+                  className="mt-6 block w-full py-3 text-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#21293D] dark:hover:bg-[#2c364f] text-slate-900 dark:text-white font-bold text-sm transition shadow-sm"
                 >
                   Deposit Junior
                 </Link>
@@ -369,7 +369,7 @@ export default function AppHowItWorksPage() {
             </div>
 
             <div className="p-6 sm:p-7 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] flex items-center justify-center mb-4 border border-blue-500/20">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center mb-4 border border-emerald-500/20">
                 <FiShield className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -381,11 +381,11 @@ export default function AppHowItWorksPage() {
               </p>
               <ul className="mt-5 space-y-2.5 text-sm text-slate-700 dark:text-neutral-300">
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-blue-500" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500" />
                   <span>Full regulatory compliance on demand</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <FiCheckCircle className="w-4 h-4 text-blue-500" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-500" />
                   <span>Auditors can verify without withdrawing funds</span>
                 </li>
               </ul>

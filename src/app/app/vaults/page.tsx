@@ -10,13 +10,15 @@ import {
   FiActivity,
   FiDollarSign,
   FiLayers,
+  FiAlertTriangle,
 } from 'react-icons/fi';
 import { RiShieldCheckLine } from 'react-icons/ri';
-import { useAccount, useReadContract, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
-import { formatUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import { useProtocolStore } from '@/lib/protocol-store';
+import { getReadableErrorMessage } from '@/lib/utils';
 
 export default function AppVaultsPage() {
   const { isConnected, address } = useAccount();
@@ -26,6 +28,15 @@ export default function AppVaultsPage() {
   const [depositAmount, setDepositAmount] = useState('1000');
   const [activeTab, setActiveTab] = useState<'DEPOSIT' | 'WITHDRAW'>('DEPOSIT');
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Real user on-chain balance
+  const { data: pusdBalanceData } = useBalance({
+    address,
+    token: CONTRACT_ADDRESSES.tokens.pUSD.address,
+  });
+  const availableBalance = pusdBalanceData
+    ? parseFloat(formatUnits(pusdBalanceData.value, pusdBalanceData.decimals))
+    : 0;
 
   // Live on-chain read for total assets in vault
   const { data: totalAssetsRaw } = useReadContract({
@@ -41,7 +52,7 @@ export default function AppVaultsPage() {
     functionName: 'riskScore',
   });
 
-  const { sendTransaction, data: txHash, isPending } = useSendTransaction();
+  const { writeContract, data: txHash, isPending, error: writeError, reset: resetWrite } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
 
   const totalUserDeposits =
@@ -89,27 +100,50 @@ export default function AppVaultsPage() {
   };
 
   const handleAction = () => {
+    resetWrite();
     const num = parseFloat(depositAmount);
     if (!num || num <= 0) return;
 
-    if (activeTab === 'DEPOSIT') {
-      // Call real on-chain deposit if wallet connected
-      if (isConnected) {
-        sendTransaction({
-          to: CONTRACT_ADDRESSES.vault,
-          value: BigInt(0),
-          data: '0xb6b55f25', // depositShielded
-        });
-      }
-
-      depositToVault(selectedVault, num);
-      setNotification(`Successfully deposited $${num.toLocaleString()} pUSD into ${vaultDetails[selectedVault].name}!`);
-    } else {
-      withdrawFromVault(selectedVault, num);
-      setNotification(`Successfully redeemed $${num.toLocaleString()} pUSD from ${vaultDetails[selectedVault].name}!`);
+    if (!isConnected || !address) {
+      setNotification('Please connect your Web3 wallet to interact with on-chain vaults.');
+      setTimeout(() => setNotification(null), 4000);
+      return;
     }
 
-    setTimeout(() => setNotification(null), 4000);
+    if (activeTab === 'DEPOSIT') {
+      try {
+        const commitment = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('')}` as `0x${string}`;
+
+        const parsedAssets = parseUnits(depositAmount, 6);
+
+        writeContract(
+          {
+            address: CONTRACT_ADDRESSES.vault,
+            abi: KUDEX_VAULT_ABI,
+            functionName: 'shieldDeposit',
+            args: [parsedAssets, commitment, address],
+          },
+          {
+            onSuccess: (hash) => {
+              depositToVault(selectedVault, num);
+              setNotification(`Deposit broadcasted successfully! Transaction: ${hash.slice(0, 10)}...`);
+              setTimeout(() => setNotification(null), 5000);
+            },
+            onError: (err) => {
+              console.warn('Vault deposit error:', err);
+            },
+          }
+        );
+      } catch (err) {
+        console.error('Vault deposit exception:', err);
+      }
+    } else {
+      withdrawFromVault(selectedVault, num);
+      setNotification(`Redeemed $${num.toLocaleString()} pUSD from ${vaultDetails[selectedVault].name}!`);
+      setTimeout(() => setNotification(null), 4000);
+    }
   };
 
   return (
@@ -126,9 +160,22 @@ export default function AppVaultsPage() {
       </div>
 
       {notification && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold text-sm flex items-center gap-2">
-          <FiCheckCircle className="w-5 h-5" />
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-[#00E599] font-semibold text-sm flex items-center gap-2">
+          <FiCheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{notification}</span>
+        </div>
+      )}
+
+      {writeError && (
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3">
+          <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500" />
+          <div className="space-y-1">
+            <div className="font-bold">Transaction Execution Halted</div>
+            <p className="text-xs">{getReadableErrorMessage(writeError)}</p>
+            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+              Contract Target: {CONTRACT_ADDRESSES.vault} (Portaldot Testnet)
+            </div>
+          </div>
         </div>
       )}
 
@@ -141,7 +188,7 @@ export default function AppVaultsPage() {
           <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             {displayTVL}
           </div>
-          <div className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold pt-1">
+          <div className="text-sm text-emerald-600 dark:text-[#00E599] font-semibold pt-1">
             Across 3 Risk Tranches
           </div>
         </div>
@@ -153,7 +200,7 @@ export default function AppVaultsPage() {
           <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             ${totalUserDeposits.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-sm text-blue-600 dark:text-blue-400 font-semibold pt-1">
+          <div className="text-sm text-emerald-600 dark:text-[#00E599] font-semibold pt-1">
             Earning Continuous APY
           </div>
         </div>
@@ -194,10 +241,10 @@ export default function AppVaultsPage() {
                     <span
                       className={`px-3 py-1 rounded-lg text-xs font-bold ${
                         vault.grade === 'AAA'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20'
                           : vault.grade === 'BBB'
-                          ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                          : 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
+                          ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/10'
+                          : 'bg-emerald-500/5 text-emerald-800 dark:text-emerald-400 border border-emerald-500/10'
                       }`}
                     >
                       Grade {vault.grade}
@@ -278,17 +325,22 @@ export default function AppVaultsPage() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
-                  Amount (pUSD)
-                </label>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-semibold uppercase text-slate-500 dark:text-neutral-400">
+                    Amount (pUSD)
+                  </label>
+                  <span className="text-xs font-mono text-slate-500 dark:text-neutral-400">
+                    Avail: {activeTab === 'DEPOSIT' ? availableBalance.toFixed(2) : (vaultDetails[selectedVault].userDeposit || 0).toFixed(2)}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1.5">
                   {[25, 50, 75, 100].map((pct) => (
                     <button
                       key={pct}
                       type="button"
                       onClick={() => {
-                        const baseBal = activeTab === 'DEPOSIT' ? 10000 : vaultDetails[selectedVault].userDeposit || 5000;
-                        setDepositAmount((baseBal * (pct / 100)).toFixed(2));
+                        const baseBal = activeTab === 'DEPOSIT' ? availableBalance : vaultDetails[selectedVault].userDeposit;
+                        setDepositAmount(baseBal > 0 ? (baseBal * (pct / 100)).toFixed(2) : '0');
                       }}
                       className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300 hover:border-emerald-500 transition"
                     >
@@ -311,17 +363,19 @@ export default function AppVaultsPage() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              {[500, 1000, 2500, 5000].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => setDepositAmount(amt.toString())}
-                  className="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-slate-300 hover:border-emerald-500 transition"
-                >
-                  ${amt}
-                </button>
-              ))}
-            </div>
+            {availableBalance > 0 && activeTab === 'DEPOSIT' && (
+              <div className="flex gap-2">
+                {[10, 50, 100, 500].filter((amt) => amt <= availableBalance).map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setDepositAmount(amt.toString())}
+                    className="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-slate-300 hover:border-emerald-500 transition"
+                  >
+                    ${amt}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={handleAction}

@@ -12,21 +12,25 @@ import {
 } from 'react-icons/fi';
 import { RiExchangeFundsLine } from 'react-icons/ri';
 import { RFQQuoteCard } from '@/components/generative/RFQQuoteCard';
+import { useAccount, useBalance } from 'wagmi';
+import { formatUnits } from 'viem';
+import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { useProtocolStore, ProtocolOrder } from '@/lib/protocol-store';
 
 const AVAILABLE_TOKENS = [
   { symbol: 'pUSD', name: 'Portaldot USD', color: 'bg-[#00E599]' },
-  { symbol: 'wPOT', name: 'Wrapped POT', color: 'bg-[#2E68FF]' },
-  { symbol: 'POT', name: 'Native POT', color: 'bg-purple-500' },
+  { symbol: 'wPOT', name: 'Wrapped POT', color: 'bg-emerald-400' },
+  { symbol: 'POT', name: 'Native POT', color: 'bg-emerald-300' },
 ];
 
 export default function AppMarketplacePage() {
+  const { isConnected, address } = useAccount();
   const { orders, addOrder } = useProtocolStore();
 
   const [orderType, setOrderType] = useState<'FOK' | 'IOC' | 'LIMIT'>('FOK');
   const [tokenIn, setTokenIn] = useState('pUSD');
   const [tokenOut, setTokenOut] = useState('wPOT');
-  const [amountIn, setAmountIn] = useState('500');
+  const [amountIn, setAmountIn] = useState('');
   const [slippageBps, setSlippageBps] = useState(50);
   const [isSimulating, setIsSimulating] = useState(false);
   const [activeQuote, setActiveQuote] = useState<any | null>(null);
@@ -35,7 +39,22 @@ export default function AppMarketplacePage() {
   const [showTokenInMenu, setShowTokenInMenu] = useState(false);
   const [showTokenOutMenu, setShowTokenOutMenu] = useState(false);
 
-  const userBalance = tokenIn === 'pUSD' ? 10000 : tokenIn === 'wPOT' ? 250 : 500;
+  // Live on-chain balance query
+  const tokenInAddress =
+    tokenIn === 'pUSD'
+      ? CONTRACT_ADDRESSES.tokens.pUSD.address
+      : tokenIn === 'wPOT'
+      ? CONTRACT_ADDRESSES.tokens.wPOT.address
+      : undefined;
+
+  const { data: balanceData } = useBalance({
+    address,
+    token: tokenInAddress,
+  });
+
+  const userBalance = balanceData
+    ? parseFloat(formatUnits(balanceData.value, balanceData.decimals))
+    : 0;
 
   // Real-time calculated solver rate
   const rateMultiplier =
@@ -50,11 +69,12 @@ export default function AppMarketplacePage() {
   const estimatedOutput = (parseFloat(amountIn || '0') * rateMultiplier).toFixed(2);
 
   const handleApplyPercentage = (pct: number) => {
-    const calculated = (userBalance * (pct / 100)).toFixed(2);
+    const calculated = userBalance > 0 ? (userBalance * (pct / 100)).toFixed(2) : '0';
     setAmountIn(calculated);
   };
 
   const handleRequestQuote = () => {
+    if (!amountIn || parseFloat(amountIn) <= 0) return;
     setIsSimulating(true);
     setTimeout(() => {
       setIsSimulating(false);
@@ -65,7 +85,7 @@ export default function AppMarketplacePage() {
         estimatedReceive: estimatedOutput,
         solver: '0x71Ae48...390b (Kudex Institutional Solver)',
         estimatedGasPOT: '0.00045',
-        routerAddress: '0x8800000000000000000000000000000000000001' as `0x${string}`,
+        routerAddress: CONTRACT_ADDRESSES.rfqMarket,
         maxSlippageBps: slippageBps,
       });
     }, 600);
@@ -83,7 +103,7 @@ export default function AppMarketplacePage() {
       type: orderType,
     });
 
-    setNotification(`Order ${newOrd.id} executed successfully with zero slippage!`);
+    setNotification(`Order ${newOrd.id} settled with zero mempool front-running!`);
     setTimeout(() => setNotification(null), 4000);
     setActiveQuote(null);
   };
@@ -384,7 +404,7 @@ export default function AppMarketplacePage() {
                           ord.status === 'FILLED'
                             ? 'bg-emerald-500/10 text-emerald-600 dark:text-[#00E599]'
                             : ord.status === 'MATCHING_SOLVER'
-                            ? 'bg-blue-500/10 text-blue-600 dark:text-[#2E68FF] animate-pulse'
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-[#00E599] animate-pulse border border-emerald-500/30'
                             : 'bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400'
                         }`}
                       >

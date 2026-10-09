@@ -168,95 +168,118 @@ export default function AppAgentsPage() {
       )}
 
       {/* Agent Policies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {agentPolicies.map((agent: AgentPolicy) => {
-          const isRevoked = agent.status === 'REVOKED';
+      {agentPolicies.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {agentPolicies.map((agent: AgentPolicy) => {
+            const isRevoked = agent.status === 'REVOKED';
 
-          return (
-            <div
-              key={agent.id}
-              className={`p-7 rounded-2xl border transition-all ${
-                isRevoked
-                  ? 'border-slate-200 dark:border-[#21293D] bg-slate-100/50 dark:bg-[#0E121B]/50 opacity-60'
-                  : 'border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm'
-              }`}
-            >
-              <div className="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                    <RiRobot2Line className="w-6 h-6" />
+            return (
+              <div
+                key={agent.id}
+                className={`p-7 rounded-2xl border transition-all ${
+                  isRevoked
+                    ? 'border-slate-200 dark:border-[#21293D] bg-slate-100/50 dark:bg-[#0E121B]/50 opacity-60'
+                    : 'border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm'
+                }`}
+              >
+                <div className="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599]">
+                      <RiRobot2Line className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                        {agent.name}
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                        {agent.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      isRevoked
+                        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                        : 'bg-emerald-500/10 text-emerald-600 dark:text-[#00E599]'
+                    }`}
+                  >
+                    {agent.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 py-5 border-b border-slate-100 dark:border-[#21293D] text-sm">
+                  <div>
+                    <span className="text-xs text-slate-500 uppercase font-semibold">Spend Cap:</span>
+                    <div className="font-bold text-slate-900 dark:text-white tabular-nums mt-0.5">
+                      ${agent.spendCap.toLocaleString()} pUSD
+                    </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                      {agent.name}
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                      {agent.role}
-                    </p>
+                    <span className="text-xs text-slate-500 uppercase font-semibold">Total Spent:</span>
+                    <div className="font-bold text-emerald-600 dark:text-[#00E599] tabular-nums mt-0.5">
+                      ${agent.spent.toLocaleString()} pUSD
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-500 uppercase font-semibold">Session Validity:</span>
+                    <div className="font-bold text-slate-900 dark:text-white mt-0.5">
+                      {agent.ttlHours} Hours
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-500 uppercase font-semibold">Actions Executed:</span>
+                    <div className="font-bold text-slate-900 dark:text-white tabular-nums mt-0.5">
+                      {agent.executedActions} calls
+                    </div>
                   </div>
                 </div>
 
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    isRevoked
-                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                  }`}
-                >
-                  {agent.status}
-                </span>
-              </div>
+                <div className="pt-4 flex items-center justify-between">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    Last: {agent.lastAction}
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4 py-5 border-b border-slate-100 dark:border-[#21293D] text-sm">
-                <div>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Spend Cap:</span>
-                  <div className="font-bold text-slate-900 dark:text-white tabular-nums mt-0.5">
-                    ${agent.spendCap.toLocaleString()} pUSD
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Total Spent:</span>
-                  <div className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums mt-0.5">
-                    ${agent.spent.toLocaleString()} pUSD
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Session Validity:</span>
-                  <div className="font-bold text-slate-900 dark:text-white mt-0.5">
-                    {agent.ttlHours} Hours
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Actions Executed:</span>
-                  <div className="font-bold text-slate-900 dark:text-white tabular-nums mt-0.5">
-                    {agent.executedActions} calls
-                  </div>
+                  {!isRevoked && (
+                    <button
+                      onClick={() => {
+                        revokeAgentPolicy(agent.id);
+                        setNotification(`Revoked permissions for ${agent.name}. Session key invalidated.`);
+                        setTimeout(() => setNotification(null), 4000);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition"
+                    >
+                      <FiSlash className="w-3.5 h-3.5" />
+                      <span>Revoke Access</span>
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <div className="pt-4 flex items-center justify-between">
-                <div className="text-xs text-slate-500 dark:text-slate-400">
-                  Last: {agent.lastAction}
-                </div>
-
-                {!isRevoked && (
-                  <button
-                    onClick={() => {
-                      revokeAgentPolicy(agent.id);
-                      setNotification(`Revoked permissions for ${agent.name}. Session key invalidated.`);
-                      setTimeout(() => setNotification(null), 4000);
-                    }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition"
-                  >
-                    <FiSlash className="w-3.5 h-3.5" />
-                    <span>Revoke Access</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="p-12 text-center rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-sm space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center mx-auto">
+            <RiRobot2Line className="w-7 h-7" />
+          </div>
+          <div className="max-w-md mx-auto space-y-1">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              No Active Agent Policies
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Configure an autonomous session policy with strict spend caps to allow programmatic RFQ rebalancing and invariant monitoring without signing each transaction.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsDeploying(true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-md shadow-emerald-500/20"
+          >
+            <FiPlus className="w-4 h-4" />
+            <span>Deploy First Agent Policy</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
