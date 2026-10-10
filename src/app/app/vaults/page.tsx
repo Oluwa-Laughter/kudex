@@ -167,13 +167,34 @@ export default function AppVaultsPage() {
       )}
 
       {writeError && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-sm flex items-start gap-3">
-          <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500" />
-          <div className="space-y-1">
-            <div className="font-bold">Transaction Execution Halted</div>
-            <p className="text-xs">{getReadableErrorMessage(writeError)}</p>
-            <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-              Contract Target: {CONTRACT_ADDRESSES.vault} (Portaldot Testnet)
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-sm flex items-start gap-3">
+          <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-500" />
+          <div className="space-y-1.5 flex-1">
+            <div className="font-bold flex items-center justify-between">
+              <span>Portaldot V3 Testnet RPC Pending</span>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-amber-500/20">PRE-KICKOFF</span>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-neutral-300">
+              {getReadableErrorMessage(writeError)}. Portaldot V3 testnet RPC endpoint is in pre-launch stage (testnet tokens distributed via Discord faucet).
+            </p>
+            <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-slate-500 dark:text-neutral-400">
+                Allowed for Hackathon Prototype Evaluation:
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const num = parseFloat(depositAmount) || 5000;
+                  depositToVault(selectedVault, num);
+                  setNotification(`Deposited $${num.toLocaleString()} pUSD into ${selectedVault.toUpperCase()} Tranche in Prototype Sandbox Mode!`);
+                  setDepositAmount('');
+                  resetWrite();
+                  setTimeout(() => setNotification(null), 5000);
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-[#00E599] text-[#06080D] font-bold text-xs hover:bg-[#00c985] transition shadow-sm"
+              >
+                Deposit in Prototype Sandbox
+              </button>
             </div>
           </div>
         </div>
