@@ -16,7 +16,7 @@ import { RiShieldCheckLine } from 'react-icons/ri';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
-import { formatUnits, parseUnits } from 'viem';
+import { formatUnits, parseUnits, zeroAddress } from 'viem';
 import { useProtocolStore } from '@/lib/protocol-store';
 import { getReadableErrorMessage } from '@/lib/utils';
 
@@ -25,7 +25,7 @@ export default function AppVaultsPage() {
   const { positions, depositToVault, withdrawFromVault, riskScoreBps } = useProtocolStore();
 
   const [selectedVault, setSelectedVault] = useState<'senior' | 'mezzanine' | 'junior'>('senior');
-  const [depositAmount, setDepositAmount] = useState('1000');
+  const [depositAmount, setDepositAmount] = useState('');
   const [activeTab, setActiveTab] = useState<'DEPOSIT' | 'WITHDRAW'>('DEPOSIT');
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -60,14 +60,16 @@ export default function AppVaultsPage() {
     positions.mezzanine.depositedAmount +
     positions.junior.depositedAmount;
 
-  const displayTVL = totalAssetsRaw
-    ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString()}`
-    : totalUserDeposits > 0
-    ? `$${totalUserDeposits.toLocaleString()}`
-    : '$0.00';
+  const displayTVL =
+    totalAssetsRaw && CONTRACT_ADDRESSES.vault !== zeroAddress
+      ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString()}`
+      : totalUserDeposits > 0
+      ? `$${totalUserDeposits.toLocaleString()}`
+      : '$0.00';
 
   const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : riskScoreBps;
-  const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);
+  const healthFactor =
+    riskScoreNum > 0 ? `${(10000 / Math.max(riskScoreNum, 1000)).toFixed(2)}x` : '--';
 
   const vaultDetails = {
     senior: {
@@ -102,11 +104,21 @@ export default function AppVaultsPage() {
   const handleAction = () => {
     resetWrite();
     const num = parseFloat(depositAmount);
-    if (!num || num <= 0) return;
+    if (!num || num <= 0) {
+      setNotification('Please enter a valid amount.');
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
 
     if (!isConnected || !address) {
       setNotification('Please connect your Web3 wallet to interact with on-chain vaults.');
       setTimeout(() => setNotification(null), 4000);
+      return;
+    }
+
+    if (CONTRACT_ADDRESSES.vault === '0x0000000000000000000000000000000000000000') {
+      setNotification('Kudex Vault smart contract is awaiting deployment. Set NEXT_PUBLIC_VAULT_ADDRESS in .env.local to broadcast transactions.');
+      setTimeout(() => setNotification(null), 5000);
       return;
     }
 
@@ -129,6 +141,7 @@ export default function AppVaultsPage() {
             onSuccess: (hash) => {
               depositToVault(selectedVault, num);
               setNotification(`Deposit broadcasted successfully! Transaction: ${hash.slice(0, 10)}...`);
+              setDepositAmount('');
               setTimeout(() => setNotification(null), 5000);
             },
             onError: (err) => {
@@ -142,6 +155,7 @@ export default function AppVaultsPage() {
     } else {
       withdrawFromVault(selectedVault, num);
       setNotification(`Redeemed $${num.toLocaleString()} pUSD from ${vaultDetails[selectedVault].name}!`);
+      setDepositAmount('');
       setTimeout(() => setNotification(null), 4000);
     }
   };
@@ -159,6 +173,13 @@ export default function AppVaultsPage() {
         </p>
       </div>
 
+      {CONTRACT_ADDRESSES.vault === '0x0000000000000000000000000000000000000000' && (
+        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs flex items-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+          <span>Contracts Awaiting Deployment: Configure <code>NEXT_PUBLIC_VAULT_ADDRESS</code> in your environment variables to enable live on-chain deposits.</span>
+        </div>
+      )}
+
       {notification && (
         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-[#00E599] font-semibold text-sm flex items-center gap-2">
           <FiCheckCircle className="w-5 h-5 flex-shrink-0" />
@@ -171,31 +192,11 @@ export default function AppVaultsPage() {
           <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-500" />
           <div className="space-y-1.5 flex-1">
             <div className="font-bold flex items-center justify-between">
-              <span>Portaldot V3 Testnet RPC Pending</span>
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-amber-500/20">PRE-KICKOFF</span>
+              <span>On-Chain Interaction Notice</span>
             </div>
             <p className="text-xs text-slate-600 dark:text-neutral-300">
-              {getReadableErrorMessage(writeError)}. Portaldot V3 testnet RPC endpoint is in pre-launch stage (testnet tokens distributed via Discord faucet).
+              {getReadableErrorMessage(writeError)}. Ensure your wallet is funded with Portaldot testnet gas and connected to Portaldot Revive EVM.
             </p>
-            <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-slate-500 dark:text-neutral-400">
-                Allowed for Hackathon Prototype Evaluation:
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  const num = parseFloat(depositAmount) || 5000;
-                  depositToVault(selectedVault, num);
-                  setNotification(`Deposited $${num.toLocaleString()} pUSD into ${selectedVault.toUpperCase()} Tranche in Prototype Sandbox Mode!`);
-                  setDepositAmount('');
-                  resetWrite();
-                  setTimeout(() => setNotification(null), 5000);
-                }}
-                className="px-3.5 py-1.5 rounded-lg bg-[#00E599] text-[#06080D] font-bold text-xs hover:bg-[#00c985] transition shadow-sm"
-              >
-                Deposit in Prototype Sandbox
-              </button>
-            </div>
           </div>
         </div>
       )}

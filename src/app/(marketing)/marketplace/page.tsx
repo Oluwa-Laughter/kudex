@@ -27,12 +27,12 @@ export default function PublicMarketplacePage() {
   const tranches = [
     {
       id: 'tranche-1',
-      name: 'Global Supply Chain Invoice Pool',
+      name: 'Global Supply Chain Invoice Facility',
       asset: 'pUSD',
       grade: 'AAA',
       trancheType: 'Senior Debt',
       apy: '8.50%',
-      tvl: '$6,200,000',
+      tvl: '$0.00',
       duration: '90 Days',
       riskScore: '1,200 bps',
       health: '1.45x',
@@ -45,7 +45,7 @@ export default function PublicMarketplacePage() {
       grade: 'BBB',
       trancheType: 'Mezzanine',
       apy: '14.20%',
-      tvl: '$4,800,000',
+      tvl: '$0.00',
       duration: '180 Days',
       riskScore: '2,400 bps',
       health: '1.30x',
@@ -58,7 +58,7 @@ export default function PublicMarketplacePage() {
       grade: 'EQUITY',
       trancheType: 'Junior First-Loss',
       apy: '22.80%',
-      tvl: '$3,250,000',
+      tvl: '$0.00',
       duration: '360 Days',
       riskScore: '4,100 bps',
       health: '1.18x',
@@ -71,7 +71,7 @@ export default function PublicMarketplacePage() {
       grade: 'AAA',
       trancheType: 'Senior Debt',
       apy: '9.10%',
-      tvl: '$5,100,000',
+      tvl: '$0.00',
       duration: '120 Days',
       riskScore: '1,450 bps',
       health: '1.40x',
@@ -256,7 +256,7 @@ export default function PublicMarketplacePage() {
               <tr>
                 <td className="py-4 font-bold text-slate-900 dark:text-white">pUSD / wPOT</td>
                 <td className="py-4 text-emerald-600 dark:text-[#00E599] font-bold tabular-nums">0.04%</td>
-                <td className="py-4 tabular-nums font-semibold">$940,250</td>
+                <td className="py-4 tabular-nums font-semibold">$0.00</td>
                 <td className="py-4 text-slate-500 dark:text-neutral-400">180ms (Atomic)</td>
                 <td className="py-4 text-right">
                   <Link
@@ -271,7 +271,7 @@ export default function PublicMarketplacePage() {
               <tr>
                 <td className="py-4 font-bold text-slate-900 dark:text-white">pUSD / ETH</td>
                 <td className="py-4 text-emerald-600 dark:text-[#00E599] font-bold tabular-nums">0.05%</td>
-                <td className="py-4 tabular-nums font-semibold">$620,000</td>
+                <td className="py-4 tabular-nums font-semibold">$0.00</td>
                 <td className="py-4 text-slate-500 dark:text-neutral-400">220ms (Solver)</td>
                 <td className="py-4 text-right">
                   <Link
@@ -286,7 +286,7 @@ export default function PublicMarketplacePage() {
               <tr>
                 <td className="py-4 font-bold text-slate-900 dark:text-white">pUSD / USDC</td>
                 <td className="py-4 text-emerald-600 dark:text-[#00E599] font-bold tabular-nums">0.01%</td>
-                <td className="py-4 tabular-nums font-semibold">$1,280,000</td>
+                <td className="py-4 tabular-nums font-semibold">$0.00</td>
                 <td className="py-4 text-slate-500 dark:text-neutral-400">150ms (Atomic)</td>
                 <td className="py-4 text-right">
                   <Link

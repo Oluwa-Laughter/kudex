@@ -22,9 +22,16 @@ export interface RFQQuoteProps {
 export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
   const { sendTransaction, data: hash, isPending, error } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+  const isRouterAwaitingDeployment = !quote.routerAddress || quote.routerAddress === '0x0000000000000000000000000000000000000000';
   const [sessionExecuted, setSessionExecuted] = useState(false);
+  const [executionError, setExecutionError] = useState<string | null>(null);
 
   const handleExecute = () => {
+    setExecutionError(null);
+    if (isRouterAwaitingDeployment) {
+      setExecutionError('RFQ Settlement Router is awaiting deployment. Set NEXT_PUBLIC_RFQ_ROUTER_ADDRESS in .env.local.');
+      return;
+    }
     sendTransaction(
       {
         to: quote.routerAddress,
@@ -35,6 +42,9 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
         onSuccess: (txHash) => {
           setSessionExecuted(true);
           if (onExecuted) onExecuted(txHash);
+        },
+        onError: (err) => {
+          setExecutionError(getReadableErrorMessage(err));
         },
       }
     );
@@ -87,6 +97,13 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
         </div>
       </div>
 
+      {isRouterAwaitingDeployment && (
+        <div className="mb-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+          <FiShield className="w-4 h-4 shrink-0 text-amber-500" />
+          <span>RFQ Settlement Router awaiting contract deployment. Set <code>NEXT_PUBLIC_RFQ_ROUTER_ADDRESS</code> to execute live on-chain.</span>
+        </div>
+      )}
+
       {hash && (
         <div className="mb-3 p-3 rounded-xl bg-[#00E599]/10 border border-[#00E599]/30 text-xs flex items-center justify-between text-[#00E599]">
           <div className="flex items-center gap-2">
@@ -105,29 +122,12 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
         </div>
       )}
 
-      {error && (
-        <div className="mb-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 space-y-2">
-          <div className="font-bold flex items-center justify-between">
-            <span>Portaldot V3 RPC Pending</span>
-            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20">PRE-KICKOFF</span>
-          </div>
+      {(error || executionError) && (
+        <div className="mb-3 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-800 dark:text-rose-300 space-y-1">
+          <div className="font-bold">Transaction Execution Failed</div>
           <p className="text-slate-600 dark:text-neutral-300">
-            {getReadableErrorMessage(error)}. Testnet V3 RPC endpoint is in pre-launch stage.
+            {executionError || (error ? getReadableErrorMessage(error) : 'Execution could not complete')}
           </p>
-          <div className="pt-1 flex items-center justify-between">
-            <span className="text-[11px] text-slate-500 dark:text-neutral-400">Allowed for Hackathon Evaluation:</span>
-            <button
-              type="button"
-              onClick={() => {
-                const simHash = `0xsim_${Math.random().toString(36).substring(2, 10)}` as `0x${string}`;
-                setSessionExecuted(true);
-                if (onExecuted) onExecuted(simHash);
-              }}
-              className="px-3 py-1.5 rounded-lg bg-[#00E599] text-[#06080D] font-bold text-xs hover:bg-[#00c985] transition shadow-sm"
-            >
-              Execute in Prototype Mode
-            </button>
-          </div>
         </div>
       )}
 
@@ -141,7 +141,7 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
 
         <button
           onClick={handleExecute}
-          disabled={isPending || isConfirming || (isConfirmed && sessionExecuted)}
+          disabled={isPending || isConfirming || (isConfirmed && sessionExecuted) || isRouterAwaitingDeployment}
           className="inline-flex items-center gap-2 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] px-5 py-2.5 text-sm font-bold transition disabled:opacity-50 shadow-md shadow-[#00E599]/15"
         >
           <FiZap className="w-4 h-4" />
@@ -149,6 +149,8 @@ export function RFQQuoteCard({ quote, onExecuted }: RFQQuoteProps) {
             ? 'Executing...'
             : isConfirmed || sessionExecuted
             ? 'Settled'
+            : isRouterAwaitingDeployment
+            ? 'Router Awaiting Deployment'
             : 'Confirm Via Session Key'}
         </button>
       </div>

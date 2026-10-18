@@ -89,7 +89,7 @@ export default function AppMarketplacePage() {
   // RAMP STATE
   const [rampType, setRampType] = useState<'ON_RAMP' | 'OFF_RAMP'>('ON_RAMP');
   const [fiatCurrency, setFiatCurrency] = useState('USD');
-  const [fiatAmount, setFiatAmount] = useState('250');
+  const [fiatAmount, setFiatAmount] = useState('');
   const [rampCryptoAsset, setRampCryptoAsset] = useState('pUSD');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isRamping, setIsRamping] = useState(false);
@@ -97,10 +97,10 @@ export default function AppMarketplacePage() {
   const [bankBeneficiary, setBankBeneficiary] = useState('');
 
   // AUTOPILOT STATE
-  const [dcaAmount, setDcaAmount] = useState('50');
+  const [dcaAmount, setDcaAmount] = useState('');
   const [dcaAsset, setDcaAsset] = useState('POT');
   const [dcaFrequency, setDcaFrequency] = useState('Daily');
-  const [dcaDailyCap, setDcaDailyCap] = useState('200');
+  const [dcaDailyCap, setDcaDailyCap] = useState('');
   const [isDeployingAgent, setIsDeployingAgent] = useState(false);
 
   // RFQ STATE
@@ -138,6 +138,10 @@ export default function AppMarketplacePage() {
       showNotification(`Insufficient ${tokenIn} balance (Available: ${currentTokenInBalance.toLocaleString()})`, 'error');
       return;
     }
+    if (CONTRACT_ADDRESSES.rfqMarket === '0x0000000000000000000000000000000000000000') {
+      showNotification('RFQ Market Router contract awaiting deployment. Configure NEXT_PUBLIC_RFQ_ROUTER_ADDRESS in .env.local to execute live on-chain swaps.', 'error');
+      return;
+    }
 
     setIsSwapping(true);
     setTimeout(() => {
@@ -155,8 +159,7 @@ export default function AppMarketplacePage() {
   const rampCryptoPrice = PRICES_IN_USD[rampCryptoAsset] || 1.0;
   const calculatedRampCryptoAmount = (fiatValueInUSD / rampCryptoPrice).toFixed(4);
 
-  const destinationWalletAddress =
-    nativeWallet?.address || evmAddress || '5Di9KJM56vFGFzwpq3UDhwsFkvUvVkTW5bogPzyYgP5hXzFd';
+  const destinationWalletAddress = nativeWallet?.address || evmAddress || '';
 
   const handleExecuteRamp = () => {
     const numFiat = parseFloat(fiatAmount || '0');
@@ -167,40 +170,40 @@ export default function AppMarketplacePage() {
       return;
     }
 
+    if (!destinationWalletAddress) {
+      showNotification('Please connect your Portaldot or EVM wallet to establish your settlement identity.', 'error');
+      return;
+    }
+
     if (rampType === 'OFF_RAMP') {
       const userBalance = balances[rampCryptoAsset] ?? 0;
       if (numCrypto > userBalance) {
-        showNotification(`Insufficient ${rampCryptoAsset} balance for off-ramp.`, 'error');
+        showNotification(`Insufficient ${rampCryptoAsset} balance for off-ramp. (Balance: ${userBalance})`, 'error');
         return;
       }
     }
 
-    setIsRamping(true);
-    setTimeout(() => {
-      setIsRamping(false);
-      const tx = addRampTransaction({
-        type: rampType,
-        fiatCurrency,
-        fiatAmount: numFiat,
-        cryptoAsset: rampCryptoAsset,
-        cryptoAmount: numCrypto,
-        paymentMethod: PAYMENT_METHODS.find((p) => p.id === paymentMethod)?.name || 'Direct Bank',
-        destinationAddress: destinationWalletAddress,
-        status: 'COMPLETED',
-        txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`,
-        complianceReceipt: `KUDEX-RAMP-VK-${Date.now().toString().slice(-6)}`,
-      });
-
-      if (rampType === 'ON_RAMP') {
-        showNotification(`Successfully on-ramped ${numCrypto} ${rampCryptoAsset} to your wallet!`);
-      } else {
-        showNotification(`Off-ramp of ${numCrypto} ${rampCryptoAsset} dispatched to bank account with zero balance leakage!`);
-      }
-    }, 900);
+    showNotification(
+      'Fiat Banking Rails & Payment Gateway are awaiting live provider integration. On-chain settlement is fully enabled via direct swaps.',
+      'error'
+    );
   };
 
   // Auto-Pilot Deployment
   const handleDeployAutopilot = () => {
+    const amt = parseFloat(dcaAmount);
+    const cap = parseFloat(dcaDailyCap);
+
+    if (!amt || amt <= 0) {
+      showNotification('Please enter a valid DCA investment amount.', 'error');
+      return;
+    }
+
+    if (!cap || cap <= 0) {
+      showNotification('Please set a valid daily spend cap for the agent.', 'error');
+      return;
+    }
+
     setIsDeployingAgent(true);
     setTimeout(() => {
       setIsDeployingAgent(false);
@@ -208,7 +211,7 @@ export default function AppMarketplacePage() {
         name: `Autopilot DCA into ${dcaAsset}`,
         role: `Automated ${dcaFrequency.toLowerCase()} buy orders with zero slippage`,
         status: 'ACTIVE',
-        spendCap: parseFloat(dcaDailyCap),
+        spendCap: cap,
         ttlHours: 720,
       });
       showNotification(`Autonomous Agent deployed! DCA schedule active under bounded session key.`);

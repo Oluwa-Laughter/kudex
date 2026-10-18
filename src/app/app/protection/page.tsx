@@ -42,13 +42,17 @@ export default function AppProtectionPage() {
 
   const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : riskScoreBps;
   const isDefaulted = Boolean(isDefaultedRaw);
-  const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);
+  const healthFactor =
+    riskScoreNum > 0 ? `${(10000 / Math.max(riskScoreNum, 1000)).toFixed(2)}x` : '--';
 
   // Interactive Solvency Stress-Test Simulator
   const [stressDrawdownPct, setStressDrawdownPct] = useState(15);
-  const onChainAssets = totalAssetsRaw ? Number(formatUnits(totalAssetsRaw, 6)) : 0;
+  const onChainAssets =
+    totalAssetsRaw && CONTRACT_ADDRESSES.vault !== '0x0000000000000000000000000000000000000000'
+      ? Number(formatUnits(totalAssetsRaw, 6))
+      : 0;
   const storeCapital = Object.values(positions).reduce((acc, p) => acc + p.depositedAmount, 0);
-  const totalFacilityCapital = onChainAssets > 0 ? onChainAssets : (storeCapital > 0 ? storeCapital : 1000000);
+  const totalFacilityCapital = onChainAssets > 0 ? onChainAssets : storeCapital;
 
   // Dynamic proportional waterfall: 20% Junior First-Loss, 35% Mezzanine, 45% Senior Principal
   const juniorCapital = totalFacilityCapital * 0.20;

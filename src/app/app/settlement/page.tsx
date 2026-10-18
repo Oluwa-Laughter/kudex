@@ -60,6 +60,12 @@ export default function AppSettlementPage() {
       return;
     }
 
+    if (CONTRACT_ADDRESSES.vault === '0x0000000000000000000000000000000000000000') {
+      setNotification('Kudex Vault smart contract is awaiting deployment. Set NEXT_PUBLIC_VAULT_ADDRESS in .env.local to broadcast ZK notes.');
+      setTimeout(() => setNotification(null), 5000);
+      return;
+    }
+
     const commitment = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('')}` as `0x${string}`;
@@ -154,6 +160,13 @@ export default function AppSettlementPage() {
         </p>
       </div>
 
+      {CONTRACT_ADDRESSES.vault === '0x0000000000000000000000000000000000000000' && (
+        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs flex items-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+          <span>Contracts Awaiting Deployment: Configure <code>NEXT_PUBLIC_VAULT_ADDRESS</code> in your environment variables to enable live on-chain ZK note generation.</span>
+        </div>
+      )}
+
       {notification && (
         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold text-sm flex items-center gap-2">
           <FiCheckCircle className="w-5 h-5 flex-shrink-0" />
@@ -166,44 +179,11 @@ export default function AppSettlementPage() {
           <FiAlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-500" />
           <div className="space-y-1.5 flex-1">
             <div className="font-bold flex items-center justify-between">
-              <span>Portaldot V3 Testnet RPC Pending</span>
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-amber-500/20">PRE-KICKOFF</span>
+              <span>On-Chain Shield Transaction Notice</span>
             </div>
             <p className="text-xs text-slate-600 dark:text-neutral-300">
-              {getReadableErrorMessage(writeError)}. Portaldot V3 RPC endpoint is in pre-launch stage (tokens distributed via Discord faucet).
+              {getReadableErrorMessage(writeError)}. Ensure your wallet is connected to Portaldot Revive EVM and funded with gas tokens.
             </p>
-            <div className="pt-1 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-slate-500 dark:text-neutral-400">
-                Allowed for Hackathon Prototype Evaluation:
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  const num = parseFloat(shieldAmount) || 1000;
-                  const commitment = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
-                    .map((b) => b.toString(16).padStart(2, '0'))
-                    .join('')}` as `0x${string}`;
-                  const nullifier = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)))
-                    .map((b) => b.toString(16).padStart(2, '0'))
-                    .join('')}` as `0x${string}`;
-                  addNote({
-                    commitment,
-                    nullifier,
-                    amount: num.toLocaleString(undefined, { minimumFractionDigits: 2 }),
-                    asset: 'pUSD',
-                    status: 'SHIELDED',
-                    txHash: `0xsim_${commitment.slice(2, 10)}`,
-                  });
-                  setNotification(`Cryptographically shielded $${num.toLocaleString()} pUSD in Prototype Sandbox Mode!`);
-                  setShieldAmount('');
-                  resetWrite();
-                  setTimeout(() => setNotification(null), 5000);
-                }}
-                className="px-3.5 py-1.5 rounded-lg bg-[#00E599] text-[#06080D] font-bold text-xs hover:bg-[#00c985] transition shadow-sm"
-              >
-                Shield in Prototype Sandbox
-              </button>
-            </div>
           </div>
         </div>
       )}

@@ -20,14 +20,15 @@ import {
 import { RiExchangeFundsLine, RiShieldCheckLine, RiRobot2Line, RiBankCardLine } from 'react-icons/ri';
 
 export default function AppHowItWorksPage() {
-  const [depositAmount, setDepositAmount] = useState(5000);
+  const [depositAmount, setDepositAmount] = useState<number | ''>('');
   const [activeTab, setActiveTab] = useState<'quickstart' | 'yield' | 'privacy' | 'architecture'>('quickstart');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Yield calculations
-  const seniorReturn = (depositAmount * 0.085).toFixed(2);
-  const mezzanineReturn = (depositAmount * 0.142).toFixed(2);
-  const juniorReturn = (depositAmount * 0.228).toFixed(2);
+  const numDeposit = typeof depositAmount === 'number' ? depositAmount : 0;
+  const seniorReturn = (numDeposit * 0.085).toFixed(2);
+  const mezzanineReturn = (numDeposit * 0.142).toFixed(2);
+  const juniorReturn = (numDeposit * 0.228).toFixed(2);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);
@@ -250,9 +251,9 @@ export default function AppHowItWorksPage() {
                   max="50000"
                   step="500"
                   value={depositAmount}
-                  onChange={(e) => setDepositAmount(Math.max(0, Number(e.target.value)))}
+                  onChange={(e) => setDepositAmount(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
                   className="w-full px-2 py-4 bg-transparent font-bold text-2xl font-mono text-slate-900 dark:text-white outline-none tabular-nums"
-                  placeholder="5000"
+                  placeholder="0.00"
                 />
                 <span className="pr-4 text-sm font-mono font-bold text-emerald-600 dark:text-[#00E599]">pUSD</span>
               </div>

@@ -155,13 +155,13 @@ interface ProtocolState {
 export const useProtocolStore = create<ProtocolState>()(
   persist(
     (set, get) => ({
-      // Portfolio Balances
+      // Portfolio Balances (Real-time initial zero state)
       balances: {
-        pUSD: 10000,
-        POT: 250,
-        wPOT: 120,
-        USDT: 5000,
-        ETH: 2.5,
+        pUSD: 0,
+        POT: 0,
+        wPOT: 0,
+        USDT: 0,
+        ETH: 0,
       },
       updateBalance: (asset, delta) => {
         set((state) => {
@@ -310,57 +310,8 @@ export const useProtocolStore = create<ProtocolState>()(
         return item;
       },
 
-      // Agent Fleet
-      agentBots: [
-        {
-          id: 'bot-1',
-          name: 'Kudex DCA Accumulator',
-          role: 'Auto-buys POT using pUSD on dips with zero slippage',
-          strategy: 'DCA',
-          status: 'RUNNING',
-          dailyBudget: 500,
-          spentToday: 125,
-          lastRunTimestamp: Date.now() - 3600000 * 2,
-          totalProfitOrVolume: 2450,
-          interval: 'Every 6 hours',
-        },
-        {
-          id: 'bot-2',
-          name: 'Cross-Shard Revive Arbitrageur',
-          role: 'Captures price differentials across Portaldot Native & Revive EVM',
-          strategy: 'ARBITRAGE',
-          status: 'RUNNING',
-          dailyBudget: 2000,
-          spentToday: 680,
-          lastRunTimestamp: Date.now() - 900000,
-          totalProfitOrVolume: 412.5,
-          interval: 'Block-atomic',
-        },
-        {
-          id: 'bot-3',
-          name: 'Waterfall Solvency Sentinel',
-          role: 'Rebalances tranches dynamically to guarantee Senior protection (Hf > 1.30)',
-          strategy: 'SOLVENCY_REBALANCE',
-          status: 'RUNNING',
-          dailyBudget: 10000,
-          spentToday: 0,
-          lastRunTimestamp: Date.now() - 7200000,
-          totalProfitOrVolume: 890,
-          interval: 'Continuous Hf audit',
-        },
-        {
-          id: 'bot-4',
-          name: 'Confidential Payroll Disperser',
-          role: 'Automated streaming of shielded pUSD notes to employee viewing keys',
-          strategy: 'PAYROLL',
-          status: 'PAUSED',
-          dailyBudget: 15000,
-          spentToday: 0,
-          lastRunTimestamp: Date.now() - 86400000 * 5,
-          totalProfitOrVolume: 12500,
-          interval: '1st of every month',
-        },
-      ],
+      // Agent Fleet (Initial zero state - user deploys their own agents)
+      agentBots: [],
       toggleAgentBot: (id) => {
         set((state) => ({
           agentBots: state.agentBots.map((b) =>
@@ -424,11 +375,11 @@ export const useProtocolStore = create<ProtocolState>()(
         }));
       },
 
-      riskScoreBps: 1200,
-      setRiskScoreBps: (score) => set({ riskScoreBps: score }),
+      riskScoreBps: 0,
+      setRiskScoreBps: (score: number) => set({ riskScoreBps: score }),
     }),
     {
-      name: 'kudex-protocol-v3',
+      name: 'kudex-protocol-v4',
     }
   )
 );

@@ -19,7 +19,7 @@ import {
 } from 'react-icons/fi';
 import { RiExchangeFundsLine, RiShieldCheckLine, RiBankCardLine } from 'react-icons/ri';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
-import { formatUnits } from 'viem';
+import { formatUnits, zeroAddress } from 'viem';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
 import { truncateAddress } from '@/lib/utils';
@@ -68,23 +68,24 @@ export default function OverviewPage() {
     positions.mezzanine.depositedAmount +
     positions.junior.depositedAmount;
 
-  const displayTVL = totalAssetsRaw
-    ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString()}`
-    : userVaultTotal > 0
-    ? `$${userVaultTotal.toLocaleString()}`
-    : '$24,850,000';
+  const displayTVL =
+    totalAssetsRaw && CONTRACT_ADDRESSES.vault !== zeroAddress
+      ? `$${Number(formatUnits(totalAssetsRaw, 6)).toLocaleString()}`
+      : userVaultTotal > 0
+      ? `$${userVaultTotal.toLocaleString()}`
+      : '$0.00';
 
   const storeVolume = orders
     .filter((o) => o.status === 'FILLED')
-    .reduce((sum, o) => sum + parseFloat(o.makerAmount.replace(/,/g, '')), 0);
+    .reduce((sum, o) => sum + parseFloat(o.makerAmount.replace(/,/g, '') || '0'), 0);
 
-  const displayVolume =
-    storeVolume > 0
-      ? `$${(142600000 + storeVolume).toLocaleString()}`
-      : '$142,600,000';
+  const displayVolume = storeVolume > 0 ? `$${storeVolume.toLocaleString()}` : '$0.00';
 
   const riskScoreNum = riskScoreRaw ? Number(riskScoreRaw) : riskScoreBps;
-  const healthFactor = (10000 / Math.max(riskScoreNum, 1000)).toFixed(2);
+  const healthFactor =
+    riskScoreNum > 0 ? `${(10000 / Math.max(riskScoreNum, 1000)).toFixed(2)}x` : '--';
+  const displayShielded =
+    userShieldedTotal > 0 ? `$${userShieldedTotal.toLocaleString()}` : '$0.00';
 
   return (
     <div className="space-y-10">
@@ -246,7 +247,7 @@ export default function OverviewPage() {
             <FiActivity className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-3xl font-extrabold font-mono text-emerald-600 dark:text-[#00E599] tabular-nums">
-            {healthFactor}x
+            {healthFactor}
           </div>
           <p className="text-xs text-muted-foreground">
             Dynamic debt restructuring active
@@ -259,7 +260,7 @@ export default function OverviewPage() {
             <FiLock className="w-4 h-4 text-primary" />
           </div>
           <div className="text-3xl font-extrabold font-mono text-foreground tabular-nums">
-            ${(userShieldedTotal > 0 ? userShieldedTotal : 8420000).toLocaleString()}
+            {displayShielded}
           </div>
           <p className="text-xs text-muted-foreground">
             Zero plaintext metadata leakage

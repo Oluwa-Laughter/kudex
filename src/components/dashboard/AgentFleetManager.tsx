@@ -31,7 +31,7 @@ export function AgentFleetManager() {
   const [showDeployModal, setShowDeployModal] = useState(false);
   const [newBotName, setNewBotName] = useState('');
   const [newBotStrategy, setNewBotStrategy] = useState<'DCA' | 'ARBITRAGE' | 'SOLVENCY_REBALANCE' | 'PAYROLL'>('DCA');
-  const [newBotBudget, setNewBotBudget] = useState('500');
+  const [newBotBudget, setNewBotBudget] = useState('');
   const [newBotInterval, setNewBotInterval] = useState('Every 4 hours');
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -41,29 +41,69 @@ export function AgentFleetManager() {
   };
 
   const handleTriggerRun = (bot: AgentBot) => {
-    triggerAgentBotRun(bot.id);
     if (bot.strategy === 'DCA') {
-      executeSwap('pUSD', 'POT', 50, 1.20);
-      showNotification(`Executed scheduled DCA order: 50 pUSD → 1.20 POT (Zero slippage)!`);
-    } else if (bot.strategy === 'ARBITRAGE') {
-      executeSwap('POT', 'pUSD', 10, 428.50);
-      showNotification(`Arbitrage captured: Substrate Shard 0 ↔ Revive EVM (+11.90 pUSD profit)!`);
+      const balance = balances['pUSD'] || 0;
+      if (balance <= 0) {
+        showNotification(`Agent execution paused: Insufficient pUSD balance (Current: ${balance}). Fund wallet to run DCA.`);
+        return;
+      }
+      const tradeAmount = Math.min(balance, bot.dailyBudget || 10);
+      const estReceived = tradeAmount * 0.024;
+      executeSwap('pUSD', 'POT', tradeAmount, estReceived);
+      triggerAgentBotRun(bot.id);
+      showNotification(`Executed scheduled DCA order: ${tradeAmount} pUSD → ${estReceived.toFixed(4)} POT.`);
     } else if (bot.strategy === 'SOLVENCY_REBALANCE') {
-      depositToVault('senior', 100);
-      showNotification(`Solvency Sentinel rebalanced: Senior AAA tranche capital safeguarded (Hf = 1.38)!`);
+      const balance = balances['pUSD'] || 0;
+      if (balance <= 0) {
+        showNotification(`Solvency Sentinel paused: Insufficient pUSD balance to rebalance.`);
+        return;
+      }
+      const rebalanceAmount = Math.min(balance, 50);
+      depositToVault('senior', rebalanceAmount);
+      triggerAgentBotRun(bot.id);
+      showNotification(`Solvency Sentinel rebalanced: ${rebalanceAmount} pUSD deployed to senior AAA tranche.`);
     } else {
-      showNotification(`${bot.name} executed batch transaction successfully!`);
+      triggerAgentBotRun(bot.id);
+      showNotification(`${bot.name} routine executed successfully.`);
     }
   };
 
   const handleDeployNewBot = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newBotName.trim()) return;
+    if (!newBotName.trim()) {
+      showNotification('Please specify an agent name.');
+      return;
+    }
+    const budget = parseFloat(newBotBudget);
+    if (!budget || budget <= 0) {
+      showNotification('Please enter a valid daily budget in pUSD.');
+      return;
+    }
 
     setIsDeploying(true);
     setTimeout(() => {
       setIsDeploying(false);
       setShowDeployModal(false);
+
+      const newBot: AgentBot = {
+        id: `bot-${Date.now().toString().slice(-4)}`,
+        name: newBotName,
+        role: strategyDescriptions[newBotStrategy],
+        strategy: newBotStrategy,
+        status: 'RUNNING',
+        dailyBudget: budget,
+        spentToday: 0,
+        lastRunTimestamp: Date.now(),
+        totalProfitOrVolume: 0,
+        interval: newBotInterval,
+      };
+
+      useProtocolStore.setState((state) => ({
+        agentBots: [newBot, ...state.agentBots],
+      }));
+
+      setNewBotName('');
+      setNewBotBudget('');
       showNotification(`New agent "${newBotName}" deployed to Portaldot 3.0 execution network!`);
       setNewBotName('');
     }, 800);
@@ -170,6 +210,7 @@ export function AgentFleetManager() {
                     type="number"
                     value={newBotBudget}
                     onChange={(e) => setNewBotBudget(e.target.value)}
+                    placeholder="e.g. 500"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] text-sm text-slate-900 dark:text-white outline-none font-bold"
                   />
                 </div>
@@ -191,7 +232,7 @@ export function AgentFleetManager() {
               </div>
 
               <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs text-slate-500 dark:text-neutral-400">
-                A bounded PolicyRegistry key will be issued with a strict maximum of ${newBotBudget} pUSD/day. The agent cannot withdraw principal.
+                A bounded PolicyRegistry key will be issued with a strict maximum of ${newBotBudget || '0'} pUSD/day. The agent cannot withdraw principal.
               </div>
 
               <div className="flex justify-end gap-3 pt-2">
@@ -223,107 +264,130 @@ export function AgentFleetManager() {
       )}
 
       {/* Grid of Active Agent Bots */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {agentBots.map((bot) => (
-          <div
-            key={bot.id}
-            className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-md space-y-5 flex flex-col justify-between"
+      {agentBots.length === 0 ? (
+        <div className="p-12 text-center rounded-2xl border border-dashed border-slate-300 dark:border-[#21293D] bg-white dark:bg-[#0E121B] space-y-4">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] flex items-center justify-center">
+            <FiCpu className="w-7 h-7" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              No Autonomous Bots Deployed Yet
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-neutral-400 max-w-md mx-auto">
+              Your autonomous execution fleet is ready. Deploy your first agent bot to automate DCA schedules, capture arbitrage, or manage vault solvency under cryptographic session keys.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowDeployModal(true)}
+            className="px-5 py-2.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition"
           >
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#21293D]">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599]">
-                    <FiCpu className="w-5 h-5" />
+            Deploy First Agent
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {agentBots.map((bot) => (
+            <div
+              key={bot.id}
+              className="p-6 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-md space-y-5 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#21293D]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-[#00E599]">
+                      <FiCpu className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                        {bot.name}
+                      </h3>
+                      <span className="text-[11px] font-mono text-slate-500 dark:text-neutral-400">
+                        ID: {bot.id} • {bot.interval}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                      {bot.name}
-                    </h3>
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-neutral-400">
-                      ID: {bot.id} • {bot.interval}
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${
+                      bot.status === 'RUNNING'
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-[#00E599] border border-emerald-500/30'
+                        : 'bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400'
+                    }`}
+                  >
+                    {bot.status}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-neutral-400 mt-3 leading-relaxed">
+                  {strategyDescriptions[bot.strategy] || bot.role}
+                </p>
+
+                {/* Progress & Metrics */}
+                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1c2438] grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-100 dark:border-[#21293D]">
+                    <span className="text-slate-500 dark:text-neutral-400 block text-[11px]">Daily Budget</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
+                      ${bot.spentToday} / ${bot.dailyBudget}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-100 dark:border-[#21293D]">
+                    <span className="text-slate-500 dark:text-neutral-400 block text-[11px]">Cumulative Volume / Yield</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-[#00E599] text-sm">
+                      ${bot.totalProfitOrVolume.toLocaleString()}
                     </span>
                   </div>
                 </div>
 
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-bold font-mono ${
-                    bot.status === 'RUNNING'
-                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-[#00E599] border border-emerald-500/30'
-                      : 'bg-slate-100 dark:bg-[#161C2B] text-slate-600 dark:text-neutral-400'
-                  }`}
+                {/* Budget Progress Bar */}
+                <div className="mt-3 space-y-1">
+                  <div className="w-full bg-slate-100 dark:bg-[#161C2B] h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-[#00E599] h-full rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, (bot.spentToday / bot.dailyBudget) * 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[11px] font-mono text-slate-400">
+                    <span>Last run: {new Date(bot.lastRunTimestamp).toLocaleTimeString()}</span>
+                    <span>{((bot.spentToday / bot.dailyBudget) * 100).toFixed(0)}% used</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 pt-3 border-t border-slate-100 dark:border-[#1c2438]">
+                <button
+                  type="button"
+                  onClick={() => toggleAgentBot(bot.id)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#21293D] hover:bg-slate-100 dark:hover:bg-[#161C2B] font-bold text-xs text-slate-700 dark:text-neutral-300 transition flex items-center justify-center gap-1.5"
                 >
-                  {bot.status}
-                </span>
-              </div>
+                  {bot.status === 'RUNNING' ? (
+                    <>
+                      <FiPause className="w-3.5 h-3.5" />
+                      <span>Pause Bot</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiPlay className="w-3.5 h-3.5" />
+                      <span>Resume Bot</span>
+                    </>
+                  )}
+                </button>
 
-              <p className="text-xs text-slate-600 dark:text-neutral-400 mt-3 leading-relaxed">
-                {strategyDescriptions[bot.strategy] || bot.role}
-              </p>
-
-              {/* Progress & Metrics */}
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-[#1c2438] grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-100 dark:border-[#21293D]">
-                  <span className="text-slate-500 dark:text-neutral-400 block text-[11px]">Daily Budget</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
-                    ${bot.spentToday} / ${bot.dailyBudget}
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#161C2B] border border-slate-100 dark:border-[#21293D]">
-                  <span className="text-slate-500 dark:text-neutral-400 block text-[11px]">Cumulative Volume / Yield</span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-[#00E599] text-sm">
-                    ${bot.totalProfitOrVolume.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Budget Progress Bar */}
-              <div className="mt-3 space-y-1">
-                <div className="w-full bg-slate-100 dark:bg-[#161C2B] h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-[#00E599] h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(100, (bot.spentToday / bot.dailyBudget) * 100)}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-[11px] font-mono text-slate-400">
-                  <span>Last run: {new Date(bot.lastRunTimestamp).toLocaleTimeString()}</span>
-                  <span>{((bot.spentToday / bot.dailyBudget) * 100).toFixed(0)}% used</span>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => handleTriggerRun(bot)}
+                  disabled={bot.status !== 'RUNNING'}
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-[#00E599] border border-emerald-500/30 font-bold text-xs transition flex items-center justify-center gap-1.5 disabled:opacity-40"
+                >
+                  <FiZap className="w-3.5 h-3.5" />
+                  <span>Trigger Run Now</span>
+                </button>
               </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3 pt-3 border-t border-slate-100 dark:border-[#1c2438]">
-              <button
-                type="button"
-                onClick={() => toggleAgentBot(bot.id)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#21293D] hover:bg-slate-100 dark:hover:bg-[#161C2B] font-bold text-xs text-slate-700 dark:text-neutral-300 transition flex items-center justify-center gap-1.5"
-              >
-                {bot.status === 'RUNNING' ? (
-                  <>
-                    <FiPause className="w-3.5 h-3.5" />
-                    <span>Pause Bot</span>
-                  </>
-                ) : (
-                  <>
-                    <FiPlay className="w-3.5 h-3.5" />
-                    <span>Resume Bot</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleTriggerRun(bot)}
-                disabled={bot.status !== 'RUNNING'}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-[#00E599] border border-emerald-500/30 font-bold text-xs transition flex items-center justify-center gap-1.5 disabled:opacity-40"
-              >
-                <FiZap className="w-3.5 h-3.5" />
-                <span>Trigger Run Now</span>
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
