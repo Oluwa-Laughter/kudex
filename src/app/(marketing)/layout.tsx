@@ -64,13 +64,10 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           <nav aria-label="Resources">
             <p className="mb-3 font-semibold">Get started</p>
             <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-              <Link href="/how-it-works">User guide</Link>
-              <a href="/kudex-quickstart.md" download>
-                Download quickstart
-              </a>
-              <Link href="/app/overview">Product workspace</Link>
-              <Link href="/docs">Developer reference</Link>
-              <Link href="/pricing">Proposed pricing</Link>
+              <Link href="/how-it-works">How It Works</Link>
+              <Link href="/solutions/credit-tranches">Credit Tranches</Link>
+              <Link href="/solutions/enterprise-payroll">Enterprise Payroll</Link>
+              <Link href="/app/overview">Product Workspace</Link>
             </div>
           </nav>
         </div>

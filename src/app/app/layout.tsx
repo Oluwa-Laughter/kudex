@@ -24,24 +24,23 @@ import { ConnectWalletButton } from '@/components/navigation/ConnectWalletButton
 
 export const APP_NAV_ITEMS = [
   { name: 'Overview', href: '/app/overview', icon: FiGrid },
-  { name: 'Public vault', href: '/app/vaults', icon: FiLayers },
-  { name: 'RFQ trading', href: '/app/marketplace', icon: FiRepeat },
-  { name: 'Agents', href: '/app/agents', icon: FiCpu },
-  { name: 'Pool protection', href: '/app/protection', icon: FiShield },
-  { name: 'User guide', href: '/app/how-it-works', icon: FiBookOpen },
+  { name: 'Credit Vaults', href: '/app/vaults', icon: FiLayers },
+  { name: 'RFQ Solver Desk', href: '/app/marketplace', icon: FiRepeat },
+  { name: 'Confidential Settlement', href: '/app/settlement', icon: FiSend },
+  { name: 'Autonomous Agents', href: '/app/agents', icon: FiCpu },
+  { name: 'Solvency Risk Matrix', href: '/app/protection', icon: FiShield },
+  { name: 'Audit & Viewing Keys', href: '/app/compliance', icon: FiFileText },
+  { name: 'Bridge Gateway', href: '/app/bridge', icon: FiGlobe },
+  { name: 'How It Works', href: '/app/how-it-works', icon: FiBookOpen },
 ];
-const upcoming = [
-  { name: 'Private settlement', href: '/app/settlement', icon: FiSend },
-  { name: 'Bridge', href: '/app/bridge', icon: FiGlobe },
-  { name: 'Audit & disclosure', href: '/app/compliance', icon: FiFileText },
-];
+
 export default function AppWorkspaceLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobile, setMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   function navigation(compact = false) {
     return (
-      <div className="flex h-full flex-col gap-7 p-4">
+      <div className="flex h-full flex-col gap-6 p-4">
         <div className="px-2 py-3">
           {compact ? (
             <Link
@@ -55,7 +54,7 @@ export default function AppWorkspaceLayout({ children }: { children: React.React
             <Logo size="sm" />
           )}
         </div>
-        <nav aria-label="Workspace" className="space-y-2">
+        <nav aria-label="Workspace" className="space-y-1.5 overflow-y-auto pr-1">
           {APP_NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -64,37 +63,13 @@ export default function AppWorkspaceLayout({ children }: { children: React.React
               title={compact ? item.name : undefined}
               aria-label={compact ? item.name : undefined}
               aria-current={pathname === item.href ? 'page' : undefined}
-              className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors duration-150 ${compact ? 'justify-center' : ''} ${pathname === item.href ? 'bg-secondary text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors duration-150 ${compact ? 'justify-center' : ''} ${pathname === item.href ? 'bg-secondary text-primary font-bold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
             >
-              <item.icon size={19} aria-hidden="true" />
+              <item.icon size={18} aria-hidden="true" />
               {!compact && item.name}
             </Link>
           ))}
         </nav>
-        {!compact && (
-          <details
-            className="border-t border-border pt-4"
-            open={upcoming.some((item) => item.href === pathname) || undefined}
-          >
-            <summary className="min-h-11 px-3 text-sm text-muted-foreground">
-              In development
-            </summary>
-            <nav aria-label="Upcoming workflows" className="space-y-1">
-              {upcoming.map((item) => (
-                <Link
-                  className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-muted-foreground hover:bg-muted"
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobile(false)}
-                  aria-current={pathname === item.href ? 'page' : undefined}
-                >
-                  <item.icon aria-hidden="true" />
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-          </details>
-        )}
         <div className="mt-auto">
           {!compact && (
             <div className="rounded-2xl bg-secondary p-4">
