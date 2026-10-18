@@ -324,14 +324,14 @@ export default function OverviewPage() {
                 <FiRepeat className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                Agent-Native RFQ Solvers
+                Instant Swap & Fiat Ramps
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Formulate off-chain quotes and settle block-atomically on Portaldot. Immunized against front-running and sandwich attacks with bounded slippage tolerance.
+                Simple 1-click token swaps, instant fiat on-ramps via card or bank wire, and confidential off-ramps to bank accounts with zero balance leakage.
               </p>
             </div>
             <div className="pt-2 flex items-center gap-2 text-sm font-bold text-primary">
-              <span>Trade RFQ Market</span>
+              <span>Trade & Ramp Now</span>
               <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>

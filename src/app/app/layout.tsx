@@ -25,7 +25,7 @@ import { ConnectWalletButton } from '@/components/navigation/ConnectWalletButton
 export const APP_NAV_ITEMS = [
   { name: 'Overview', href: '/app/overview', icon: FiGrid },
   { name: 'Credit Vaults', href: '/app/vaults', icon: FiLayers },
-  { name: 'RFQ Solver Desk', href: '/app/marketplace', icon: FiRepeat },
+  { name: 'Swap & Ramps', href: '/app/marketplace', icon: FiRepeat },
   { name: 'Confidential Settlement', href: '/app/settlement', icon: FiSend },
   { name: 'Autonomous Agents', href: '/app/agents', icon: FiCpu },
   { name: 'Solvency Risk Matrix', href: '/app/protection', icon: FiShield },

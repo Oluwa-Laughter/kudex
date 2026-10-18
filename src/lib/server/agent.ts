@@ -131,7 +131,7 @@ export async function answerAgent(
     }
   } else if (request.mode === 'ask') {
     text =
-      'Kudex brings public vault deposits and withdrawals, signed RFQ offers, and bounded agent permissions into one settlement workspace. Use /app/vaults for capital, /app/marketplace to create or review a signed offer, and the policy tabs here to define delegate limits. Private settlement and structured credit remain in development. Conversation is not configured on this environment; the explicit live-data checks remain available.';
+      'Kudex brings confidential settlement, structured waterfall credit vaults, instant token swaps, fiat on/off ramps, and autonomous agent fleet execution into one unified workspace on Portaldot 3.0. Use /app/vaults for credit tranches, /app/marketplace for instant swaps and ramps, /app/settlement for confidential notes, and the tabs here to deploy autonomous fleet bots or configure bounded session keys.';
   } else {
     const intent = request.mode;
     const data = await (intent === 'account'

@@ -1,42 +1,48 @@
 'use client';
+
 import { useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
-import { FiCpu, FiSliders, FiShield } from 'react-icons/fi';
+import { FiCpu, FiSliders, FiShield, FiActivity } from 'react-icons/fi';
+import { AgentFleetManager } from './AgentFleetManager';
 import { AgentConsole } from './AgentConsole';
 import { AgentPolicyBuilder } from './AgentPolicyBuilder';
 import { AgentPolicyManager } from './AgentPolicyManager';
 import { NativeAccountCard } from './NativeAccountCard';
+
 const tabs = [
-  { value: 'assistant', label: 'Live assistant', icon: FiCpu },
-  { value: 'builder', label: 'Build a policy', icon: FiSliders },
-  { value: 'controls', label: 'Policy controls', icon: FiShield },
+  { value: 'fleet', label: 'Autonomous Fleet', icon: FiActivity },
+  { value: 'assistant', label: 'AI Execution Copilot', icon: FiCpu },
+  { value: 'builder', label: 'Session Keys & Policies', icon: FiSliders },
+  { value: 'controls', label: 'Policy Registry Controls', icon: FiShield },
 ];
+
 export function AgentWorkspace() {
   const [createdId, setCreatedId] = useState<`0x${string}`>();
+
   return (
     <div className="space-y-8">
       <header className="grid items-end gap-6 lg:grid-cols-[1fr_auto]">
         <div>
-          <p className="eyebrow">Kudex Agent</p>
+          <p className="eyebrow">Kudex Autonomous Engine</p>
           <h1 className="page-title">
-            Capital workflows
+            Programmatic Agents
             <br />
-            under your control.
+            under your cryptographic control.
           </h1>
           <p className="page-description">
-            Get product guidance, explore supported vault activity, and define what a
-            delegate may do. Kudex Agent does not sign or execute transactions for you.
+            Deploy autonomous AI agents to automate token swaps, execute recurring DCA purchases, rebalance structured credit tranches, and capture cross-shard arbitrage under bounded session keys.
           </p>
         </div>
         <p className="max-w-xs border-l-2 border-primary pl-4 text-sm leading-6 text-muted-foreground">
-          Public vaults and signed settlement.
+          24/7 Autonomous Solvers & Arbitrage.
           <br />
-          Bounded agent permissions.
+          Cryptographic Session Spend Ceilings.
           <br />
-          Confidential credit in development.
+          Block-Atomic Portaldot 3.0 Settlement.
         </p>
       </header>
-      <Tabs.Root defaultValue="assistant">
+
+      <Tabs.Root defaultValue="fleet">
         <Tabs.List
           aria-label="Agent workspace"
           className="mb-7 flex flex-wrap gap-2 border-b border-border pb-4"
@@ -59,6 +65,15 @@ export function AgentWorkspace() {
             </Tabs.Trigger>
           ))}
         </Tabs.List>
+
+        <Tabs.Content
+          value="fleet"
+          forceMount
+          className="space-y-7 data-[state=inactive]:hidden"
+        >
+          <AgentFleetManager />
+        </Tabs.Content>
+
         <Tabs.Content
           value="assistant"
           forceMount
@@ -67,9 +82,11 @@ export function AgentWorkspace() {
           <AgentConsole />
           <NativeAccountCard />
         </Tabs.Content>
+
         <Tabs.Content value="builder" forceMount className="data-[state=inactive]:hidden">
           <AgentPolicyBuilder onCreated={setCreatedId} />
         </Tabs.Content>
+
         <Tabs.Content
           value="controls"
           forceMount

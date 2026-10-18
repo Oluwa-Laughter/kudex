@@ -25,9 +25,9 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Kudex | A clearer way to settle on Portaldot',
+  title: 'Kudex | Confidential Settlement & Autonomous Finance on Portaldot 3.0',
   description:
-    'Explore Kudex: public testnet vaults today, with bounded agents and confidential settlement in development on Portaldot.',
+    'Confidential settlement, structured waterfall credit facilities, instant token swaps, fiat ramps, and autonomous agent fleet on Portaldot 3.0 Revive.',
   icons: {
     icon: '/logo.svg',
   },

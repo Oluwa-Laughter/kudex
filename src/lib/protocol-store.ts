@@ -71,11 +71,48 @@ export interface ViewingKey {
   status: 'ACTIVE' | 'REVOKED';
 }
 
+export interface RampTransaction {
+  id: string;
+  type: 'ON_RAMP' | 'OFF_RAMP';
+  fiatCurrency: string;
+  fiatAmount: number;
+  cryptoAsset: string;
+  cryptoAmount: number;
+  paymentMethod: string;
+  destinationAddress: string;
+  status: 'COMPLETED' | 'PROCESSING' | 'PENDING';
+  timestamp: number;
+  txHash: string;
+  complianceReceipt?: string;
+}
+
+export interface AgentBot {
+  id: string;
+  name: string;
+  role: string;
+  strategy: 'DCA' | 'ARBITRAGE' | 'SOLVENCY_REBALANCE' | 'PAYROLL';
+  status: 'RUNNING' | 'PAUSED';
+  dailyBudget: number;
+  spentToday: number;
+  lastRunTimestamp: number;
+  totalProfitOrVolume: number;
+  interval: string;
+}
+
 interface ProtocolState {
+  // Balances
+  balances: Record<string, number>;
+  updateBalance: (asset: string, delta: number) => void;
+  executeSwap: (fromAsset: string, toAsset: string, fromAmount: number, toAmount: number) => ProtocolOrder;
+
   // Orders
   orders: ProtocolOrder[];
   addOrder: (order: Omit<ProtocolOrder, 'id' | 'timestamp'>) => ProtocolOrder;
   updateOrderStatus: (id: string, status: ProtocolOrder['status'], txHash?: string) => void;
+
+  // Ramps
+  rampTransactions: RampTransaction[];
+  addRampTransaction: (tx: Omit<RampTransaction, 'id' | 'timestamp'>) => RampTransaction;
 
   // Shielded Notes
   notes: ShieldedNote[];
@@ -95,6 +132,11 @@ interface ProtocolState {
   bridgeTransfers: BridgeTransfer[];
   addBridgeTransfer: (transfer: Omit<BridgeTransfer, 'id' | 'timestamp'>) => BridgeTransfer;
 
+  // Agent Fleet
+  agentBots: AgentBot[];
+  toggleAgentBot: (id: string) => void;
+  triggerAgentBotRun: (id: string) => void;
+
   // Agent Policies
   agentPolicies: AgentPolicy[];
   addAgentPolicy: (policy: Omit<AgentPolicy, 'id' | 'createdTimestamp' | 'spent' | 'executedActions' | 'lastAction'>) => AgentPolicy;
@@ -113,6 +155,41 @@ interface ProtocolState {
 export const useProtocolStore = create<ProtocolState>()(
   persist(
     (set, get) => ({
+      // Portfolio Balances
+      balances: {
+        pUSD: 10000,
+        POT: 250,
+        wPOT: 120,
+        USDT: 5000,
+        ETH: 2.5,
+      },
+      updateBalance: (asset, delta) => {
+        set((state) => {
+          const current = state.balances[asset] ?? 0;
+          return {
+            balances: {
+              ...state.balances,
+              [asset]: Math.max(0, parseFloat((current + delta).toFixed(4))),
+            },
+          };
+        });
+      },
+      executeSwap: (fromAsset, toAsset, fromAmount, toAmount) => {
+        get().updateBalance(fromAsset, -fromAmount);
+        get().updateBalance(toAsset, toAmount);
+        const order = get().addOrder({
+          makerAsset: fromAsset,
+          takerAsset: toAsset,
+          makerAmount: fromAmount.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+          takerAmount: toAmount.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+          status: 'FILLED',
+          solver: '0x71Ae48...390b (Kudex Instant Solver)',
+          txHash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`,
+          type: 'FOK',
+        });
+        return order;
+      },
+
       orders: [],
       addOrder: (newOrder) => {
         const order: ProtocolOrder = {
@@ -129,6 +206,23 @@ export const useProtocolStore = create<ProtocolState>()(
             o.id === id ? { ...o, status, ...(txHash ? { txHash } : {}) } : o
           ),
         }));
+      },
+
+      // Ramps
+      rampTransactions: [],
+      addRampTransaction: (newTx) => {
+        const item: RampTransaction = {
+          ...newTx,
+          id: `rmp-${Date.now().toString().slice(-4)}`,
+          timestamp: Date.now(),
+        };
+        if (newTx.type === 'ON_RAMP') {
+          get().updateBalance(newTx.cryptoAsset, newTx.cryptoAmount);
+        } else {
+          get().updateBalance(newTx.cryptoAsset, -newTx.cryptoAmount);
+        }
+        set((state) => ({ rampTransactions: [item, ...state.rampTransactions] }));
+        return item;
       },
 
       notes: [],
@@ -214,6 +308,81 @@ export const useProtocolStore = create<ProtocolState>()(
         };
         set((state) => ({ bridgeTransfers: [item, ...state.bridgeTransfers] }));
         return item;
+      },
+
+      // Agent Fleet
+      agentBots: [
+        {
+          id: 'bot-1',
+          name: 'Kudex DCA Accumulator',
+          role: 'Auto-buys POT using pUSD on dips with zero slippage',
+          strategy: 'DCA',
+          status: 'RUNNING',
+          dailyBudget: 500,
+          spentToday: 125,
+          lastRunTimestamp: Date.now() - 3600000 * 2,
+          totalProfitOrVolume: 2450,
+          interval: 'Every 6 hours',
+        },
+        {
+          id: 'bot-2',
+          name: 'Cross-Shard Revive Arbitrageur',
+          role: 'Captures price differentials across Portaldot Native & Revive EVM',
+          strategy: 'ARBITRAGE',
+          status: 'RUNNING',
+          dailyBudget: 2000,
+          spentToday: 680,
+          lastRunTimestamp: Date.now() - 900000,
+          totalProfitOrVolume: 412.5,
+          interval: 'Block-atomic',
+        },
+        {
+          id: 'bot-3',
+          name: 'Waterfall Solvency Sentinel',
+          role: 'Rebalances tranches dynamically to guarantee Senior protection (Hf > 1.30)',
+          strategy: 'SOLVENCY_REBALANCE',
+          status: 'RUNNING',
+          dailyBudget: 10000,
+          spentToday: 0,
+          lastRunTimestamp: Date.now() - 7200000,
+          totalProfitOrVolume: 890,
+          interval: 'Continuous Hf audit',
+        },
+        {
+          id: 'bot-4',
+          name: 'Confidential Payroll Disperser',
+          role: 'Automated streaming of shielded pUSD notes to employee viewing keys',
+          strategy: 'PAYROLL',
+          status: 'PAUSED',
+          dailyBudget: 15000,
+          spentToday: 0,
+          lastRunTimestamp: Date.now() - 86400000 * 5,
+          totalProfitOrVolume: 12500,
+          interval: '1st of every month',
+        },
+      ],
+      toggleAgentBot: (id) => {
+        set((state) => ({
+          agentBots: state.agentBots.map((b) =>
+            b.id === id
+              ? { ...b, status: b.status === 'RUNNING' ? ('PAUSED' as const) : ('RUNNING' as const) }
+              : b
+          ),
+        }));
+      },
+      triggerAgentBotRun: (id) => {
+        set((state) => ({
+          agentBots: state.agentBots.map((b) => {
+            if (b.id !== id) return b;
+            const executedAmt = Math.min(50, Math.max(10, b.dailyBudget - b.spentToday));
+            return {
+              ...b,
+              spentToday: b.spentToday + executedAmt,
+              totalProfitOrVolume: b.totalProfitOrVolume + executedAmt,
+              lastRunTimestamp: Date.now(),
+            };
+          }),
+        }));
       },
 
       agentPolicies: [],

@@ -178,9 +178,9 @@ export default function HomePage() {
             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
               <FiRepeat className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-foreground">Agent-Native RFQ</h3>
+            <h3 className="text-lg font-bold text-foreground">Instant Swaps & Fiat Ramps</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Programmatic solvers formulate quotes off-chain with atomic on-chain execution under strict cryptographic session keys with zero wallet popups.
+              Simple 1-click token swaps, direct bank on/off ramps with confidential compliance receipts, and autonomous agent bots trading 24/7.
             </p>
           </div>
 

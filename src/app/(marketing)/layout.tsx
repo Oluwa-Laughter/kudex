@@ -56,9 +56,9 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           <nav aria-label="Product">
             <p className="mb-3 font-semibold">Explore Kudex</p>
             <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-              <Link href="/app/vaults">Public vault</Link>
-              <Link href="/marketplace">RFQ trading</Link>
-              <Link href="/solutions/autonomous-agents">Bounded agents</Link>
+              <Link href="/app/vaults">Structured Credit Vaults</Link>
+              <Link href="/app/marketplace">Instant Swaps & Fiat Ramps</Link>
+              <Link href="/solutions/autonomous-agents">Autonomous Agents</Link>
             </div>
           </nav>
           <nav aria-label="Resources">
@@ -72,8 +72,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
         <p className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
-          Kudex · Built for Portaldot · Deposits are public. Private settlement is in
-          development.
+          Kudex · Confidential Settlement, Structured Waterfall Credit & Autonomous Agent Economy on Portaldot 3.0.
         </p>
       </footer>
     </div>
