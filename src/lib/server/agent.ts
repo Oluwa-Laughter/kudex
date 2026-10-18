@@ -12,13 +12,16 @@ import type { ChatRequest } from '@/lib/agent/request';
 import type { AgentEvidence, AgentReply } from '@/lib/agent/types';
 
 export function agentAvailability() {
+  const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
+  // Valid Google AI Studio keys start with AIzaSy
+  const hasValidKey = Boolean(key && key.startsWith('AIzaSy'));
   return {
     modelAvailable: Boolean(
-      process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim() &&
+      hasValidKey &&
       process.env.KUDEX_AI_MODEL?.trim(),
     ),
     provider: 'Google AI Studio',
-    model: process.env.KUDEX_AI_MODEL?.trim() || null,
+    model: process.env.KUDEX_AI_MODEL?.trim() || 'gemini-1.5-flash',
     liveChecks: true,
   };
 }
@@ -126,6 +129,10 @@ export async function answerAgent(
       text =
         (await result.text).trim() ||
         'The checks have completed. Review the observations below before taking an action.';
+    } catch (err: unknown) {
+      console.warn('AI conversation provider unauthenticated or stream error, falling back to guided mode:', err);
+      text =
+        'Kudex Copilot is operating in local deterministic mode. Portaldot 3.0 Revive EVM (Chain ID 420420777) is monitored live. You can explore /app/vaults for credit tranches, /app/marketplace for instant swaps and ramps, /app/settlement for confidential notes, or configure autonomous agent session policies.';
     } finally {
       activeConversations--;
     }
