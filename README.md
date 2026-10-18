@@ -1,118 +1,70 @@
-# KUDEX PROTOCOL: AUTONOMOUS CONFIDENTIAL SETTLEMENT & AGENTIC RFQ MARKETPLACE
+# Kudex
 
-Kudex is an autonomous confidential settlement layer and agent-native RFQ marketplace engineered for Portaldot Network V3.0 EVM (Chain ID 8890). The protocol unifies fractionalized Real World Asset (RWA) vaults, client-side Zero-Knowledge commitments, Default-as-a-Service (DaaS) automated debt restructuring, cross-chain solver liquidity, and ERC-7579 zero-popup session key execution.
+Kudex is a Portaldot settlement product in development, with a planned scope covering tokenized credit, signed RFQ trading and bounded agents. Privacy, RWA tranches, bridging and selective disclosure are not implemented production capabilities.
 
----
+The current contract foundation contains a public ERC-4626 vault, an EIP-712 signed-order RFQ router, and an owner-scored risk adapter that can freeze new deposits. The app integrates public vault deposits/withdrawals, gated on verified network and contract configuration. Unsupported workflows display unavailable states rather than simulated success.
 
-## 1. ARCHITECTURAL HIGHLIGHTS
+**Portaldot V3 is now connected:** EVM RPC `https://test-evm-rpc-v3.portaldot.dev`, chain ID `420420777`. Runtime inspection confirms native tPOT uses 14 decimals and the Ethereum interface uses 18. Contract logic passed read-only execution on the live runtime. Contract publication still needs a funded native or EVM signer. See [the activation runbook](docs/PORTALDOT_TESTNET.md).
 
-### 1.1 Portaldot Network V3.0 EVM Native Integration
-- **Chain ID:** 8890
-- **Native Currency:** Portaldot Token (POT)
-- **Token Precision:** Strictly 14 Decimals (1 POT = 10^14 base units)
-- **ERC-20 Stablecoins:** 6 Decimals (pUSD)
-- **Standard Tokens:** 18 Decimals
-- **Arithmetic Safety:** 100% native BigInt arithmetic across both Solidity contracts and TypeScript interfaces. Zero floating-point calculations on on-chain values.
+Read [the implementation review and scaling roadmap](docs/READINESS.md) for security findings, fixes, remaining work and the network compatibility checklist. This is not an independently audited or production-ready protocol.
 
-### 1.2 Confidential ERC-4626 Shielded Vaults (`contracts/src/KudexVault.sol`)
-- Integrates Snarkjs-compatible `Groth16Verifier.sol` for client-side Zero-Knowledge note validation.
-- Emits cryptographic commitment and nullifier events (`NoteShielded`, `NoteSpent`).
-- Tracks on-chain risk score basis points (0 to 10,000) and triggers automated default freezing.
+## Local checks
 
-### 1.3 Agentic RFQ Settlement Router (`contracts/src/KudexRFQMarket.sol`)
-- Atomic settlement router executing intent-centric order matching between takers and solvers.
-- Prevents MEV sandwiching and front-running via off-chain signed orders and single-block atomic fills.
-- Supports order nonces and granular cancellations.
-
-### 1.4 Portaldot Default-as-a-Service (DaaS) Hook (`contracts/src/KudexDaaSAdapter.sol`)
-- Automated credit surveillance monitoring RWA collateral ratios and solvency health factors.
-- Triggers algorithmic liquidation cascades and debt restructuring when risk scores exceed the 8,500 bps threshold.
-
-### 1.5 Autonomous Agent Copilot & Generative UI
-- Decomposes natural language commands into type-safe EVM calldata via Vercel AI SDK streaming endpoints.
-- Pre-Flight invariant simulator evaluates state diffs, spend ceilings, and reentrancy vectors before transaction submission.
-- Dynamically streams interactive execution cards: `RFQQuoteCard`, `PreFlightSimCard`, and `ShieldReceiptCard`.
-
----
-
-## 2. REPOSITORY REPOSITORY TOPOLOGY
-
-```
-kudex/
-├── .antigravityrules        # Strict engineering directives & rules
-├── README.md                # System documentation
-├── contracts/
-│   ├── foundry.toml         # Foundry configuration (solc 0.8.24, Cancun EVM)
-│   ├── src/
-│   │   ├── KudexVault.sol   # ERC-4626 Shielded Pool + ZK Verifier
-│   │   ├── KudexRFQMarket.sol # Agent RFQ Atomic Settlement Router
-│   │   ├── KudexDaaSAdapter.sol # Portaldot Default-as-a-Service Hook
-│   │   └── verifiers/
-│   │       └── Groth16Verifier.sol # Snarkjs-compatible ZK Verifier
-│   └── test/
-│       ├── KudexVault.t.sol
-│       ├── KudexRFQMarket.t.sol
-│       └── KudexDaaSAdapter.t.sol
-├── public/
-│   ├── favicon.ico
-│   ├── logo.svg             # Vector brand logo (Light)
-│   └── logo-dark.svg        # Vector brand logo (Dark)
-└── src/
-    ├── app/
-    │   ├── api/chat/route.ts # Vercel AI SDK Agent Tool Calling Route
-    │   ├── layout.tsx       # Root Layout with Theme & Web3 Providers
-    │   ├── page.tsx         # Enterprise Landing Page
-    │   └── dashboard/
-    │       ├── layout.tsx   # Modulify-Inspired App Shell
-    │       ├── page.tsx     # Main Analytics Terminal & Copilot
-    │       ├── vaults/page.tsx # ERC-4626 Confidential Vaults
-    │       ├── rfq/page.tsx # Solver Orderbook & RFQ Quotes
-    │       └── governance/page.tsx # DAO Sentinel & DaaS Health
-    ├── components/
-    │   ├── brand/
-    │   ├── generative/
-    │   ├── navigation/
-    │   └── dashboard/
-    ├── lib/
-    │   ├── chains/portaldot.ts # Portaldot V3.0 EVM Viem Chain Definition
-    │   ├── wagmi.ts         # Wagmi @latest Config
-    │   ├── sessionKeys.ts   # ERC-7579 Bounded Policy Generators
-    │   ├── simulation.ts    # Pre-Flight State Diff Interceptor
-    │   ├── math.ts          # Type-Safe BigInt Conversion Utilities
-    │   └── utils.ts
-    └── types/
-        └── index.ts
+```sh
+pnpm install --frozen-lockfile
+pnpm build
+forge test --root contracts
 ```
 
----
+Copy `.env.example` to `.env.local`. The announced network values are included; deployment addresses stay empty until verified. Sign in a wallet or local keystore; do not put keys in public configuration. Run the read-only preflight once configuration is available:
 
-## 3. VERIFICATION & LAUNCH SEQUENCE
-
-### 3.1 Smart Contract Compilation & Test Suite
-Execute the Foundry test suite:
-```bash
-cd contracts
-forge test
-```
-Result: All test suites (`KudexVaultTest`, `KudexRFQMarketTest`, `KudexDaaSAdapterTest`) pass with 100% test coverage.
-
-### 3.2 Frontend Build & TypeScript Link
-From the repository root:
-```bash
-pnpm run build
+```sh
+node --env-file=.env.local scripts/check-network.mjs
 ```
 
-### 3.3 Run Local Development Server
-```bash
-pnpm run dev
-```
-Navigate to `http://localhost:3000` to access the Landing Page or `http://localhost:3000/dashboard` for the Modulify-inspired App Shell.
+Start the application with `pnpm dev`. The workspace is `/app/overview`; public vault actions are at `/app/vaults`. Empty or failed network configuration does not fabricate balances or successful transactions.
 
----
+## Deployment
 
-## 4. STRICT ENGINEERING DIRECTIVES VERIFICATION
-- Ethers.js and Web3.js: Strictly excluded. Powered exclusively by Viem and Wagmi.
-- Numeric Precision: 14 Decimals enforced for POT (`parsePOT`, `formatPOT`). Zero floating-point calculations on Wei or base units.
-- Contract ABIs: Declared using `as const` for strict compile-time TypeScript type inference.
-- UI Design Tokens: Semantic Tailwind utility classes.
-- Iconography: 100% imported from `react-icons`. Zero emojis rendered across the entire codebase.
+The Foundry script accepts an existing collateral token, or an explicitly enabled testnet-only KTEST deployment. A native SS58 deployment preparation helper is also available. It wires the risk adapter as a revocable default controller without transferring vault ownership. Contracts changed during this review require a new deployment.
+
+The live runtime accepts EVM bytecode and passed the read-only diagnostic. Funded publication, wallet signing and final receipt checks are still required. The included verifier is deliberately fail-closed; confidential transfers are disabled.
+
+## Repository
+
+- `contracts/src`: public vault, signed RFQ router, risk adapter and disabled verifier.
+- `contracts/test`: authorization, replay, vault and default regression tests.
+- `src/app`: marketing, developer reference, product workspaces, streamed agent and bounded public read endpoints.
+- `src/lib/contracts`: addresses, ABIs, typed order schema and deployment checks.
+- `scripts/check-network.mjs`: read-only RPC identity and code-presence preflight.
+- `docs/READINESS.md`: product status, security review, architecture and release gates.
+
+## Product guides and bounded agents
+
+Read the [user quickstart](public/kudex-quickstart.md) for wallet readiness, public vault deposits, withdrawals, and draft agent policies. The same guide is available in the product at `/how-it-works` and `/app/how-it-works`.
+
+The refreshed workspace includes native extension account identification, a separate EVM signing connection, explicit transaction review, and a bounded agent policy builder. Native transaction signing in the vault form remains pending. Draft export activates no policy.
+
+The [agent and upgrade runbook](docs/AGENTS_AND_UPGRADES.md) covers the new deposit-only executor, opt-in timelocked policy registry, signing boundaries, and remaining production requirements. The custody vault remains immutable. No new infrastructure has been deployed.
+
+The [UI system and manual acceptance checklist](docs/UI_SYSTEM.md) records typography, interaction rules, motion, and visual checks still required.
+
+See [product scope and delivery gates](docs/PRODUCT_SCOPE.md) for track fit, the architecture diagram, testnet activation, and the indexing/worker work required before scaling traffic. Repository tests and a working UI are not a production scaling certification.
+
+## Live agent workspace
+
+The agent now includes streamed Google AI Studio conversation when configured, live read-only Portaldot tools, finalized native account inspection, and wallet-driven policy authorization/lifecycle controls after deployment. See [Agent setup](docs/AGENT_SETUP.md) for the server-only key/model settings and the exact activation boundaries. A running model does not itself authorize spending.
+
+Run `pnpm agent:check` to discover models available to your Google project, then `pnpm agent:check -- --probe` for a small provider check. The key must be entered locally; no model credential is required for the explicit live network checks.
+
+Recent event scanning now uses a bounded shared server endpoint rather than one independent RPC scan per browser. This reduces per-instance request duplication; durable indexing and global limits remain release gates.
+
+Use the [demo walkthrough](docs/DEMO_WALKTHROUGH.md) to explain the current product in under three minutes.
+
+## Signed offers and product workspaces
+
+The RFQ workspace at `/app/marketplace` now supports maker signing/export, imported-offer review, separate exact approvals, complete atomic fills, cancellation, and allowance removal. It requires a configured router and funded wallet; there is no hosted orderbook or invented solver price feed. See [RFQ settlement](docs/RFQ_SETTLEMENT.md) for the JSON contract and verification boundaries.
+
+Run `pnpm test:rfq` for precision/import/signature checks and `pnpm test:rfq-runtime` for an isolated local-EVM settlement using the actual compiled contracts. Neither command uses user keys or sends a public-network transaction.
+
+Overview and Kudex Agent lead with product workflows. Network readiness supports transaction setup. Pool protection reads the configured vault's administrative risk input and deposit-freeze state through a cached public endpoint; it does not claim debt recovery. `/docs` describes current interfaces, and `/pricing` labels the business model's proposed rates without activating billing or contract fees.

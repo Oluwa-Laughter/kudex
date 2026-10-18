@@ -1,354 +1,83 @@
-'use client';
-
-import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/brand/Logo';
 import { ThemeToggle } from '@/components/brand/ThemeToggle';
-import {
-  FiArrowRight,
-  FiChevronDown,
-  FiLayers,
-  FiShield,
-  FiCpu,
-  FiExternalLink,
-  FiMenu,
-  FiX,
-  FiActivity,
-  FiLock,
-  FiBook,
-} from 'react-icons/fi';
+import { FiArrowUpRight } from 'react-icons/fi';
 
-export default function MarketingLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
-
-  const solutions = [
-    {
-      title: 'Enterprise Payroll',
-      desc: 'Private global disbursements with zero mempool leakage',
-      href: '/solutions/enterprise-payroll',
-      icon: FiLock,
-    },
-    {
-      title: 'Credit Tranches & Solvency',
-      desc: 'Institutional yield pools with algorithmic debt restructuring',
-      href: '/solutions/credit-tranches',
-      icon: FiLayers,
-    },
-    {
-      title: 'Autonomous Agents',
-      desc: 'Solver-driven execution with bounded session spend caps',
-      href: '/solutions/autonomous-agents',
-      icon: FiCpu,
-    },
-  ];
-
+export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#06080D] text-slate-900 dark:text-neutral-100 flex flex-col transition-colors duration-200 selection:bg-[#00E599]/30 selection:text-white">
-      {/* Top Banner Ribbon */}
-      <div className="bg-slate-100 dark:bg-[#0E121B] border-b border-slate-200 dark:border-[#21293D] py-2 px-4 text-center text-xs font-mono text-slate-600 dark:text-neutral-400 transition-colors duration-200">
-        <span className="text-[#00E599] font-bold mr-2">CONFIDENTIAL SETTLEMENT</span>
-        <span>Zero-leakage institutional settlement and autonomous RFQ liquidity</span>
-        <Link
-          href="/app/overview"
-          className="ml-3 inline-flex items-center gap-1 text-[#00E599] hover:underline font-semibold"
-        >
-          <span>Launch Protocol</span>
-          <FiArrowRight className="w-3 h-3" />
-        </Link>
-      </div>
-
-      {/* Main Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 dark:bg-[#06080D]/85 border-b border-slate-200 dark:border-[#21293D] transition-colors duration-200">
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-10">
-            <Logo size="md" />
-
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-neutral-300">
-              {/* Solutions Dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={() => setSolutionsOpen(true)}
-                onMouseLeave={() => setSolutionsOpen(false)}
-              >
-                <button
-                  onClick={() => setSolutionsOpen(!solutionsOpen)}
-                  className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white transition py-2"
-                >
-                  <span>Solutions</span>
-                  <FiChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      solutionsOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
-
-                {solutionsOpen && (
-                  <div className="absolute top-full left-0 w-80 pt-2 z-50">
-                    <div className="rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-2xl p-2.5 backdrop-blur-xl">
-                      {solutions.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setSolutionsOpen(false)}
-                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-[#161C2B] transition group"
-                          >
-                            <div className="p-2 rounded-lg bg-slate-100 dark:bg-[#161C2B] text-[#00E599] group-hover:bg-[#00E599]/15 transition border border-slate-200 dark:border-[#21293D]">
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-slate-900 dark:text-neutral-100 group-hover:text-[#00E599] transition">
-                                {item.title}
-                              </div>
-                              <div className="text-xs text-slate-500 dark:text-neutral-400 leading-snug mt-0.5">
-                                {item.desc}
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Link
-                href="/marketplace"
-                className={`hover:text-slate-900 dark:hover:text-white transition ${
-                  pathname === '/marketplace' ? 'text-[#00E599] font-bold' : ''
-                }`}
-              >
-                Marketplace
-              </Link>
-
-              <Link
-                href="/bridge"
-                className={`hover:text-slate-900 dark:hover:text-white transition ${
-                  pathname === '/bridge' ? 'text-[#00E599] font-bold' : ''
-                }`}
-              >
-                Bridge
-              </Link>
-
-              <Link
-                href="/how-it-works"
-                className={`hover:text-slate-900 dark:hover:text-white transition ${
-                  pathname === '/how-it-works' ? 'text-emerald-500 font-bold' : ''
-                }`}
-              >
-                How It Works
-              </Link>
-            </nav>
-          </div>
-
-          {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-4">
-            <ThemeToggle />
-            <Link
-              href="/app/overview"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#06080D] font-bold text-sm transition shadow-lg shadow-[#00E599]/15 group"
-            >
-              <span>Launch App</span>
-              <FiArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+    <div className="min-h-screen">
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-xl bg-card p-4 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
+      <header className="border-b border-border bg-background">
+        <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-10 lg:px-16">
+          <Logo size="sm" />
+          <nav
+            aria-label="Main navigation"
+            className="order-3 flex w-full gap-6 overflow-x-auto text-sm font-medium sm:order-none sm:w-auto"
+          >
+            <Link className="py-3 hover:text-primary" href="/how-it-works">
+              How it works
             </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex sm:hidden items-center gap-2">
-            <ThemeToggle />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white dark:bg-[#0E121B] border border-slate-200 dark:border-[#21293D] text-slate-700 dark:text-neutral-300"
+            <Link className="py-3 hover:text-primary" href="/marketplace">
+              Trade
+            </Link>
+            <Link
+              className="whitespace-nowrap py-3 hover:text-primary"
+              href="/solutions/autonomous-agents"
             >
-              {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
-            </button>
+              Agents
+            </Link>
+          </nav>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link className="action-link px-3 sm:px-5" href="/app/overview">
+              Open app <FiArrowUpRight aria-hidden="true" />
+            </Link>
           </div>
         </div>
-
-        {/* Mobile Nav Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] px-4 pt-3 pb-6 space-y-3">
-            <div className="text-xs font-mono uppercase text-slate-500 dark:text-neutral-400 px-3 pt-2 font-semibold">
-              Solutions
-            </div>
-            {solutions.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
-              >
-                {item.title}
-              </Link>
-            ))}
-            <div className="border-t border-slate-200 dark:border-[#21293D] my-2" />
-            <Link
-              href="/marketplace"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
-            >
-              Marketplace
-            </Link>
-            <Link
-              href="/bridge"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
-            >
-              Bridge
-            </Link>
-            <Link
-              href="/how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#161C2B]"
-            >
-              How It Works
-            </Link>
-            <div className="pt-2">
-              <Link
-                href="/app/overview"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#00E599] text-[#06080D] font-bold text-sm"
-              >
-                <span>Launch App</span>
-                <FiArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        )}
       </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1">{children}</main>
-
-      {/* Institutional Corporate Footer */}
-      <footer className="border-t border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mt-24 transition-colors duration-200">
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-12 py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-            {/* Col 1: Brand & Status */}
-            <div className="lg:col-span-2 space-y-4">
-              <Logo size="md" />
-              <p className="text-sm text-slate-600 dark:text-neutral-400 max-w-sm leading-relaxed">
-                Autonomous confidential settlement network and agent-native RFQ marketplace on Portaldot 3.0.
-                Dual-execution support via the revive module with native ink! contract coexistence.
-              </p>
-              <div className="pt-2 flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#161C2B] border border-slate-200 dark:border-[#21293D] text-xs font-mono text-slate-700 dark:text-neutral-300">
-                  <span className="w-2 h-2 rounded-full bg-[#00E599] animate-pulse" />
-                  <span>Portaldot 3.0 Live</span>
-                </div>
-                <div className="text-xs font-mono text-slate-500 dark:text-neutral-400">
-                  Revive EVM: <span className="text-emerald-600 dark:text-[#00E599] font-semibold">Operational</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Col 2: Solutions */}
-            <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
-                Solutions
-              </h5>
-              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
-                <li>
-                  <Link href="/solutions/enterprise-payroll" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Enterprise Payroll
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/solutions/credit-tranches" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Credit Tranches & Solvency
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/solutions/autonomous-agents" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Autonomous Agents
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/marketplace" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Tranche Discovery
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 3: Platform */}
-            <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
-                Platform
-              </h5>
-              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
-                <li>
-                  <Link href="/app/overview" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Portfolio Workspace
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/app/settlement" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Shielded Transfers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/bridge" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Cross-Chain Gateway
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/app/compliance" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Audit & Viewing Keys
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 4: Resources */}
-            <div>
-              <h5 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
-                Resources
-              </h5>
-              <ul className="space-y-2.5 text-sm text-slate-600 dark:text-neutral-400">
-                <li>
-                  <Link href="/how-it-works" className="hover:text-slate-900 dark:hover:text-white transition">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/app/how-it-works" className="hover:text-slate-900 dark:hover:text-white transition">
-                    App User Guide
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/solutions/credit-tranches" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Solvency Invariants
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/app/compliance" className="hover:text-slate-900 dark:hover:text-white transition">
-                    Audit & Viewing Keys
-                  </Link>
-                </li>
-              </ul>
-            </div>
+      <main id="main-content">{children}</main>
+      <footer className="mt-16 border-t border-border">
+        <div className="mx-auto grid max-w-screen-2xl gap-10 px-5 py-12 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
+          <div className="sm:col-span-2">
+            <Logo />
+            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
+              A settlement workspace built on Portaldot. Start with the essentials. Know
+              what you authorize.
+            </p>
+            <p className="mt-4 text-sm text-primary">
+              Testnet development · No real funds
+            </p>
           </div>
-
-          <div className="mt-12 pt-8 border-t border-slate-200 dark:border-[#21293D] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500 dark:text-neutral-400">
-            <div>
-              © {new Date().getFullYear()} Kudex Protocol. Autonomous Confidential Settlement Layer.
+          <nav aria-label="Product">
+            <p className="mb-3 font-semibold">Explore Kudex</p>
+            <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
+              <Link href="/app/vaults">Public vault</Link>
+              <Link href="/marketplace">RFQ trading</Link>
+              <Link href="/solutions/autonomous-agents">Bounded agents</Link>
             </div>
-            <div className="flex items-center gap-6">
-              <span>Cryptographically Enforced Invariants</span>
-              <span>Zero Leakage Guarantees</span>
+          </nav>
+          <nav aria-label="Resources">
+            <p className="mb-3 font-semibold">Get started</p>
+            <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
+              <Link href="/how-it-works">User guide</Link>
+              <a href="/kudex-quickstart.md" download>
+                Download quickstart
+              </a>
+              <Link href="/app/overview">Product workspace</Link>
+              <Link href="/docs">Developer reference</Link>
+              <Link href="/pricing">Proposed pricing</Link>
             </div>
-          </div>
+          </nav>
         </div>
+        <p className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
+          Kudex · Built for Portaldot · Deposits are public. Private settlement is in
+          development.
+        </p>
       </footer>
     </div>
   );

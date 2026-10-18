@@ -12,4 +12,4 @@ remappings = [
 ]
 
 [rpc_endpoints]
-portaldot = "https://testnet-evm.portaldot.world"
+portaldot = "${PORTALDOT_RPC_HTTP}"

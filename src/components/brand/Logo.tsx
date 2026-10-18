@@ -9,7 +9,7 @@ interface LogoProps {
   showSubtitle?: boolean;
 }
 
-export function Logo({ size = 'md', showSubtitle = true }: LogoProps) {
+export function Logo({ size = 'md', showSubtitle = false }: LogoProps) {
   const dimensions = {
     sm: { img: 30, text: 'text-lg', sub: 'text-xs' },
     md: { img: 38, text: 'text-2xl', sub: 'text-xs' },
@@ -42,13 +42,13 @@ export function Logo({ size = 'md', showSubtitle = true }: LogoProps) {
         </div>
       </div>
       <div className="flex flex-col">
-        <span className={`font-bold tracking-tight text-foreground font-mono leading-none ${dimensions.text}`}>
-          KUDEX
+        <span
+          className={`font-bold tracking-tight text-foreground leading-none ${dimensions.text}`}
+        >
+          Kudex
         </span>
         {showSubtitle && (
-          <span className={`font-mono uppercase tracking-widest text-[#00E599] mt-0.5 ${dimensions.sub}`}>
-            SETTLEMENT NETWORK
-          </span>
+          <span className={`text-primary mt-0.5 ${dimensions.sub}`}>On Portaldot</span>
         )}
       </div>
     </Link>

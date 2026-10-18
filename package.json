@@ -6,20 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "typecheck": "tsc --noEmit",
+    "test:contracts": "forge test --root contracts",
+    "check:network": "node --env-file-if-exists=.env.local scripts/check-network.mjs",
+    "inspect:portaldot": "node --env-file-if-exists=.env.local scripts/inspect-portaldot.mjs",
+    "test:network": "node --experimental-strip-types --test tests/network.test.mjs",
+    "test:runtime": "forge build --root contracts testnet/RuntimeSmoke.sol && node --env-file-if-exists=.env.local scripts/smoke-portaldot.mjs",
+    "configure:deployment": "node --env-file-if-exists=.env.local scripts/configure-deployment.mjs",
+    "prepare:native": "node --env-file-if-exists=.env.local scripts/prepare-native-deployment.mjs",
+    "test:deployment": "node --test tests/deployment-import.test.mjs",
+    "test:agents": "node --experimental-strip-types --test tests/agent-policy.test.mjs",
+    "agent:run": "node --env-file-if-exists=.env.local scripts/run-agent.mjs",
+    "agent:check": "node --env-file-if-exists=.env.local scripts/check-agent.mjs",
+    "test:agent-service": "node --experimental-strip-types --test tests/agent-service.test.mjs",
+    "test:rfq": "node --experimental-strip-types --test tests/rfq-orders.test.mjs",
+    "test:rfq-runtime": "forge build --root contracts && node --experimental-strip-types --test tests/rfq-runtime.test.mjs",
+    "test:ui": "playwright test",
+    "probe:ui": "node scripts/probe-ui.mjs"
   },
   "dependencies": {
-    "@ai-sdk/react": "^4.0.0",
+    "@ai-sdk/google": "^4.0.99",
     "@gsap/react": "^2.1.2",
+    "@polkadot/api": "^17.0.2",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tanstack/react-query": "^5.62.8",
-    "ai": "^4.0.0",
+    "ai": "^7.0.143",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.0.0",
     "gsap": "^3.15.0",
     "next": "^16.4.0",
     "next-themes": "^0.4.4",
@@ -30,16 +46,23 @@
     "tailwind-merge": "^3.0.0",
     "viem": "^2.21.58",
     "wagmi": "^2.14.9",
-    "zod": "^3.24.1",
-    "zustand": "^5.0.15"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "prettier": "^3.9.10",
     "tailwindcss": "^3.4.17",
     "typescript": "^7.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "ws@>=8.0.0 <8.21.0": "8.21.0"
+    }
   }
 }

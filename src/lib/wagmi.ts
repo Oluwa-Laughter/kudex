@@ -6,10 +6,10 @@ export const wagmiConfig = createConfig({
   chains: [portaldotTestnet],
   connectors: [
     injected(),
-    ...(typeof window !== 'undefined'
+    ...(typeof window !== 'undefined' && process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
       ? [
           walletConnect({
-            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '3a8b7c9e0d1f2a3b4c5d6e7f8a9b0c1d',
+            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
             showQrModal: false,
           }),
         ]

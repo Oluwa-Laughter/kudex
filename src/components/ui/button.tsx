@@ -2,45 +2,46 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@/lib/utils';
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
   variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive';
   size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', asChild = false, ...props }, ref) => {
+  (
+    { className, variant = 'default', size = 'default', asChild = false, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : 'button';
 
     const variants = {
-      default: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
-      secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700',
-      outline: 'border border-neutral-300 bg-transparent hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100',
-      ghost: 'hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100',
-      destructive: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm',
+      default: 'bg-primary text-primary-foreground hover:opacity-90',
+      secondary: 'bg-secondary text-secondary-foreground hover:opacity-90',
+      outline: 'border border-border bg-transparent text-foreground hover:bg-secondary',
+      ghost: 'text-foreground hover:bg-secondary',
+      destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
     };
-
     const sizes = {
-      default: 'h-9 px-4 py-2 text-xs font-medium',
-      sm: 'h-8 px-3 text-xs',
-      lg: 'h-10 px-6 text-sm font-medium',
-      icon: 'h-9 w-9 p-0 flex items-center justify-center',
+      default: 'min-h-11 px-5 py-3 text-sm font-semibold',
+      sm: 'min-h-11 px-3 text-sm',
+      lg: 'min-h-12 px-6 py-3 text-base font-semibold',
+      icon: 'h-11 w-11 shrink-0 p-0',
     };
 
     return (
       <Comp
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-xl transition font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center gap-2 rounded-xl transition-[background-color,opacity,transform] duration-150 active:scale-[.98] focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
           variants[variant],
           sizes[size],
-          className
+          className,
         )}
         ref={ref}
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = 'Button';
 

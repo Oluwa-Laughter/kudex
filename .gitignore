@@ -20,3 +20,14 @@ contracts/cache/
 # OS
 .DS_Store
 *.pem
+
+# TypeScript incremental cache
+*.tsbuildinfo
+
+# Raw deployment traces: publish the verified public manifest instead.
+contracts/broadcast/
+
+# Generated browser evidence and test runner output
+artifacts/
+test-results/
+playwright-report/

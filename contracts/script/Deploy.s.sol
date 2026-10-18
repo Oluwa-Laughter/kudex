@@ -2,52 +2,42 @@
 pragma solidity ^0.8.24;
 
 import {Script, console2} from "forge-std/Script.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {KudexVault} from "../src/KudexVault.sol";
 import {KudexRFQMarket} from "../src/KudexRFQMarket.sol";
 import {KudexDaaSAdapter} from "../src/KudexDaaSAdapter.sol";
+import {KudexTestToken} from "../src/KudexTestToken.sol";
 import {Groth16Verifier} from "../src/verifiers/Groth16Verifier.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-// Mock collateral asset for initial testnet liquidity if native Portaldot USDC does not exist yet
-contract MockUSDC is ERC20 {
-    constructor() ERC20("Portaldot USD Coin", "pUSDC") {
-        _mint(msg.sender, 10_000_000 * 10**6);
-    }
-    function decimals() public pure override returns (uint8) {
-        return 6;
-    }
-}
 
 contract DeployKudex is Script {
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PORTALDOT_PRIVATE_KEY");
-        vm.startBroadcast(deployerPrivateKey);
-
-        // 1. Deploy Testnet Base Asset (if needed)
-        MockUSDC usdc = new MockUSDC();
-        console2.log("Mock USDC Deployed at:", address(usdc));
-
-        // 2. Deploy Cryptographic ZK Verifier
-        Groth16Verifier verifier = new Groth16Verifier();
-        console2.log("Groth16 Verifier Deployed at:", address(verifier));
-
-        // 3. Deploy Kudex ERC-4626 Shielded Vault
-        KudexVault vault = new KudexVault(
-            usdc,
-            "Kudex Shielded Treasury Vault",
-            "kUSDp",
-            address(verifier)
+        require(
+            block.chainid == 420420777 && block.chainid == vm.envUint("PORTALDOT_CHAIN_ID"),
+            "Unexpected deployment chain"
         );
-        console2.log("KudexVault Deployed at:", address(vault));
+        string memory assetValue = vm.envOr("PORTALDOT_COLLATERAL_ADDRESS", string(""));
+        address asset = bytes(assetValue).length == 0 ? address(0) : vm.parseAddress(assetValue);
+        bool useTestAsset = vm.envOr("KUDEX_DEPLOY_TEST_ASSET", false);
+        require(asset != address(0) || useTestAsset, "Provide collateral or explicitly enable test token");
+        if (asset != address(0)) require(asset.code.length > 0, "Collateral is not deployed");
 
-        // 4. Deploy Kudex RFQ Market Router
-        KudexRFQMarket rfqMarket = new KudexRFQMarket();
-        console2.log("KudexRFQMarket Deployed at:", address(rfqMarket));
-
-        // 5. Deploy Default-as-a-Service Risk Adapter
-        KudexDaaSAdapter daasAdapter = new KudexDaaSAdapter(address(vault));
-        console2.log("KudexDaaSAdapter Deployed at:", address(daasAdapter));
-
+        // Sign using Foundry's --account/--sender or hardware-wallet support.
+        // No private key is read from an environment file by this script.
+        vm.startBroadcast();
+        if (asset == address(0)) {
+            asset = address(new KudexTestToken());
+            console2.log("KudexTestToken (unbacked test collateral):", asset);
+        }
+        Groth16Verifier verifier = new Groth16Verifier();
+        KudexVault vault = new KudexVault(IERC20(asset), "Kudex Public Treasury Vault", "kVAULT", address(verifier));
+        KudexRFQMarket router = new KudexRFQMarket();
+        KudexDaaSAdapter adapter = new KudexDaaSAdapter(address(vault));
+        vault.setDefaultController(address(adapter));
+        console2.log("Collateral:", asset);
+        console2.log("Disabled privacy verifier:", address(verifier));
+        console2.log("Public vault:", address(vault));
+        console2.log("Signed RFQ router:", address(router));
+        console2.log("Risk adapter:", address(adapter));
         vm.stopBroadcast();
     }
 }

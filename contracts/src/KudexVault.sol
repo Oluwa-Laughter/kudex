@@ -21,9 +21,13 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
 
     mapping(bytes32 => bool) public commitments;
     mapping(bytes32 => bool) public nullifiers;
-    
+
     uint256 public riskScore; // Basis points: 0 to 10000
     bool public isDefaulted;
+    address public defaultController;
+
+    event DefaultControllerUpdated(address indexed controller);
+    error UnauthorizedDefaultController();
 
     event NoteShielded(bytes32 indexed commitment, uint256 assetAmount, uint256 timestamp);
     event NoteSpent(bytes32 indexed nullifier, bytes32 indexed newCommitment);
@@ -35,46 +39,50 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
     error VaultInDefault();
     error ZeroDepositNotAllowed();
     error InvalidRiskScore();
+    error InvalidCommitment();
+    error ConfidentialTransfersUnavailable();
 
-    constructor(
-        IERC20 _underlyingAsset,
-        string memory _name,
-        string memory _symbol,
-        address _verifier
-    ) ERC4626(_underlyingAsset) ERC20(_name, _symbol) Ownable(msg.sender) {
+    constructor(IERC20 _underlyingAsset, string memory _name, string memory _symbol, address _verifier)
+        ERC4626(_underlyingAsset)
+        ERC20(_name, _symbol)
+        Ownable(msg.sender)
+    {
         verifier = IGroth16Verifier(_verifier);
     }
 
-    function shieldDeposit(
-        uint256 assets,
-        bytes32 commitment,
-        address receiver
-    ) external nonReentrant returns (uint256 shares) {
+    function shieldDeposit(uint256 assets, bytes32 commitment, address receiver)
+        external
+        nonReentrant
+        returns (uint256 shares)
+    {
         if (isDefaulted) revert VaultInDefault();
         if (assets == 0) revert ZeroDepositNotAllowed();
 
+        if (commitment == bytes32(0) || commitments[commitment]) revert InvalidCommitment();
         shares = deposit(assets, receiver);
         commitments[commitment] = true;
         emit NoteShielded(commitment, assets, block.timestamp);
     }
 
+    // Disabled until a reviewed note circuit binds membership, value conservation,
+    // nullifier, output commitment and domain. ERC-4626 shares are public balances.
     function confidentialTransfer(
-        bytes32 nullifier,
-        bytes32 newCommitment,
-        uint256[2] calldata a,
-        uint256[2][2] calldata b,
-        uint256[2] calldata c,
-        uint256[2] calldata publicInputs
-    ) external nonReentrant {
-        if (isDefaulted) revert VaultInDefault();
-        if (nullifiers[nullifier]) revert NullifierAlreadySpent();
+        bytes32,
+        bytes32,
+        uint256[2] calldata,
+        uint256[2][2] calldata,
+        uint256[2] calldata,
+        uint256[2] calldata
+    ) external pure {
+        revert ConfidentialTransfersUnavailable();
+    }
 
-        if (!verifier.verifyProof(a, b, c, publicInputs)) revert InvalidZKProof();
+    function maxDeposit(address receiver) public view override returns (uint256) {
+        return isDefaulted ? 0 : super.maxDeposit(receiver);
+    }
 
-        nullifiers[nullifier] = true;
-        commitments[newCommitment] = true;
-
-        emit NoteSpent(nullifier, newCommitment);
+    function maxMint(address receiver) public view override returns (uint256) {
+        return isDefaulted ? 0 : super.maxMint(receiver);
     }
 
     function setRiskScore(uint256 _newScore) external onlyOwner {
@@ -83,7 +91,13 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
         riskScore = _newScore;
     }
 
-    function triggerDefault() external onlyOwner {
+    function setDefaultController(address controller) external onlyOwner {
+        defaultController = controller;
+        emit DefaultControllerUpdated(controller);
+    }
+
+    function triggerDefault() external {
+        if (msg.sender != owner() && msg.sender != defaultController) revert UnauthorizedDefaultController();
         isDefaulted = true;
         emit DefaultTriggered(totalAssets(), block.timestamp);
     }

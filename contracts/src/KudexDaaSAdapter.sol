@@ -34,6 +34,7 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
     event SentinelUpdated(address indexed sentinel, bool authorized);
     event HealthFactorEvaluated(address indexed vault, uint256 riskScore, uint256 healthFactorBps);
     event DebtRestructured(address indexed vault, uint256 recoveredAssets, uint256 timestamp);
+    event DefaultEnforced(address indexed vault, uint256 assetsAtFreeze, uint256 timestamp);
     event LiquidationCascadeTriggered(address indexed vault, uint256 totalAssetsAffected, uint256 timestamp);
 
     error VaultAlreadyRegistered();
@@ -115,15 +116,10 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
         emit HealthFactorEvaluated(vault, risk, hf);
 
         if (risk >= CRITICAL_RISK_THRESHOLD && !kv.isDefaulted()) {
-            profile.restructuringActive = true;
             uint256 vaultAssets = kv.totalAssets();
-
-            profile.totalRestructuredDebt += vaultAssets;
-            emit LiquidationCascadeTriggered(vault, vaultAssets, block.timestamp);
-            emit DebtRestructured(vault, vaultAssets, block.timestamp);
-
-            // Trigger on-chain default hook on KudexVault
+            // A deposit freeze does not recover assets or restructure debt.
             kv.triggerDefault();
+            emit DefaultEnforced(vault, vaultAssets, block.timestamp);
         }
     }
 

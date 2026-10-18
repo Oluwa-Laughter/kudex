@@ -22,7 +22,7 @@ contract KudexDaaSAdapterTest is Test {
         vault = new KudexVault(asset, "Kudex Confidential pUSD", "k-pUSD", address(verifier));
 
         // Transfer vault ownership to DaaS adapter to allow automated default triggering
-        vault.transferOwnership(address(adapter));
+        vault.setDefaultController(address(adapter));
 
         adapter.setSentinel(sentinel, true);
         adapter.registerVault(address(vault), 12000); // 120% collateralization ratio
@@ -35,15 +35,28 @@ contract KudexDaaSAdapterTest is Test {
     }
 
     function test_SentinelRestructuringOnCriticalRisk() public {
-        // Vault owner was transferred to adapter, so simulate risk elevation
-        // We test with low risk first
+        vault.setRiskScore(8500);
         vm.prank(sentinel);
         adapter.evaluateAndEnforce(address(vault));
-        assertFalse(vault.isDefaulted());
+        assertTrue(vault.isDefaulted());
+        assertEq(vault.maxDeposit(address(this)), 0);
+        // Risk administration stays with the vault owner, not the adapter.
+        vault.setRiskScore(9000);
+        assertEq(vault.riskScore(), 9000);
+    }
 
-        // When riskScore >= CRITICAL_RISK_THRESHOLD (8500 bps)
-        // We can inspect DaaS health factor decreases as risk increases
-        uint256 count = adapter.getRegisteredVaultsCount();
-        assertEq(count, 1);
+    function test_UnauthorizedCallerCannotFreezeVault() public {
+        vm.prank(address(0xBAD));
+        vm.expectRevert(KudexVault.UnauthorizedDefaultController.selector);
+        vault.triggerDefault();
+    }
+
+    function test_RevokedControllerCannotFreezeVault() public {
+        vault.setDefaultController(address(0));
+        vault.setRiskScore(9000);
+        vm.prank(sentinel);
+        vm.expectRevert(KudexVault.UnauthorizedDefaultController.selector);
+        adapter.evaluateAndEnforce(address(vault));
+        assertFalse(vault.isDefaulted());
     }
 }

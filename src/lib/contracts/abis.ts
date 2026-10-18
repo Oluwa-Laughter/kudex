@@ -106,7 +106,12 @@ export const kudexVaultAbi = [
     type: 'event',
     name: 'DefaultTriggered',
     inputs: [
-      { name: 'remainingAssets', type: 'uint256', indexed: false, internalType: 'uint256' },
+      {
+        name: 'remainingAssets',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
       { name: 'timestamp', type: 'uint256', indexed: false, internalType: 'uint256' },
     ],
     anonymous: false,
@@ -114,6 +119,12 @@ export const kudexVaultAbi = [
 ] as const;
 
 export const kudexRFQMarketAbi = [
+  { type: 'error', name: 'InvalidOrder', inputs: [] },
+  { type: 'error', name: 'InvalidSignature', inputs: [] },
+  { type: 'error', name: 'InexactTokenTransfer', inputs: [] },
+  { type: 'error', name: 'OrderExpired', inputs: [] },
+  { type: 'error', name: 'OrderAlreadyProcessed', inputs: [] },
+  { type: 'error', name: 'OrderAlreadyCancelled', inputs: [] },
   {
     type: 'function',
     name: 'hashOrder',
@@ -134,7 +145,7 @@ export const kudexRFQMarketAbi = [
       },
     ],
     outputs: [{ name: '', type: 'bytes32', internalType: 'bytes32' }],
-    stateMutability: 'pure',
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -181,6 +192,16 @@ export const kudexRFQMarketAbi = [
       { name: '', type: 'uint256', internalType: 'uint256' },
     ],
     outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'nonceUsed',
+    inputs: [
+      { name: 'maker', type: 'address' },
+      { name: 'nonce', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -238,4 +259,3 @@ export const kudexDaaSAdapterAbi = [
 export const KUDEX_VAULT_ABI = kudexVaultAbi;
 export const KUDEX_RFQ_ABI = kudexRFQMarketAbi;
 export const KUDEX_DAAS_ABI = kudexDaaSAdapterAbi;
-

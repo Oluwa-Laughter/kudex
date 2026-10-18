@@ -7,12 +7,11 @@ import {Groth16Verifier} from "../src/verifiers/Groth16Verifier.sol";
 import {MockERC20} from "./mocks/MockERC20.sol";
 
 contract MockVerifier is IGroth16Verifier {
-    function verifyProof(
-        uint256[2] calldata,
-        uint256[2][2] calldata,
-        uint256[2] calldata,
-        uint256[2] calldata
-    ) external pure returns (bool) {
+    function verifyProof(uint256[2] calldata, uint256[2][2] calldata, uint256[2] calldata, uint256[2] calldata)
+        external
+        pure
+        returns (bool)
+    {
         return true;
     }
 }
@@ -71,27 +70,52 @@ contract KudexVaultTest is Test {
         uint256[2] memory pubInputs = [uint256(9), uint256(10)];
 
         // True bn128 pairing verifier will fail verification on invalid random points
-        vm.expectRevert(KudexVault.InvalidZKProof.selector);
+        vm.expectRevert(KudexVault.ConfidentialTransfersUnavailable.selector);
         vault.confidentialTransfer(nullifier, newCommitment, a, b, c, pubInputs);
     }
 
-    function test_ConfidentialTransfer() public {
-        bytes32 nullifier = keccak256("nullifier_valid_1");
-        bytes32 newCommitment = keccak256("commitment_valid_2");
+    function test_ConfidentialTransfersDisabledEvenWithPermissiveVerifier() public {
+        uint256[2] memory point;
+        uint256[2][2] memory b;
+        vm.expectRevert(KudexVault.ConfidentialTransfersUnavailable.selector);
+        mockVault.confidentialTransfer(bytes32(uint256(1)), bytes32(uint256(2)), point, b, point, point);
+    }
 
-        uint256[2] memory a = [uint256(1), uint256(2)];
-        uint256[2][2] memory b = [[uint256(3), uint256(4)], [uint256(5), uint256(6)]];
-        uint256[2] memory c = [uint256(7), uint256(8)];
-        uint256[2] memory pubInputs = [uint256(9), uint256(10)];
+    function test_ZeroProofRejected() public view {
+        uint256[2] memory point;
+        uint256[2][2] memory b;
+        assertFalse(verifier.verifyProof(point, b, point, point));
+    }
 
-        mockVault.confidentialTransfer(nullifier, newCommitment, a, b, c, pubInputs);
+    function test_DefaultBlocksStandardDepositAndMint() public {
+        vault.triggerDefault();
+        assertEq(vault.maxDeposit(alice), 0);
+        assertEq(vault.maxMint(alice), 0);
+        vm.startPrank(alice);
+        vm.expectRevert();
+        vault.deposit(1e6, alice);
+        vm.expectRevert();
+        vault.mint(1e6, alice);
+        vm.stopPrank();
+    }
 
-        assertTrue(mockVault.nullifiers(nullifier));
-        assertTrue(mockVault.commitments(newCommitment));
+    function test_DuplicateCommitmentRejected() public {
+        bytes32 commitment = keccak256("unique note");
+        vm.startPrank(alice);
+        vault.shieldDeposit(1e6, commitment, alice);
+        vm.expectRevert(KudexVault.InvalidCommitment.selector);
+        vault.shieldDeposit(1e6, commitment, alice);
+        vm.stopPrank();
+    }
 
-        // Attempting to spend the same nullifier should revert
-        vm.expectRevert(KudexVault.NullifierAlreadySpent.selector);
-        mockVault.confidentialTransfer(nullifier, newCommitment, a, b, c, pubInputs);
+    function test_PublicDepositAndWithdrawal() public {
+        vm.startPrank(alice);
+        uint256 beforeBalance = asset.balanceOf(alice);
+        uint256 shares = vault.deposit(100e6, alice);
+        assertEq(vault.balanceOf(alice), shares);
+        vault.redeem(shares, alice, alice);
+        assertEq(asset.balanceOf(alice), beforeBalance);
+        vm.stopPrank();
     }
 
     function test_RiskScoreAndDefault() public {
@@ -106,5 +130,14 @@ contract KudexVaultTest is Test {
         vm.prank(alice);
         vm.expectRevert(KudexVault.VaultInDefault.selector);
         vault.shieldDeposit(100 * 1e6, commitment, alice);
+    }
+
+    function test_DefaultStillAllowsPublicWithdrawal() public {
+        vm.prank(alice);
+        uint256 shares = vault.deposit(100e6, alice);
+        vault.triggerDefault();
+        vm.prank(alice);
+        assertEq(vault.redeem(shares, alice, alice), 100e6);
+        assertEq(vault.balanceOf(alice), 0);
     }
 }

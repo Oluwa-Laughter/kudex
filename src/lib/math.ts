@@ -1,5 +1,6 @@
 import { parseUnits, formatUnits } from 'viem';
 
+// Native Substrate balances only. EVM gas/value uses 18 decimals on V3.
 export const POT_DECIMALS = 14;
 export const USDC_DECIMALS = 6;
 export const STANDARD_DECIMALS = 18;
@@ -29,7 +30,11 @@ export function mulDiv(a: bigint, b: bigint, denominator: bigint): bigint {
   return (a * b) / denominator;
 }
 
-export function formatDisplayBalance(amount: bigint, decimals: number, maxDecimals: number = 4): string {
+export function formatDisplayBalance(
+  amount: bigint,
+  decimals: number,
+  maxDecimals: number = 4,
+): string {
   const formatted = formatUnits(amount, decimals);
   const [whole, fraction] = formatted.split('.');
   if (!fraction) return whole;

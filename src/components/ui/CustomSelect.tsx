@@ -1,15 +1,13 @@
 'use client';
-
-import React, { useState, useRef, useEffect } from 'react';
-import { FiChevronDown, FiCheck } from 'react-icons/fi';
-
+import type { ReactNode } from 'react';
+import * as Menu from '@radix-ui/react-dropdown-menu';
+import { FiCheck, FiChevronDown } from 'react-icons/fi';
 export interface SelectOption {
   value: string;
   label: string;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
 }
-
 export interface CustomSelectProps {
   options: SelectOption[];
   value: string;
@@ -19,188 +17,69 @@ export interface CustomSelectProps {
   className?: string;
   buttonClassName?: string;
   variant?: 'default' | 'compact' | 'input-addon';
+  label?: string;
 }
-
 export function CustomSelect({
   options,
   value,
   onChange,
-  placeholder = 'Select option...',
+  placeholder = 'Choose an option',
   disabled = false,
   className = '',
   buttonClassName = '',
   variant = 'default',
+  label,
 }: CustomSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const selectedOption = options.find((opt) => opt.value === value);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
-
-  const handleSelect = (val: string) => {
-    onChange(val);
-    setIsOpen(false);
-  };
-
-  if (variant === 'input-addon') {
-    return (
-      <div className={`relative inline-block ${className}`} ref={containerRef}>
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-          className={`h-full flex items-center gap-2 px-4 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-[#161C2B] dark:hover:bg-[#21293D] text-slate-900 dark:text-white font-bold text-sm border-l border-slate-200 dark:border-[#21293D] transition outline-none select-none cursor-pointer rounded-r-xl ${
-            disabled ? 'opacity-50 cursor-not-allowed' : ''
-          } ${buttonClassName}`}
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-        >
-          {selectedOption?.icon && (
-            <span className="flex-shrink-0">{selectedOption.icon}</span>
-          )}
-          <span>{selectedOption?.label || value || placeholder}</span>
-          <FiChevronDown
-            className={`w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
-          />
-        </button>
-
-        {isOpen && (
-          <div
-            className="absolute right-0 top-full mt-1.5 min-w-[180px] rounded-xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100"
-            role="listbox"
-          >
-            <div className="max-h-60 overflow-y-auto space-y-1">
-              {options.map((option) => {
-                const isSelected = option.value === value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleSelect(option.value)}
-                    className={`w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition cursor-pointer text-left ${
-                      isSelected
-                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-[#00E599]'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#161C2B] hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                    role="option"
-                    aria-selected={isSelected}
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      {option.icon && (
-                        <span className="flex-shrink-0">{option.icon}</span>
-                      )}
-                      <span className="truncate">{option.label}</span>
-                    </div>
-                    {isSelected && (
-                      <FiCheck className="w-4 h-4 text-emerald-600 dark:text-[#00E599] flex-shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
+  const selected = options.find((option) => option.value === value);
   return (
-    <div className={`relative w-full ${className}`} ref={containerRef}>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border transition text-sm font-semibold outline-none cursor-pointer select-none ${
-          isOpen
-            ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-white dark:bg-[#0E121B]'
-            : 'border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] hover:border-slate-300 dark:hover:border-slate-600'
-        } text-slate-900 dark:text-white ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${buttonClassName}`}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-      >
-        <div className="flex items-center gap-2.5 truncate">
-          {selectedOption?.icon && (
-            <span className="flex-shrink-0">{selectedOption.icon}</span>
-          )}
-          <span className="truncate">
-            {selectedOption ? selectedOption.label : placeholder}
-          </span>
-        </div>
-        <FiChevronDown
-          className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 flex-shrink-0 ${
-            isOpen ? 'rotate-180 text-emerald-500' : ''
-          }`}
-        />
-      </button>
-
-      {isOpen && (
-        <div
-          className="absolute left-0 right-0 top-full mt-1.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-100"
-          role="listbox"
+    <div className={className}>
+      <Menu.Root modal={false}>
+        <Menu.Trigger
+          disabled={disabled}
+          aria-label={label}
+          className={`flex min-h-11 items-center justify-between gap-3 rounded-xl border border-input bg-card px-4 py-3 text-sm font-medium disabled:opacity-50 ${variant === 'default' ? 'w-full' : ''} ${buttonClassName}`}
         >
-          <div className="max-h-60 overflow-y-auto space-y-1">
-            {options.map((option) => {
-              const isSelected = option.value === value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSelect(option.value)}
-                  className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer text-left ${
-                    isSelected
-                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-[#00E599]'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#161C2B] hover:text-slate-900 dark:hover:text-white'
-                  }`}
-                  role="option"
-                  aria-selected={isSelected}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    {option.icon && (
-                      <span className="flex-shrink-0">{option.icon}</span>
-                    )}
-                    <div className="truncate">
-                      <div>{option.label}</div>
-                      {option.description && (
-                        <div className="text-xs font-normal text-slate-500 dark:text-slate-400 truncate">
-                          {option.description}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {isSelected && (
-                    <FiCheck className="w-4 h-4 text-emerald-600 dark:text-[#00E599] flex-shrink-0" />
+          <span className="flex min-w-0 items-center gap-2">
+            {selected?.icon}
+            <span className="truncate">{selected?.label ?? placeholder}</span>
+          </span>
+          <FiChevronDown aria-hidden="true" />
+        </Menu.Trigger>
+        <Menu.Portal>
+          <Menu.Content
+            sideOffset={6}
+            collisionPadding={12}
+            align={variant === 'input-addon' ? 'end' : 'start'}
+            className="menu-content z-[70] min-w-[var(--radix-dropdown-menu-trigger-width)] max-w-[calc(100vw-24px)] overflow-y-auto rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-xl"
+            aria-label={label ?? placeholder}
+          >
+            {options.map((option) => (
+              <Menu.Item
+                key={option.value}
+                textValue={option.label}
+                onSelect={() => onChange(option.value)}
+                className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm outline-none data-[highlighted]:bg-secondary data-[highlighted]:text-primary"
+              >
+                {option.icon}
+                <span className="min-w-0 flex-1">
+                  <span className="block">{option.label}</span>
+                  {option.description && (
+                    <span className="block text-xs text-muted-foreground">
+                      {option.description}
+                    </span>
                   )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                </span>
+                {value === option.value && (
+                  <>
+                    <FiCheck aria-hidden="true" />
+                    <span className="sr-only">Selected</span>
+                  </>
+                )}
+              </Menu.Item>
+            ))}
+          </Menu.Content>
+        </Menu.Portal>
+      </Menu.Root>
     </div>
   );
 }

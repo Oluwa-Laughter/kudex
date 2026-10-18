@@ -1,24 +1,44 @@
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+
+const bodyFont = localFont({
+  src: [
+    { path: '../../public/fonts/dm-sans-400.ttf', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/dm-sans-500.ttf', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/dm-sans-600.ttf', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/dm-sans-700.ttf', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-sans',
+  display: 'swap',
+});
+const headingFont = localFont({
+  src: [
+    { path: '../../public/fonts/sora-400.ttf', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/sora-500.ttf', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/sora-600.ttf', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/sora-700.ttf', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-heading',
+  display: 'swap',
+});
 import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'KUDEX | Autonomous Confidential Settlement Layer & RFQ Marketplace',
+  title: 'Kudex | A clearer way to settle on Portaldot',
   description:
-    'Institutional-grade confidential settlement network, protected real-world asset yield vaults, and autonomous agent execution.',
+    'Explore Kudex: public testnet vaults today, with bounded agents and confidential settlement in development on Portaldot.',
   icons: {
     icon: '/logo.svg',
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-emerald-500/20 selection:text-emerald-500">
+      <body
+        className={`${bodyFont.variable} ${headingFont.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
