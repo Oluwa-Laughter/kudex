@@ -178,9 +178,9 @@ export default function HomePage() {
             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
               <FiRepeat className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-foreground">Instant Swaps & Fiat Ramps</h3>
+            <h3 className="text-lg font-bold text-foreground">Instant Swaps & Agent Desk</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Simple 1-click token swaps, direct bank on/off ramps with confidential compliance receipts, and autonomous agent bots trading 24/7.
+              Simple 1-click token swaps, autonomous agent fleets executing 24/7 DCA schedules, and institutional solver routing native to Portaldot 3.0.
             </p>
           </div>
 

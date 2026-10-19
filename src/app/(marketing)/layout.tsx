@@ -57,7 +57,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             <p className="mb-3 font-semibold">Explore Kudex</p>
             <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
               <Link href="/app/vaults">Structured Credit Vaults</Link>
-              <Link href="/app/marketplace">Instant Swaps & Fiat Ramps</Link>
+              <Link href="/app/marketplace">Instant Swaps & Agent Desk</Link>
               <Link href="/solutions/autonomous-agents">Autonomous Agents</Link>
             </div>
           </nav>
