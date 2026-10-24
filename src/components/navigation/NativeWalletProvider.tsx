@@ -55,7 +55,7 @@ export function NativeWalletProvider({ children }: { children: React.ReactNode }
       }));
       if (!available.length)
         throw new Error(
-          'No accounts were shared. Approve account access in your native extension and try again.',
+          'Please open your Portaldot extension, unlock your wallet, and approve account access to connect.',
         );
       // Prefer the organizer's requested address format; no account conversion is guessed here.
       const native = Array.from(
@@ -67,7 +67,7 @@ export function NativeWalletProvider({ children }: { children: React.ReactNode }
       );
       if (!native.length)
         throw new Error(
-          'No native address beginning with 5 was shared. Check the selected network and address format in your extension.',
+          'No Substrate address (starting with 5) was found. Please ensure your extension account is set to Portaldot or Substrate format.',
         );
       setAccounts(native);
       setSelected(native[0]);

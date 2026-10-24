@@ -99,6 +99,19 @@ export interface AgentBot {
   interval: string;
 }
 
+export interface LiquidityPoolPosition {
+  id: string;
+  poolId: string;
+  token0: string;
+  token1: string;
+  amount0: number;
+  amount1: number;
+  lpTokens: number;
+  sharePercent: number;
+  timestamp: number;
+  accruedFeesUSD: number;
+}
+
 interface ProtocolState {
   // Balances
   balances: Record<string, number>;
@@ -146,6 +159,11 @@ interface ProtocolState {
   viewingKeys: ViewingKey[];
   addViewingKey: (key: Omit<ViewingKey, 'id' | 'issuedAt'>) => ViewingKey;
   revokeViewingKey: (id: string) => void;
+
+  // Liquidity Pools
+  liquidityPositions: LiquidityPoolPosition[];
+  addLiquidity: (poolId: string, token0: string, token1: string, amount0: number, amount1: number) => LiquidityPoolPosition;
+  removeLiquidity: (positionId: string) => void;
 
   // Solvency Telemetry
   riskScoreBps: number;
@@ -375,11 +393,43 @@ export const useProtocolStore = create<ProtocolState>()(
         }));
       },
 
+      // Liquidity Pools
+      liquidityPositions: [],
+      addLiquidity: (poolId, token0, token1, amount0, amount1) => {
+        get().updateBalance(token0, -amount0);
+        get().updateBalance(token1, -amount1);
+        const lpTokens = parseFloat(Math.sqrt(amount0 * amount1).toFixed(4));
+        const position: LiquidityPoolPosition = {
+          id: `lp-${Date.now().toString().slice(-4)}`,
+          poolId,
+          token0,
+          token1,
+          amount0,
+          amount1,
+          lpTokens,
+          sharePercent: 0.15,
+          timestamp: Date.now(),
+          accruedFeesUSD: 0,
+        };
+        set((state) => ({ liquidityPositions: [position, ...state.liquidityPositions] }));
+        return position;
+      },
+      removeLiquidity: (positionId) => {
+        const pos = get().liquidityPositions.find((p) => p.id === positionId);
+        if (pos) {
+          get().updateBalance(pos.token0, pos.amount0);
+          get().updateBalance(pos.token1, pos.amount1);
+          set((state) => ({
+            liquidityPositions: state.liquidityPositions.filter((p) => p.id !== positionId),
+          }));
+        }
+      },
+
       riskScoreBps: 0,
       setRiskScoreBps: (score: number) => set({ riskScoreBps: score }),
     }),
     {
-      name: 'kudex-protocol-v4',
+      name: 'kudex-protocol-v5',
     }
   )
 );
