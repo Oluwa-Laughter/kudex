@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  experimental: {
+    agentUpgrade: 'security',
+  },
   async redirects() {
     return [
       {
