@@ -6,7 +6,7 @@ import { useAccount, useConnect, useDisconnect, useSwitchChain, useBalance } fro
 import { FiX, FiCopy, FiCheck, FiArrowUpRight, FiShield, FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
 import { RiWallet3Line } from 'react-icons/ri';
 import { useNativeWallet } from './NativeWalletProvider';
-import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
+import { useNativeAccount, useEvmMapping } from '@/lib/hooks/useNativeAccount';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
@@ -19,6 +19,7 @@ export function ConnectWalletButton() {
   const { switchChain, error: switchError, isPending: switching } = useSwitchChain();
   const native = useNativeWallet();
   const { data: nativeAccountData } = useNativeAccount();
+  const { data: evmMappingData } = useEvmMapping(address);
 
   const { data: balanceData } = useBalance({
     address,
@@ -140,6 +141,28 @@ export function ConnectWalletButton() {
                   </div>
                 </div>
 
+                {evmMappingData?.nativeFundingAddress && (
+                  <div className="pt-2.5 border-t border-slate-200 dark:border-[#21293D]/60 space-y-1 bg-emerald-500/5 -mx-4 px-4 py-2.5">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 dark:text-neutral-300 font-semibold">
+                      <span>Substrate Funding Address:</span>
+                      <button
+                        type="button"
+                        onClick={() => void copy(evmMappingData.nativeFundingAddress!)}
+                        className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
+                      >
+                        {copied === evmMappingData.nativeFundingAddress ? <FiCheck /> : <FiCopy />}
+                        <span>{copied === evmMappingData.nativeFundingAddress ? 'Copied' : 'Copy SS58'}</span>
+                      </button>
+                    </div>
+                    <p className="font-mono text-xs font-bold text-slate-900 dark:text-white break-all">
+                      {evmMappingData.nativeFundingAddress}
+                    </p>
+                    <p className="text-[10px] text-slate-500 dark:text-neutral-400 leading-normal pt-0.5">
+                      Transfer testnet tPOT from your Portaldot extension to this address to instantly fund your EVM wallet for gas fees on Portaldot V3.
+                    </p>
+                  </div>
+                )}
+
                 {chainId !== portaldotTestnet.id && (
                   <div className="pt-2">
                     <button
@@ -256,6 +279,25 @@ export function ConnectWalletButton() {
                     Source: {native.selected.source}
                   </span>
                 </div>
+
+                {nativeAccountData?.contractAddress && (
+                  <div className="pt-2 border-t border-slate-200 dark:border-[#21293D]/60 space-y-1">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-neutral-400 font-semibold">
+                      <span>Revive EVM Address (Unified Mapping):</span>
+                      <button
+                        type="button"
+                        onClick={() => void copy(nativeAccountData.contractAddress)}
+                        className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
+                      >
+                        {copied === nativeAccountData.contractAddress ? <FiCheck /> : <FiCopy />}
+                        <span>{copied === nativeAccountData.contractAddress ? 'Copied' : 'Copy 0x'}</span>
+                      </button>
+                    </div>
+                    <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 break-all">
+                      {nativeAccountData.contractAddress}
+                    </p>
+                  </div>
+                )}
 
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button

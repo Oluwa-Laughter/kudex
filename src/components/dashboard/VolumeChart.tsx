@@ -46,8 +46,8 @@ export function VolumeChart() {
             Blocks {data.fromBlock.toString()}–{data.indexedThrough.toString()}:{' '}
             {data.totalDepositEvents} vault deposits;{' '}
             {data.rfqConfigured
-              ? `${data.totalSettlements} RFQ settlements.`
-              : 'RFQ feed not configured.'}{' '}
+              ? `${data.totalSettlements} trade settlements.`
+              : 'Settlement feed not configured.'}{' '}
             {error ? 'Showing the last successful result.' : ''}
           </p>
           {data.totalDepositEvents === 0 ? (

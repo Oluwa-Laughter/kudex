@@ -56,9 +56,9 @@ export default function HowItWorksPage() {
       },
       {
         step: 2,
-        title: 'Institutional Solvers Compete',
-        desc: 'Approved liquidity solvers receive your encrypted RFQ. They compete off-chain to offer the tightest spread and lowest slippage without front-running your order.',
-        action: '3 solvers submitted verified price quotes',
+        title: 'Instant AMM & Agent Routing',
+        desc: 'Trades route through optimized liquidity pools and autonomous agents, guaranteeing optimal price execution without public mempool front-running.',
+        action: 'Algorithmic route optimized across pools',
       },
       {
         step: 3,
@@ -164,7 +164,7 @@ export default function HowItWorksPage() {
     },
     {
       q: 'How does Kudex protect trades from MEV and front-running?',
-      a: 'Traditional decentralized exchanges publish all pending swaps in a transparent public mempool, allowing predatory bots to front-run and sandwich your trades. Kudex routes swaps through off-chain competitive solvers using encrypted RFQs, guaranteeing the exact price quoted.',
+      a: 'Traditional decentralized exchanges publish pending swaps in transparent public mempools, allowing predatory bots to front-run and sandwich your trades. Kudex routes swaps through optimized Revive liquidity pools and non-custodial agent autopilots, guaranteeing slippage-bounded atomic fills.',
     },
     {
       q: 'What makes the credit tranches safe during market downturns?',
@@ -423,7 +423,7 @@ export default function HowItWorksPage() {
             <tbody className="divide-y divide-slate-100 dark:divide-[#21293D] text-base text-slate-700 dark:text-neutral-300">
               <tr>
                 <td className="p-4 sm:p-5 font-bold text-slate-900 dark:text-white">Trade Privacy</td>
-                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Encrypted Off-Chain RFQ</td>
+                <td className="p-4 sm:p-5 font-bold text-emerald-600 dark:text-[#00E599] bg-[#00E599]/5">Revive AMM & Agent Routing</td>
                 <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Public Mempool (Front-run risk)</td>
                 <td className="p-4 sm:p-5 text-slate-500 dark:text-neutral-400">Internal database (Opaque)</td>
               </tr>

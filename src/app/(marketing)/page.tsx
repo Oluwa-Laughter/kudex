@@ -31,7 +31,7 @@ export default function HomePage() {
         </h1>
 
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Eliminate mempool front-running, safeguard corporate principal with algorithmic waterfall credit tranches, and settle RFQ orders via autonomous solver fleets on Portaldot 3.0.
+          Eliminate mempool front-running, safeguard corporate principal with algorithmic waterfall credit tranches, and execute DeFi swaps via autonomous agent fleets on Portaldot 3.0.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -101,7 +101,7 @@ export default function HomePage() {
             </p>
             <div className="pt-2 border-t border-border text-xs text-primary font-bold flex items-center gap-2">
               <FiCheck className="w-4 h-4 text-emerald-500" />
-              <span>Kudex: Private RFQ Solvers with zero mempool exposure.</span>
+              <span>Kudex: Private AMM & automated agent trading with zero mempool exposure.</span>
             </div>
           </div>
 
@@ -277,7 +277,7 @@ export default function HomePage() {
           Ready to Transact with Privacy and Solvency Guarantees?
         </h2>
         <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Connect your Portaldot extension or EVM wallet to explore confidential settlement, credit tranches, and RFQ solvers in the interactive workspace.
+          Connect your Portaldot extension or EVM wallet to explore confidential settlement, credit tranches, and autonomous DeFi agents in the interactive workspace.
         </p>
         <div className="pt-2">
           <Link

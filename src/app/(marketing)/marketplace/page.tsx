@@ -122,11 +122,11 @@ export default function PublicMarketplacePage() {
           <span>TRANCHE & LIQUIDITY DISCOVERY</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-          Institutional Credit Facilities & RFQ Discovery
+          Institutional Credit Facilities & DeFi AMM Swaps
         </h1>
         <p className="text-base sm:text-lg text-slate-600 dark:text-neutral-400 leading-relaxed">
           Explore tokenized real-world credit tranches, verified overcollateralization ratios,
-          and institutional RFQ spreads settled on our confidential settlement layer.
+          and institutional AMM liquidity pools with instant 1-click swaps.
         </p>
       </div>
 
@@ -232,13 +232,13 @@ export default function PublicMarketplacePage() {
         ))}
       </div>
 
-      {/* Institutional RFQ Pairs Overview */}
+      {/* Institutional AMM Pairs Overview */}
       <div className="p-8 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] mb-16 shadow-sm">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-          Live RFQ Pair Execution Rates
+          Live AMM Pool Execution Rates
         </h3>
         <p className="text-base text-slate-600 dark:text-neutral-400 mb-6">
-          Institutional solvers provide continuous, block-atomic execution without public mempool slippage
+          Institutional liquidity pools provide continuous, block-atomic execution and yield generation on Portaldot V3
         </p>
 
         <div className="overflow-x-auto">
@@ -380,13 +380,13 @@ export default function PublicMarketplacePage() {
         <div className="max-w-3xl mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00E599]/10 text-xs font-mono font-bold text-emerald-600 dark:text-[#00E599] mb-3">
             <FiZap className="w-3.5 h-3.5" />
-            <span>OFF-CHAIN RFQ SOLVER ENGINE</span>
+            <span>INSTITUTIONAL AMM & AGENT AUTOPILOT</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-            Why RFQ Outperforms Automated Market Makers
+            Why Kudex Delivers Superior DeFi Execution
           </h2>
           <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
-            Standard AMMs force traders to broadcast intents into public mempools where front-running bots steal basis points. Kudex uses private cryptographic RFQs matched atomically.
+            Standard exchanges force users to manage complex orderbooks and suffer slippage. Kudex combines instant 1-click AMM swaps, automated liquidity provision, and AI agent autopilots for effortless execution.
           </p>
         </div>
 
@@ -436,7 +436,7 @@ export default function PublicMarketplacePage() {
             Instant Secondary Exit Routes & Orderbook Depth
           </h2>
           <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 leading-relaxed">
-            Institutional allocators do not need to lock capital until facility maturity. Kudex supports liquid secondary trading: swap yield notes (kUSDp) on the private RFQ orderbook or redeem instantly via continuous buffer pools.
+            Institutional allocators do not need to lock capital until facility maturity. Kudex supports liquid secondary trading: swap yield notes (kUSDp) on the AMM or redeem instantly via continuous buffer pools.
           </p>
         </div>
 
@@ -521,7 +521,7 @@ export default function PublicMarketplacePage() {
         <div>
           <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Access Full Institutional Orderbook</h3>
           <p className="text-base text-slate-600 dark:text-neutral-400 mt-2 max-w-xl leading-relaxed">
-            Place limit RFQ orders, negotiate with solvers, and participate in shielded tranches.
+            Execute instant swaps, provide liquidity, and deploy autonomous agents.
           </p>
         </div>
         <Link

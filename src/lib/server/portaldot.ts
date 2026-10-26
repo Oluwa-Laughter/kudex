@@ -159,10 +159,28 @@ export function evmAccountSnapshot(address: `0x${string}`) {
       throw new Error('Unexpected network.');
     const block = await rpcClient.getBlockNumber({ cacheTime: 0 });
     const balance = await rpcClient.getBalance({ address, blockNumber: block });
+
+    let nativeFundingAddress = '';
+    let nativeFreeTPOT = '0';
+    try {
+      const api = await nativeApi();
+      const mapped = await api.call.reviveApi.accountId(address);
+      nativeFundingAddress = mapped.toString();
+      const account = await api.query.system.account(mapped);
+      const value = account.toJSON() as { data?: { free?: string } };
+      if (value?.data?.free) {
+        nativeFreeTPOT = formatUnits(BigInt(value.data.free), 14);
+      }
+    } catch {
+      // Fallback if native metadata is temporarily busy
+    }
+
     return {
       address,
       balanceBaseUnits: balance.toString(),
       gasTPOT: formatUnits(balance, 18),
+      nativeFundingAddress,
+      nativeFreeTPOT,
       block: block.toString(),
       observedAt: new Date().toISOString(),
     };

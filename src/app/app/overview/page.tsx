@@ -25,7 +25,7 @@ import { KUDEX_VAULT_ABI } from '@/lib/contracts/abis';
 import { truncateAddress } from '@/lib/utils';
 import { useProtocolStore } from '@/lib/protocol-store';
 import { useNativeWallet } from '@/components/navigation/NativeWalletProvider';
-import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
+import { useNativeAccount, useEvmMapping } from '@/lib/hooks/useNativeAccount';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
 import { AgentConsole } from '@/components/dashboard/AgentConsole';
 
@@ -33,6 +33,7 @@ export default function OverviewPage() {
   const { address, isConnected } = useAccount();
   const { selected: nativeSelected } = useNativeWallet();
   const nativeAccount = useNativeAccount();
+  const { data: evmData } = useEvmMapping(address);
   const { notes, positions, orders, riskScoreBps } = useProtocolStore();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -100,7 +101,7 @@ export default function OverviewPage() {
             Protocol Command Center
           </h1>
           <p className="mt-2 text-base text-muted-foreground max-w-2xl">
-            Institutional confidential settlement, structured RWA credit tranches, and autonomous agent RFQ execution.
+            Institutional confidential settlement, structured RWA credit tranches, and autonomous agent DeFi execution.
           </p>
         </div>
 
@@ -202,6 +203,26 @@ export default function OverviewPage() {
                     Revive Module (Active)
                   </span>
                 </div>
+                {evmData?.nativeFundingAddress && (
+                  <div className="mt-2 pt-2 border-t border-border/50 space-y-1">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Substrate Funding Address:</span>
+                      <button
+                        onClick={() => handleCopy(evmData.nativeFundingAddress!, 'funding')}
+                        className="text-xs text-primary hover:underline flex items-center gap-1 font-mono"
+                      >
+                        {copiedId === 'funding' ? <FiCheck className="w-3.5 h-3.5" /> : <FiCopy className="w-3.5 h-3.5" />}
+                        <span>{copiedId === 'funding' ? 'Copied' : 'Copy'}</span>
+                      </button>
+                    </div>
+                    <p className="font-mono text-[11px] font-bold text-foreground break-all select-all">
+                      {evmData.nativeFundingAddress}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Send testnet tPOT here from your Portaldot extension to fund EVM transactions.
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-xs text-muted-foreground py-1">
@@ -230,7 +251,7 @@ export default function OverviewPage() {
 
         <div className="p-6 rounded-2xl border border-border bg-card space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-xs font-mono uppercase text-muted-foreground">
-            <span>Settled RFQ Volume</span>
+            <span>Settled DeFi Volume</span>
             <FiRepeat className="w-4 h-4 text-primary" />
           </div>
           <div className="text-3xl font-extrabold font-mono text-foreground tabular-nums">
@@ -328,11 +349,11 @@ export default function OverviewPage() {
                 Instant Swap & Fiat Ramps
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Simple 1-click token swaps, instant fiat on-ramps via card or bank wire, and confidential off-ramps to bank accounts with zero balance leakage.
+                Simple 1-click AMM token swaps, yield-bearing liquidity pools, and autonomous agent autopilot execution on Portaldot V3.
               </p>
             </div>
             <div className="pt-2 flex items-center gap-2 text-sm font-bold text-primary">
-              <span>Trade & Ramp Now</span>
+              <span>Trade & Swap Now</span>
               <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -350,7 +371,7 @@ export default function OverviewPage() {
               Autonomous Agent & Settlement Copilot
             </h2>
             <p className="text-sm text-muted-foreground">
-              Query on-chain solvency telemetry, simulate RFQ routes, and explore credit tranches.
+              Query on-chain solvency telemetry, simulate AMM swap routes, and explore credit tranches.
             </p>
           </div>
         </div>

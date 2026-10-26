@@ -37,7 +37,7 @@ export default function AppHowItWorksPage() {
   const faqs = [
     {
       q: 'How do I start trading or depositing assets on Kudex?',
-      a: 'First, connect your Web3 wallet using the Connect Wallet button at the top right. Once connected, you can fund your wallet with testnet tokens, deposit into shielded yield vaults, or perform zero-slippage RFQ swaps directly.',
+      a: 'First, connect your Web3 wallet using the Connect Wallet button at the top right. Once connected, you can fund your wallet with testnet tokens, deposit into shielded yield vaults, or perform instant DeFi swaps and provide pool liquidity directly.',
     },
     {
       q: 'How does client-side note shielding protect my balance?',
