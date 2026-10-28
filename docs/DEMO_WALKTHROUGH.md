@@ -1,5 +1,7 @@
 # Kudex product walkthrough
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 This script demonstrates Kudex's current product: vault discovery, maker-signed settlement offers, and a bounded assistant. Keep the walkthrough under three minutes. Use the live Portaldot test network when the required contracts and funded EVM account are available. Otherwise show the real product states and explain which deployment gate remains; never imply that a local test settled on the public network.
 
 ## Before recording
@@ -17,7 +19,7 @@ Open Overview. Point out the product paths to vaults, marketplace, and the agent
 
 ## 0:25–1:30 — Create and review a signed offer
 
-Open Marketplace and choose Create offer. Enter the offered and requested token addresses, exact amounts, and expiry. Review the direction of the trade, connected maker, token decimals, and expiry before signing.
+Open Advanced signed RFQ at `/app/rfq` and choose Create an offer. Enter the offered and requested token addresses, exact amounts, and expiry. Review the direction of the trade, connected maker, token decimals, and expiry before signing.
 
 Explain that the signature commits to the order and network. It does not reserve tokens or grant spending permission. Export the signed offer and show how the counterparty imports it. The review displays the exact terms and checks the live router, nonce, signature, balances, and allowances.
 

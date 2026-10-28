@@ -1,5 +1,7 @@
 # Bounded agents and upgrade governance
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 ## Release boundary
 
 This repository now includes a deposit-only delegate executor and an upgradeable vault-policy registry. Neither is deployed by the main deployment script. Their tests are local; no live agent policy or background worker is activated. The web policy builder exports a draft and provides a separate owner-signed policy creation control after infrastructure checks. Policy controls support allowance changes, revocation, and one delegate-signed deposit after deployment. See [AGENT_SETUP.md](AGENT_SETUP.md) for the Google assistant and current UI paths.

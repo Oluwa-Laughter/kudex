@@ -1,70 +1,65 @@
 # Kudex
 
-Kudex is a Portaldot settlement product in development, with a planned scope covering tokenized credit, signed RFQ trading and bounded agents. Privacy, RWA tranches, bridging and selective disclosure are not implemented production capabilities.
+Kudex is financial infrastructure in development on **Portaldot V3 Testnet**. The current foundation is a public ERC-4626 custody vault, signed RFQ trading, an administrative risk freeze, a read-only Google AI assistant, and deposit-only contract permissions. There is no promised yield, principal protection, private settlement or autonomous profit.
 
-The current contract foundation contains a public ERC-4626 vault, an EIP-712 signed-order RFQ router, and an owner-scored risk adapter that can freeze new deposits. The app integrates public vault deposits/withdrawals, gated on verified network and contract configuration. Unsupported workflows display unavailable states rather than simulated success.
+The October 28 integrity revision removes browser-ledger execution, fabricated pools/settlements/metrics, local agent profits and the wallet's fallback faucet balance. The premium dark/light shell and branding remain; unsupported workspaces display explicit unavailable states.
 
-**Portaldot V3 is now connected:** EVM RPC `https://test-evm-rpc-v3.portaldot.dev`, chain ID `420420777`. Runtime inspection confirms native tPOT uses 14 decimals and the Ethereum interface uses 18. Contract logic passed read-only execution on the live runtime. Contract publication still needs a funded native or EVM signer. See [the activation runbook](docs/PORTALDOT_TESTNET.md).
+| Capability | Current evidence |
+| --- | --- |
+| Network | Real RPC chain `420420777`; native runtime `3002`, EVM bytecode allowed, 14 native / 18 EVM decimals |
+| Public vault | Exact separate approval, bounded deposit/redemption, matching receipts/events and refreshed actual shares; local contract/browser round trips tested |
+| RFQ `/app/rfq` | Existing signed offers, exact approvals, full-fill settlement, cancellation and replay protection; local compiled-contract test |
+| Agent permissions | Deposit-only policy contracts and wallet controls; public deployment required |
+| Assistant | Configured Google conversation and bounded read tools; no custody or signer |
+| AMM / LP | Disabled; no reviewed deployment or funded liquidity verified |
+| Privacy / bridge / disclosure / credit tranches | Unimplemented or deliberately disabled |
+| Worker / persistent indexer | Not implemented; existing event API scans a bounded recent chain window |
 
-Read [the implementation review and scaling roadmap](docs/READINESS.md) for security findings, fixes, remaining work and the network compatibility checklist. This is not an independently audited or production-ready protocol.
+**No public-testnet deployment or funded financial transaction was performed in this revision.** Read-only runtime execution is not a public receipt or independent audit. New vault methods require a new immutable deployment.
 
-## Local checks
+Read the [current engineering report and threat model](docs/ENGINEERING_REVIEW_2026-10-28.md), [contract guide](contracts/README.md), and [Portaldot activation runbook](docs/PORTALDOT_TESTNET.md). Older dated review sections record historical states; the October 28 report is the current inventory.
+
+## Setup and verification
+
+Use Node 22 or later, pnpm 10 and Foundry. Copy `.env.example` to `.env.local`; keep deployment addresses and runtime hash pins empty until verified. Store server-only Google configuration locally. Never expose signing keys or model keys through public environment variables.
 
 ```sh
 pnpm install --frozen-lockfile
+pnpm typecheck
 pnpm build
 forge test --root contracts
+pnpm test:network
+pnpm test:deployment
+pnpm test:agents
+pnpm test:agent-service
+pnpm test:rfq
+pnpm test:vault
+pnpm test:rfq-runtime
+pnpm test:vault-runtime
+pnpm exec playwright install --with-deps chromium
+pnpm test:ui
+pnpm test:vault-ui
+pnpm audit --prod --audit-level high
 ```
 
-Copy `.env.example` to `.env.local`. The announced network values are included; deployment addresses stay empty until verified. Sign in a wallet or local keystore; do not put keys in public configuration. Run the read-only preflight once configuration is available:
+`test:vault-ui` starts its own local Anvil and isolated Next.js development server, deploys real compiled local contracts, injects an unlocked **local test signer**, and verifies a browser deposit/redemption against receipts and balances. It never uses a public signer. The ordinary Playwright suite uses the production build. Fixture network observations are labeled tests, not public execution evidence.
+
+Run `pnpm dev`, then open `/app/overview`. Vaults are at `/app/vaults`, swaps/liquidity availability at `/app/marketplace`, advanced signed offers at `/app/rfq`, policies at `/app/agents`, and risk at `/app/protection`. Native extension identification does not enable EVM signing for a mapped address.
+
+Read-only Portaldot checks:
 
 ```sh
-node --env-file=.env.local scripts/check-network.mjs
+pnpm check:network --rpc-only
+pnpm inspect:portaldot
+pnpm test:runtime
 ```
 
-Start the application with `pnpm dev`. The workspace is `/app/overview`; public vault actions are at `/app/vaults`. Empty or failed network configuration does not fabricate balances or successful transactions.
+In a proxy-based environment using a Node version that supports it, set `NODE_USE_ENV_PROXY=1`. Do not change chain identity or gas units to work around transport errors. The runtime smoke diagnostic uses `eth_call` and temporary assets; it does not deploy anything.
 
-## Deployment
+## Deployment boundary
 
-The Foundry script accepts an existing collateral token, or an explicitly enabled testnet-only KTEST deployment. A native SS58 deployment preparation helper is also available. It wires the risk adapter as a revocable default controller without transferring vault ownership. Contracts changed during this review require a new deployment.
+Run `pnpm prepare:deployment` to generate an offline unsigned review manifest with real compiled creation-code hashes and constructor schemas. Signer, collateral, final constructor inputs, addresses and transaction evidence remain unresolved. Select and review collateral, signer, gas/storage funding, constructor arguments and the final manifest first. Obtain explicit authorization before broadcasting. `Deploy.s.sol` wires the risk adapter as a revocable controller; the owner retains administration. Agent infrastructure is separate and governed by a timelock.
 
-The live runtime accepts EVM bytecode and passed the read-only diagnostic. Funded publication, wallet signing and final receipt checks are still required. The included verifier is deliberately fail-closed; confidential transfers are disabled.
+After an authorized deployment, `pnpm configure:deployment <foundry-broadcast-file>` checks compiled creation input, canonical finalized receipts, owner/controller relationships and bytecode. It records actual evidence and writes vault/collateral runtime hash pins. Rebuild the app to inline configuration. The vault checks these pins before spending and separately supports allowance removal. The importer does not establish an independent asset audit.
 
-## Repository
-
-- `contracts/src`: public vault, signed RFQ router, risk adapter and disabled verifier.
-- `contracts/test`: authorization, replay, vault and default regression tests.
-- `src/app`: marketing, developer reference, product workspaces, streamed agent and bounded public read endpoints.
-- `src/lib/contracts`: addresses, ABIs, typed order schema and deployment checks.
-- `scripts/check-network.mjs`: read-only RPC identity and code-presence preflight.
-- `docs/READINESS.md`: product status, security review, architecture and release gates.
-
-## Product guides and bounded agents
-
-Read the [user quickstart](public/kudex-quickstart.md) for wallet readiness, public vault deposits, withdrawals, and draft agent policies. The same guide is available in the product at `/how-it-works` and `/app/how-it-works`.
-
-The refreshed workspace includes native extension account identification, a separate EVM signing connection, explicit transaction review, and a bounded agent policy builder. Native transaction signing in the vault form remains pending. Draft export activates no policy.
-
-The [agent and upgrade runbook](docs/AGENTS_AND_UPGRADES.md) covers the new deposit-only executor, opt-in timelocked policy registry, signing boundaries, and remaining production requirements. The custody vault remains immutable. No new infrastructure has been deployed.
-
-The [UI system and manual acceptance checklist](docs/UI_SYSTEM.md) records typography, interaction rules, motion, and visual checks still required.
-
-See [product scope and delivery gates](docs/PRODUCT_SCOPE.md) for track fit, the architecture diagram, testnet activation, and the indexing/worker work required before scaling traffic. Repository tests and a working UI are not a production scaling certification.
-
-## Live agent workspace
-
-The agent now includes streamed Google AI Studio conversation when configured, live read-only Portaldot tools, finalized native account inspection, and wallet-driven policy authorization/lifecycle controls after deployment. See [Agent setup](docs/AGENT_SETUP.md) for the server-only key/model settings and the exact activation boundaries. A running model does not itself authorize spending.
-
-Run `pnpm agent:check` to discover models available to your Google project, then `pnpm agent:check -- --probe` for a small provider check. The key must be entered locally; no model credential is required for the explicit live network checks.
-
-Recent event scanning now uses a bounded shared server endpoint rather than one independent RPC scan per browser. This reduces per-instance request duplication; durable indexing and global limits remain release gates.
-
-Use the [demo walkthrough](docs/DEMO_WALKTHROUGH.md) to explain the current product in under three minutes.
-
-## Signed offers and product workspaces
-
-The RFQ workspace at `/app/marketplace` now supports maker signing/export, imported-offer review, separate exact approvals, complete atomic fills, cancellation, and allowance removal. It requires a configured router and funded wallet; there is no hosted orderbook or invented solver price feed. See [RFQ settlement](docs/RFQ_SETTLEMENT.md) for the JSON contract and verification boundaries.
-
-Run `pnpm test:rfq` for precision/import/signature checks and `pnpm test:rfq-runtime` for an isolated local-EVM settlement using the actual compiled contracts. Neither command uses user keys or sends a public-network transaction.
-
-Overview and Kudex Agent lead with product workflows. Network readiness supports transaction setup. Pool protection reads the configured vault's administrative risk input and deposit-freeze state through a cached public endpoint; it does not claim debt recovery. `/docs` describes current interfaces, and `/pricing` labels the business model's proposed rates without activating billing or contract fees.
+The [quickstart](public/kudex-quickstart.md), [agent setup](docs/AGENT_SETUP.md), and [agent governance](docs/AGENTS_AND_UPGRADES.md) explain supported workflows. Persistent indexing, durable jobs, reviewed AMM integration, live wallet coverage, independent contract review and operational controls remain release gates.

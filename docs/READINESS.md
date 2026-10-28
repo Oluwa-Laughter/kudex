@@ -1,5 +1,7 @@
 # Kudex implementation and scaling review
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 Initial review date: 2026-10-16. This document records the initial review; sections describing the then-disabled agent and unavailable browser are historical. Current agent behavior is in [Agent setup](AGENT_SETUP.md), current signed-offer UI in [RFQ settlement](RFQ_SETTLEMENT.md), and current network configuration in [Portaldot activation](PORTALDOT_TESTNET.md). This is an internal engineering review, not an independent security audit or production certification.
 
 ## Product and track

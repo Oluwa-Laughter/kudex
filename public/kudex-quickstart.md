@@ -18,15 +18,15 @@ Portaldot V3 testnet's EVM chain ID is `420420777`. Native balances use 14 decim
 
 Open `/app/vaults` after deployment. Check the collateral symbol, token precision, available balance, and contract address. Test collateral is not a dollar-backed stablecoin or ownership of a real-world asset.
 
-Enter a deposit amount and choose **Review deposit**. Review the amount, estimated shares, owner account, vault, and network. Estimates can change before inclusion. Your wallet displays gas fees.
+Enter a deposit amount and choose **Review vault transaction**. Review the amount, estimated shares, owner account, vault, and network. Estimates can change before inclusion. Your wallet displays gas fees.
 
 ## 4. Authorize and confirm
 
-Choose **Confirm in wallet**. A deposit may need an exact-amount token approval first. Approval is not a deposit. Review the separate deposit transaction and wait for a successful receipt. Balances refresh from the chain. A rejected signature, RPC error, or reverted transaction is a failure.
+Choose **Approve exact deposit amount** when required, review again after the approval, then **Confirm deposit in wallet**. A deposit may need an exact-amount token approval first. Approval is not a deposit. Review the separate deposit transaction and wait for a successful receipt. Balances refresh from the chain. A rejected signature, RPC error, or reverted transaction is a failure.
 
 ## 5. Withdraw
 
-Choose **Withdraw**, review your maximum available assets, and confirm the amount. A default freeze can stop new deposits; withdrawals remain subject to asset availability.
+Choose **Redeem shares**, enter available shares, review minimum asset output and expiry, then confirm redemption in your wallet. A default freeze can stop new deposits; withdrawals remain subject to asset availability.
 
 ## 6. Prepare an agent policy
 
@@ -38,7 +38,7 @@ Revoke the on-chain policy and any remaining token allowance when finished. The 
 
 ## 7. Trade a signed offer
 
-Open `/app/marketplace`. The maker chooses Create an offer, enters the two token addresses, exact offered/requested amounts, and expiry, then reviews the loaded token metadata. Signing creates a shareable JSON offer, not a trade or a token reservation. Download the export. Anyone holding the signature may take the full offer.
+Open `/app/rfq`. The maker chooses Create an offer, enters the two token addresses, exact offered/requested amounts, and expiry, then reviews the loaded token metadata. Signing creates a shareable JSON offer, not a trade or a token reservation. Download the export. Anyone holding the signature may take the full offer.
 
 Review your own export to check funding and approve the maker's exact outgoing amount to the router. The taker imports that export, checks all terms and token addresses, connects the paying wallet, and refreshes the review. The taker approves the exact payment separately, then fills the complete offer. The app refreshes state, simulates, and checks for a successful receipt with the matching settlement event. Used, expired, or cancelled offers cannot be filled.
 
@@ -65,3 +65,5 @@ Only use test assets. Keep private keys and recovery phrases in your wallet or p
 ## Ask the assistant
 
 Open Agents → Live assistant for vault, signed-order, and bounded-permission guidance. With Google conversation configured by the operator, you can ask in your own words. Live reads are used for network, wallet, or vault claims; replies stream with observations and timestamps. The assistant cannot sign transactions or grant allowances. If the native RPC is unavailable, your balance remains unknown.
+
+Pending vault transaction hashes are retained only for receipt reconciliation, never as a record of success. If a receipt cannot be read, keep the hash and inspect wallet activity before another submission. Vault spending requires runtime code hashes imported from finalized deployment evidence.

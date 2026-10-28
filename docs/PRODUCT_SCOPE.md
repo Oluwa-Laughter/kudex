@@ -1,5 +1,7 @@
 # Kudex product scope
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 ## Product and track fit
 
 Kudex is a financial application: public vault custody, signed RFQ settlement, bounded delegate execution, and a longer-term direction toward confidential settlement and structured credit. Based on this scope, DeFi / financial infrastructure / RWA is the closest track **if present in the actual registration form**. The organizer's validator-monitoring response does not describe Kudex's current functionality. No official track list has been verified in this repository, so do not claim an official selection or invent validator features to fit that response.

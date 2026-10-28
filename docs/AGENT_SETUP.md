@@ -1,5 +1,7 @@
 # Kudex Agent: setup and operating boundaries
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 ## What is implemented
 
 `/app/agents` now has three areas:

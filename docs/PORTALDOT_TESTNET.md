@@ -1,5 +1,7 @@
 # Portaldot V3 activation
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 Updated 2026-10-17. The network is reachable. Contract publication is still pending funding and wallet signatures.
 
 ## Verified network

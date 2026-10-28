@@ -1,5 +1,7 @@
 # Signed RFQ settlement
 
+Current inventory, October 28 fixes, test evidence and release gates: [engineering review](ENGINEERING_REVIEW_2026-10-28.md). Earlier dated observations below are historical. The AMM workspace remains at `/app/marketplace`; signed RFQ is now `/app/rfq`.
+
 Kudex's marketplace supports a direct maker/counterparty workflow. It has no hosted orderbook, solver quote service, price oracle, Dutch auction, private fill, or partial-fill mechanism. Terms come from the maker; no market price is fabricated.
 
 ## User flow
