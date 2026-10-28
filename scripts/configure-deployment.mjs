@@ -76,6 +76,12 @@ try {
       client.getTransaction({ hash: tx.hash }),
       client.getBytecode({ address: tx.contractAddress }),
     ]);
+    const [canonical, finalized] = await Promise.all([
+      client.getBlock({blockNumber: receipt.blockNumber}),
+      client.getBlock({blockTag: 'finalized'}),
+    ]);
+    if (canonical.hash !== receipt.blockHash || finalized.number < receipt.blockNumber)
+      throw new Error('Deployment is not canonical and finalized');
     const expectedInput = encodeDeployData({
       abi: artifact.abi,
       bytecode: artifact.bytecode.object,
@@ -145,6 +151,7 @@ try {
     importedAt: new Date().toISOString(),
     deployer,
     collateral: asset,
+    collateralRuntimeCodeHash: keccak256(assetCode),
     contracts: confirmed,
   };
   const dir = new URL('contracts/deployments/', root);
@@ -163,6 +170,8 @@ try {
   }
   const values = {
     NEXT_PUBLIC_VAULT_ADDRESS: vault,
+    NEXT_PUBLIC_VAULT_CODE_HASH: confirmed.KudexVault.runtimeCodeHash,
+    NEXT_PUBLIC_COLLATERAL_CODE_HASH: keccak256(assetCode),
     NEXT_PUBLIC_RFQ_ROUTER_ADDRESS: router,
     NEXT_PUBLIC_DAAS_ADAPTER_ADDRESS: adapter,
     NEXT_PUBLIC_VERIFIER_ADDRESS: verifier,

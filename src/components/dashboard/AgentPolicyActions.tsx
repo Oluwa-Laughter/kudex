@@ -94,7 +94,9 @@ export function AgentPolicyActions({
       const event = events.find(
         (event) =>
           event.args.owner.toLowerCase() === address.toLowerCase() &&
-          event.args.delegate.toLowerCase() === policy.delegate.toLowerCase(),
+          event.args.delegate.toLowerCase() === policy.delegate.toLowerCase() &&
+          event.args.vault.toLowerCase() === policy.vault.toLowerCase() &&
+          event.args.expiresAt === BigInt(policy.expiresAt),
       );
       if (!event)
         throw new Error(

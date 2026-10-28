@@ -40,9 +40,9 @@ contract RuntimeSmoke {
         KudexVault vault = new KudexVault(token, "Smoke Vault", "sVAULT", address(verifier));
         token.mint(address(this), 1000);
         token.approve(address(vault), 100);
-        vault.deposit(100, address(this));
+        vault.depositWithMinimum(100, address(this), 100, block.timestamp + 60);
         require(vault.totalAssets() == 100, "Deposit mismatch");
-        vault.withdraw(40, address(this), address(this));
+        vault.redeemWithMinimum(40, address(this), 40, block.timestamp + 60);
         require(vault.totalAssets() == 60, "Withdrawal mismatch");
 
         SmokeToken quoteToken = new SmokeToken("QUOTE");

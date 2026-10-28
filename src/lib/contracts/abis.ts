@@ -1,4 +1,22 @@
+import { parseAbi } from 'viem';
+
+export const publicVaultAbi = parseAbi([
+  'function asset() view returns(address)',
+  'function decimals() view returns(uint8)',
+  'function balanceOf(address) view returns(uint256)',
+  'function convertToAssets(uint256) view returns(uint256)',
+  'function maxDeposit(address) view returns(uint256)',
+  'function maxRedeem(address) view returns(uint256)',
+  'function maxWithdraw(address) view returns(uint256)',
+  'function previewDeposit(uint256) view returns(uint256)',
+  'function previewRedeem(uint256) view returns(uint256)',
+  'function depositWithMinimum(uint256 assets,address receiver,uint256 minShares,uint256 deadline) returns(uint256)',
+  'function redeemWithMinimum(uint256 shares,address receiver,uint256 minAssets,uint256 deadline) returns(uint256)',
+  'event Deposit(address indexed sender,address indexed owner,uint256 assets,uint256 shares)',
+  'event Withdraw(address indexed sender,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)',
+]);
 export const kudexVaultAbi = [
+  ...publicVaultAbi,
   {
     type: 'constructor',
     inputs: [

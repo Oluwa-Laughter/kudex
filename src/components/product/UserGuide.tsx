@@ -24,7 +24,7 @@ const steps = [
   ],
   [
     'Withdraw when available',
-    'Choose Withdraw, check the displayed maximum, and confirm the amount. New deposits can be paused during default; withdrawals remain subject to available assets.',
+    'Choose Redeem shares, check the maximum redeemable shares, review minimum asset output, and confirm. New deposits can be paused during default; withdrawals remain subject to available assets.',
   ],
 ];
 export function UserGuide() {
@@ -96,7 +96,7 @@ export function UserGuide() {
             </li>
           ))}
         </ol>
-        <Link className="action-link mt-6" href="/app/marketplace">
+        <Link className="action-link mt-6" href="/app/rfq">
           Open RFQ trading <FiArrowRight aria-hidden="true" />
         </Link>
       </section>

@@ -4,7 +4,7 @@ test('malformed RFQ exports cannot enable settlement and expiry selection stays 
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 900 });
-  await page.goto('/app/marketplace');
+  await page.goto('/app/rfq');
   await expect(page.getByRole('heading', { name: 'Trade on your terms.' })).toBeVisible();
   await page
     .getByLabel('Signed offer JSON', { exact: true })

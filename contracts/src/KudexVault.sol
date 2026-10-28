@@ -41,6 +41,9 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
     error InvalidRiskScore();
     error InvalidCommitment();
     error ConfidentialTransfersUnavailable();
+    error InexactAssetTransfer();
+    error MinimumOutputNotMet();
+    error TransactionExpired();
 
     constructor(IERC20 _underlyingAsset, string memory _name, string memory _symbol, address _verifier)
         ERC4626(_underlyingAsset)
@@ -52,7 +55,6 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
 
     function shieldDeposit(uint256 assets, bytes32 commitment, address receiver)
         external
-        nonReentrant
         returns (uint256 shares)
     {
         if (isDefaulted) revert VaultInDefault();
@@ -75,6 +77,47 @@ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
         uint256[2] calldata
     ) external pure {
         revert ConfidentialTransfersUnavailable();
+    }
+
+    /// @notice Public ERC-4626 deposit with user-specified share floor and expiry.
+    function depositWithMinimum(uint256 assets, address receiver, uint256 minShares, uint256 deadline)
+        external returns (uint256 shares)
+    {
+        if (block.timestamp > deadline) revert TransactionExpired();
+        if (assets == 0 || minShares == 0) revert ZeroDepositNotAllowed();
+        shares = deposit(assets, receiver);
+        if (shares < minShares) revert MinimumOutputNotMet();
+    }
+
+    /// @notice Redeem the caller's shares with a minimum asset return.
+    function redeemWithMinimum(uint256 shares, address receiver, uint256 minAssets, uint256 deadline)
+        external returns (uint256 assets)
+    {
+        if (block.timestamp > deadline) revert TransactionExpired();
+        if (shares == 0 || minAssets == 0) revert ZeroDepositNotAllowed();
+        assets = redeem(shares, receiver, msg.sender);
+        if (assets < minAssets) revert MinimumOutputNotMet();
+    }
+
+    // All standard and bounded entry points share the same transfer guard.
+    // Fee-on-transfer and rebasing assets are unsupported.
+    function _deposit(address caller, address receiver, uint256 assets, uint256 shares)
+        internal override nonReentrant
+    {
+        if (assets == 0 || shares == 0) revert ZeroDepositNotAllowed();
+        uint256 beforeAssets = IERC20(asset()).balanceOf(address(this));
+        super._deposit(caller, receiver, assets, shares);
+        if (IERC20(asset()).balanceOf(address(this)) != beforeAssets + assets) revert InexactAssetTransfer();
+    }
+
+    function _withdraw(address caller, address receiver, address owner_, uint256 assets, uint256 shares)
+        internal override nonReentrant
+    {
+        uint256 beforeAssets = IERC20(asset()).balanceOf(address(this));
+        uint256 beforeReceiver = IERC20(asset()).balanceOf(receiver);
+        super._withdraw(caller, receiver, owner_, assets, shares);
+        if (IERC20(asset()).balanceOf(address(this)) + assets != beforeAssets
+            || IERC20(asset()).balanceOf(receiver) != beforeReceiver + assets) revert InexactAssetTransfer();
     }
 
     function maxDeposit(address receiver) public view override returns (uint256) {

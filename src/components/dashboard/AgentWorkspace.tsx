@@ -11,7 +11,7 @@ import { NativeAccountCard } from './NativeAccountCard';
 
 const tabs = [
   { value: 'fleet', label: 'Autonomous Fleet', icon: FiActivity },
-  { value: 'assistant', label: 'AI Execution Copilot', icon: FiCpu },
+  { value: 'assistant', label: 'AI Assistant', icon: FiCpu },
   { value: 'builder', label: 'Session Keys & Policies', icon: FiSliders },
   { value: 'controls', label: 'Policy Registry Controls', icon: FiShield },
 ];
@@ -30,19 +30,20 @@ export function AgentWorkspace() {
             under your cryptographic control.
           </h1>
           <p className="page-description">
-            Deploy autonomous AI agents to automate token swaps, execute recurring DCA purchases, rebalance structured credit tranches, and capture cross-shard arbitrage under bounded session keys.
+            Inspect verified observations with the assistant, prepare deposit-only
+            policies, and manage permissions through the exact owner or delegate wallet.
           </p>
         </div>
         <p className="max-w-xs border-l-2 border-primary pl-4 text-sm leading-6 text-muted-foreground">
-          24/7 Autonomous Solvers & Arbitrage.
+          Deposit-only contract permissions.
           <br />
           Cryptographic Session Spend Ceilings.
           <br />
-          Block-Atomic Portaldot 3.0 Settlement.
+          Automation service awaiting implementation.
         </p>
       </header>
 
-      <Tabs.Root defaultValue="fleet">
+      <Tabs.Root defaultValue="assistant">
         <Tabs.List
           aria-label="Agent workspace"
           className="mb-7 flex flex-wrap gap-2 border-b border-border pb-4"

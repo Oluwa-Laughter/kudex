@@ -1,5 +1,5 @@
 import { zeroAddress, type Address, type PublicClient } from 'viem';
-import { isNetworkConfigured, portaldotTestnet } from '@/lib/chains/portaldot';
+import { isNetworkConfigured, portaldotTestnet } from '../chains/portaldot.ts';
 
 export async function assertDeployment(
   client: PublicClient,

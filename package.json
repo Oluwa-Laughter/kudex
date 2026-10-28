@@ -22,7 +22,11 @@
     "test:rfq": "node --experimental-strip-types --test tests/rfq-orders.test.mjs",
     "test:rfq-runtime": "forge build --root contracts && node --experimental-strip-types --test tests/rfq-runtime.test.mjs",
     "test:ui": "playwright test",
-    "probe:ui": "node scripts/probe-ui.mjs"
+    "probe:ui": "node scripts/probe-ui.mjs",
+    "test:vault": "node --experimental-strip-types --test tests/vault-client.test.mjs",
+    "test:vault-runtime": "forge build --root contracts && node --experimental-strip-types --test tests/vault-runtime.test.mjs",
+    "test:vault-ui": "forge build --root contracts && node --experimental-strip-types tests/local-vault-ui.mjs",
+    "prepare:deployment": "forge build --root contracts && node scripts/prepare-deployment-manifest.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",
@@ -46,7 +50,7 @@
     "tailwind-merge": "^3.0.0",
     "viem": "^2.21.58",
     "wagmi": "^2.14.9",
-    "zod": "^3.25.76",
+    "zod": "^4.6.7",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
@@ -63,7 +67,8 @@
   },
   "pnpm": {
     "overrides": {
-      "ws@>=8.0.0 <8.21.0": "8.21.0"
+      "ws@>=8.0.0 <8.21.0": "8.21.0",
+      "zod@<4.6.6": "4.6.7"
     }
   }
 }

@@ -37,7 +37,7 @@ test('wallet dialog restores focus, native account context loads, and mobile men
   await wallet.click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page
-    .getByRole('button', { name: 'Connect native extension', exact: true })
+    .getByRole('button', { name: 'Connect Portaldot Native Extension', exact: true })
     .click();
   await expect(page.getByText(nativeAddress, { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
@@ -60,7 +60,7 @@ test('policy draft can be reviewed and exported without activating any on-chain 
   page,
 }) => {
   await page.goto('/app/agents');
-  await page.getByRole('tab', { name: 'Build a policy', exact: true }).click();
+  await page.getByRole('tab', { name: 'Session Keys & Policies', exact: true }).click();
   for (const [label, value] of [
     ['Contract-facing owner', '0x1111111111111111111111111111111111111111'],
     ['Agent delegate', '0x2222222222222222222222222222222222222222'],

@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Isolate the compiled browser-to-Anvil test server from normal application output.
+  distDir: process.env.KUDEX_LOCAL_VAULT_TEST === '1' ? '.next-vault-test' : '.next',
   serverExternalPackages: ['@polkadot/api'],
   typescript: {
     ignoreBuildErrors: false,
@@ -28,7 +30,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/dashboard/rfq',
-        destination: '/app/marketplace',
+        destination: '/app/rfq',
         permanent: true,
       },
       {

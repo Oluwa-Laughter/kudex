@@ -1,0 +1,119 @@
+{
+  "status": "unsigned-review-only",
+  "chainId": 420420777,
+  "broadcastAuthorized": false,
+  "signer": null,
+  "collateral": null,
+  "constructorArguments": null,
+  "deploymentAddresses": null,
+  "transactionEvidence": [],
+  "artifacts": [
+    {
+      "name": "KudexVault",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xf436d4650350ff531b76fe0df955e188430467862b1ed67a7a270bb01834f366",
+      "constructorInputs": [
+        {
+          "name": "_underlyingAsset",
+          "type": "address",
+          "internalType": "contract IERC20"
+        },
+        {
+          "name": "_name",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "_symbol",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "_verifier",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "name": "KudexRFQMarket",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xe83ba9fb12f2e74e592c6828095bc1eb6e204b54c4501d2e37d0df871857a346",
+      "constructorInputs": []
+    },
+    {
+      "name": "KudexDaaSAdapter",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0x8ec23381529d168288c07b0dd6e87176f2b00458102082320058e99ea7be015a",
+      "constructorInputs": [
+        {
+          "name": "initialVault",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "name": "Groth16Verifier",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xacd6a7180c305996e1606ef6ee9973f0f8fc8b71b2473bcb14da966e9775b334",
+      "constructorInputs": []
+    },
+    {
+      "name": "KudexAgentExecutor",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xeaf5002adffff6be39cd99b909f3425bf0c3ce48b0d824e3c855815d4e98f256",
+      "constructorInputs": [
+        {
+          "name": "policyRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "name": "KudexPolicyRegistry",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0x91ba522c4989959f291942b357ca99b95d3e3bc0e175a387c5f2786104184997",
+      "constructorInputs": []
+    }
+  ],
+  "requirements": [
+    "Review the vault changes and collateral provenance; this is not an independent audit.",
+    "Select an explicitly authorized funded signer and verify its actual signing model.",
+    "Choose existing reviewed collateral or explicitly authorize unbacked KTEST deployment.",
+    "Resolve exact constructor inputs, owner/controller identities, nonce and fee/storage funding.",
+    "Recheck current runtime, simulate exact deployment, review final manifest and obtain broadcast authorization.",
+    "Publish only to testnet, verify canonical finalized receipts and creation input, then import configuration."
+  ]
+}

@@ -72,7 +72,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
         <p className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
-          Kudex · Confidential Settlement, Structured Waterfall Credit & Autonomous Agent Economy on Portaldot 3.0.
+          Kudex · Public vaults, signed trading and bounded permissions on Portaldot V3
+          Testnet.
         </p>
       </footer>
     </div>

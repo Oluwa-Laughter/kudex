@@ -2,7 +2,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
-import { erc20Abi, formatUnits, isHex, parseUnits, zeroAddress } from 'viem';
+import {
+  erc20Abi,
+  formatUnits,
+  isHex,
+  parseUnits,
+  parseEventLogs,
+  zeroAddress,
+} from 'viem';
 import { AGENT_EXECUTOR, executorAbi } from '@/lib/agent/contracts';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { getReadableErrorMessage } from '@/lib/utils';
@@ -116,6 +123,9 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         setStatus('Transaction submitted. Waiting for a successful receipt…');
         const receipt = await client.waitForTransactionReceipt({ hash: tx });
         if (receipt.status !== 'success') throw new Error('The transaction reverted.');
+        if (receipt.from.toLowerCase() !== address.toLowerCase())
+          throw new Error('Receipt signer mismatch. Requires reconciliation.');
+        return receipt;
       };
       if (action === 'approve' || action === 'clearAllowance') {
         if (address.toLowerCase() !== p.owner.toLowerCase())
@@ -139,9 +149,22 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
             args: [AGENT_EXECUTOR, value],
             account: address,
           });
-          await wait(
-            await writeContractAsync({ ...simulation.request, chainId: 420420777 }),
+          const receipt = await wait(
+            await writeContractAsync({
+              ...simulation.request,
+              account: address,
+              chainId: 420420777,
+            }),
           );
+          const observed = await client.readContract({
+            address: p.asset,
+            abi: erc20Abi,
+            functionName: 'allowance',
+            args: [address, AGENT_EXECUTOR],
+            blockNumber: receipt.blockNumber,
+          });
+          if (observed !== value)
+            throw new Error('Exact allowance not observed. Requires reconciliation.');
         }
       } else if (action === 'revoke') {
         if (address.toLowerCase() !== p.owner.toLowerCase())
@@ -156,9 +179,22 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         setStatus(
           'Review policy revocation in your wallet. Token allowance is a separate control.',
         );
-        await wait(
-          await writeContractAsync({ ...simulation.request, chainId: 420420777 }),
+        const receipt = await wait(
+          await writeContractAsync({
+            ...simulation.request,
+            account: address,
+            chainId: 420420777,
+          }),
         );
+        const events = parseEventLogs({
+          abi: executorAbi,
+          eventName: 'PolicyRevoked',
+          logs: receipt.logs.filter(
+            (log) => log.address.toLowerCase() === AGENT_EXECUTOR.toLowerCase(),
+          ),
+        });
+        if (!events.some((event) => event.args.policyId === id))
+          throw new Error('Matching revocation event missing. Requires reconciliation.');
       } else {
         if (address.toLowerCase() !== p.delegate.toLowerCase())
           throw new Error(
@@ -197,9 +233,31 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         setStatus(
           'Review this single delegated deposit in your wallet. Shares go to the owner.',
         );
-        await wait(
-          await writeContractAsync({ ...simulation.request, chainId: 420420777 }),
+        const receipt = await wait(
+          await writeContractAsync({
+            ...simulation.request,
+            account: address,
+            chainId: 420420777,
+          }),
         );
+        const events = parseEventLogs({
+          abi: executorAbi,
+          eventName: 'DepositExecuted',
+          logs: receipt.logs.filter(
+            (log) => log.address.toLowerCase() === AGENT_EXECUTOR.toLowerCase(),
+          ),
+        });
+        if (
+          !events.some(
+            (event) =>
+              event.args.policyId === id &&
+              event.args.assets === assets &&
+              event.args.shares > 0n,
+          )
+        )
+          throw new Error(
+            'Matching deposit execution event missing. Requires reconciliation.',
+          );
       }
       setStatus(
         `${action === 'approve' ? 'Allowance update' : action === 'clearAllowance' ? 'Allowance removal' : action === 'revoke' ? 'Policy revocation' : 'Delegated deposit'} confirmed on-chain.`,

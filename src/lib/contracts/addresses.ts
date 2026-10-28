@@ -49,3 +49,11 @@ export const CONTRACT_ADDRESSES = {
 } as const;
 
 export const isVaultConfigured = vault !== zeroAddress && usdc !== zeroAddress;
+
+// Populated by the receipt/artifact-verifying deployment importer, never guessed.
+export const VAULT_CODE_HASH = process.env.NEXT_PUBLIC_VAULT_CODE_HASH;
+export const COLLATERAL_CODE_HASH = process.env.NEXT_PUBLIC_COLLATERAL_CODE_HASH;
+export const isVaultProvenanceConfigured =
+  isVaultConfigured &&
+  /^0x[0-9a-fA-F]{64}$/.test(VAULT_CODE_HASH ?? '') &&
+  /^0x[0-9a-fA-F]{64}$/.test(COLLATERAL_CODE_HASH ?? '');

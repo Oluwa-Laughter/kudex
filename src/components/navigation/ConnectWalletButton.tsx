@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useAccount, useConnect, useDisconnect, useSwitchChain, useBalance } from 'wagmi';
-import { FiX, FiCopy, FiCheck, FiArrowUpRight, FiShield, FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
+import {
+  FiX,
+  FiCopy,
+  FiCheck,
+  FiArrowUpRight,
+  FiShield,
+  FiAlertTriangle,
+  FiRefreshCw,
+} from 'react-icons/fi';
 import { RiWallet3Line } from 'react-icons/ri';
 import { useNativeWallet } from './NativeWalletProvider';
 import { useNativeAccount, useEvmMapping } from '@/lib/hooks/useNativeAccount';
@@ -14,16 +22,19 @@ import Link from 'next/link';
 
 export function ConnectWalletButton() {
   const { address, chainId } = useAccount();
-  const { connect, connectors, isPending: isConnecting, error: connectError } = useConnect();
+  const {
+    connect,
+    connectors,
+    isPending: isConnecting,
+    error: connectError,
+  } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, error: switchError, isPending: switching } = useSwitchChain();
   const native = useNativeWallet();
   const { data: nativeAccountData } = useNativeAccount();
   const { data: evmMappingData } = useEvmMapping(address);
 
-  const { data: balanceData } = useBalance({
-    address,
-  });
+  const { data: balanceData } = useBalance({ address, chainId: portaldotTestnet.id });
 
   const [copied, setCopied] = useState('');
   const [copyError, setCopyError] = useState('');
@@ -49,15 +60,20 @@ export function ConnectWalletButton() {
 
   const evmBalanceFormatted = balanceData
     ? `${parseFloat(balanceData.formatted).toFixed(2)} ${balanceData.symbol}`
-    : '0.00 tPOT';
+    : 'Unavailable';
 
   const nativeBalanceFormatted = nativeAccountData?.nativeFreeTPOT
     ? `${parseFloat(nativeAccountData.nativeFreeTPOT).toFixed(2)} tPOT`
-    : '500.00 tPOT';
+    : 'Unavailable';
 
   return (
     <Dialog.Root>
-      <Dialog.Trigger className="action-link gap-2">
+      <Dialog.Trigger
+        aria-label={
+          address ? 'EVM account' : native.selected ? 'Native account' : 'Connect wallets'
+        }
+        className="action-link gap-2"
+      >
         <RiWallet3Line className="w-4 h-4 text-emerald-400" aria-hidden="true" />
         <span className="font-mono text-xs font-semibold">
           {address ? (
@@ -136,7 +152,7 @@ export function ConnectWalletButton() {
                       Network Chain ID
                     </span>
                     <span className="text-base font-mono font-bold text-slate-900 dark:text-white">
-                      {chainId || 420420777}
+                      {chainId ?? 'Unavailable'}
                     </span>
                   </div>
                 </div>
@@ -150,15 +166,25 @@ export function ConnectWalletButton() {
                         onClick={() => void copy(evmMappingData.nativeFundingAddress!)}
                         className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
                       >
-                        {copied === evmMappingData.nativeFundingAddress ? <FiCheck /> : <FiCopy />}
-                        <span>{copied === evmMappingData.nativeFundingAddress ? 'Copied' : 'Copy SS58'}</span>
+                        {copied === evmMappingData.nativeFundingAddress ? (
+                          <FiCheck />
+                        ) : (
+                          <FiCopy />
+                        )}
+                        <span>
+                          {copied === evmMappingData.nativeFundingAddress
+                            ? 'Copied'
+                            : 'Copy SS58'}
+                        </span>
                       </button>
                     </div>
                     <p className="font-mono text-xs font-bold text-slate-900 dark:text-white break-all">
                       {evmMappingData.nativeFundingAddress}
                     </p>
                     <p className="text-[10px] text-slate-500 dark:text-neutral-400 leading-normal pt-0.5">
-                      Transfer testnet tPOT from your Portaldot extension to this address to instantly fund your EVM wallet for gas fees on Portaldot V3.
+                      Transfer testnet tPOT from your Portaldot extension to this address
+                      only after verifying the runtime mapping and transfer details.
+                      Native and EVM accounts have separate signing authority.
                     </p>
                   </div>
                 )}
@@ -211,7 +237,8 @@ export function ConnectWalletButton() {
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-slate-500 dark:text-neutral-400">
-                  Connect your EVM wallet (MetaMask, Rabby, or WalletConnect) to execute DeFi swaps, add liquidity, and deposit into structured vaults.
+                  Connect your EVM wallet (MetaMask, Rabby, or WalletConnect) to sign
+                  supported testnet transactions after deployment verification.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
                   {connectors.map((connector) => (
@@ -270,7 +297,9 @@ export function ConnectWalletButton() {
 
                 <div className="pt-2 border-t border-slate-200 dark:border-[#21293D]/60 flex items-center justify-between text-xs">
                   <div>
-                    <span className="text-slate-500 dark:text-neutral-400">Native Balance:</span>
+                    <span className="text-slate-500 dark:text-neutral-400">
+                      Native Balance:
+                    </span>
                     <strong className="font-mono text-emerald-600 dark:text-[#00E599] ml-1.5 font-bold">
                       {nativeBalanceFormatted}
                     </strong>
@@ -283,14 +312,22 @@ export function ConnectWalletButton() {
                 {nativeAccountData?.contractAddress && (
                   <div className="pt-2 border-t border-slate-200 dark:border-[#21293D]/60 space-y-1">
                     <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-neutral-400 font-semibold">
-                      <span>Revive EVM Address (Unified Mapping):</span>
+                      <span>Runtime-derived contract address:</span>
                       <button
                         type="button"
                         onClick={() => void copy(nativeAccountData.contractAddress)}
                         className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
                       >
-                        {copied === nativeAccountData.contractAddress ? <FiCheck /> : <FiCopy />}
-                        <span>{copied === nativeAccountData.contractAddress ? 'Copied' : 'Copy 0x'}</span>
+                        {copied === nativeAccountData.contractAddress ? (
+                          <FiCheck />
+                        ) : (
+                          <FiCopy />
+                        )}
+                        <span>
+                          {copied === nativeAccountData.contractAddress
+                            ? 'Copied'
+                            : 'Copy 0x'}
+                        </span>
                       </button>
                     </div>
                     <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 break-all">
@@ -324,7 +361,9 @@ export function ConnectWalletButton() {
             ) : (
               <div className="p-4 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] space-y-3">
                 <p className="text-xs text-slate-500 dark:text-neutral-400 leading-relaxed">
-                  Optional: Connect your Portaldot / Substrate extension to link your native SS58 identity for multi-shard governance.
+                  Optional: Connect your Portaldot / Substrate extension to inspect your
+                  native SS58 account and runtime-derived address. This does not enable
+                  transaction signing.
                 </p>
                 <button
                   type="button"

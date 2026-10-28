@@ -26,14 +26,25 @@ jobs:
       - run: pnpm test:agents
       - run: pnpm test:agent-service
       - run: pnpm test:rfq
+      - run: pnpm test:vault
       - uses: foundry-rs/foundry-toolchain@v1
         with:
           version: stable
       - run: pnpm test:rfq-runtime
+      - run: pnpm test:vault-runtime
+      - run: pnpm typecheck
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:ui
+      - run: pnpm test:vault-ui
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failure-evidence
+          path: test-results/
+          retention-days: 7
       - run: pnpm audit --prod --audit-level high
+        if: always()
   contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 15
