@@ -1,0 +1,26 @@
+Compiling 2 files with Solc 0.8.24
+Solc 0.8.24 finished in 8.56s
+Compiler run successful!
+
+Ran 6 tests for test/KudexTestCreditFacility.t.sol:KudexTestCreditFacilityTest
+[PASS] testFuzz_WaterfallConservesMeasuredCash(uint96) (runs: 256, μ: 554839, ~: 529195)
+[PASS] test_AuthorizationOverpaymentAndDefaultBoundary() (gas: 401498)
+[PASS] test_FailedRaiseRefundAndNoLateDisbursement() (gas: 266204)
+[PASS] test_LifecycleSeniorFirstAndRecovery() (gas: 803500)
+[PASS] test_MultipleInvestorsHaveCumulativeRoundingAndNoOverclaim() (gas: 807033)
+[PASS] test_RevokedEligibilityCannotSeizeRepaymentClaims() (gas: 485971)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 168.64ms (155.71ms CPU time)
+
+Ran 9 tests for test/KudexRfqExecutor.t.sol:KudexRfqExecutorTest
+[PASS] testFuzz_ExecutionConservesAssetsAndCaps(uint96) (runs: 256, μ: 352563, ~: 352625)
+[PASS] test_DailyAndLifetimeCaps() (gas: 847456)
+[PASS] test_ExactTradeNoCustodyOrResidualApproval() (gas: 327883)
+[PASS] test_FailedSignatureRollsBackBudgetAndFunds() (gas: 263849)
+[PASS] test_PriceCounterpartyPairExpiryAndReplay() (gas: 851266)
+[PASS] test_RationalFloorRoundsUpAndCancelledQuoteRollsBack() (gas: 868242)
+[PASS] test_TaxedMakerLegRollsBackOwnerFunding() (gas: 1399848)
+[PASS] test_TaxedOwnerFundingRollsBackAuthorityAndCash() (gas: 1234254)
+[PASS] test_UnauthorizedAndRevoked() (gas: 167404)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 168.76ms (223.38ms CPU time)
+
+Ran 2 test suites in 170.03ms (337.40ms CPU time): 15 tests passed, 0 failed, 0 skipped (15 total tests)

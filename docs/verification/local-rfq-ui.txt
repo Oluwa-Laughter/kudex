@@ -1,0 +1,31 @@
+
+> kudex@1.0.0 test:rfq-ui /home/laughter/Desktop/Hackathon/kudex
+> forge build --root contracts --quiet && node --experimental-strip-types tests/local-rfq-ui.mjs
+
+▲ Next.js 16.4.3 (Turbopack)
+- Local:         http://localhost:3018
+- Network:       http://192.168.1.243:3018
+- Environments: .env.local
+✓ Ready in 690ms
+✓ Running next.config.ts took 64ms
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+    - include was updated to add '.next-vault-test/types/**/*.ts'
+    - include was updated to add '.next-vault-test/dev/types/**/*.ts'
+
+
+✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+○ Compiling /app/marketplace ...
+(node:123109) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ GET /app/marketplace 200 in 1619ms (next.js: 398ms, application-code: 1221ms)
+ GET /app/marketplace 200 in 158ms (next.js: 3ms, application-code: 155ms)
+○ Compiling /app/agents ...
+ GET /app/agents 200 in 293ms (next.js: 16ms, application-code: 277ms)
+ GET /api/agent/status 200 in 691ms (next.js: 493ms, application-code: 198ms)
+ GET /app/marketplace 200 in 146ms (next.js: 4ms, application-code: 142ms)
+ GET /app/agents 200 in 155ms (next.js: 2ms, application-code: 152ms)
+ GET /api/agent/status 200 in 9ms (next.js: 1.5ms, application-code: 7ms)
+PASS: browser request signature → maker quote signature → exact maker/taker approvals → simulation → compiled router settlement → verified receipt → actual balances → separately authorized bounded delegate quote → mandate revocation. Isolated local Anvil only.

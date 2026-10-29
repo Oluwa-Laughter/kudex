@@ -38,7 +38,7 @@ Revoke the on-chain policy and any remaining token allowance when finished. The 
 
 ## 7. Trade a signed offer
 
-Open `/app/rfq`. The maker chooses Create an offer, enters the two token addresses, exact offered/requested amounts, and expiry, then reviews the loaded token metadata. Signing creates a shareable JSON offer, not a trade or a token reservation. Download the export. Anyone holding the signature may take the full offer.
+Open `/app/marketplace`. The maker chooses Create an offer, enters the two token addresses, exact offered/requested amounts, and expiry, then reviews the loaded token metadata. Signing creates a shareable JSON offer, not a trade or a token reservation. Download the export. Anyone holding the signature may take the full offer.
 
 Review your own export to check funding and approve the maker's exact outgoing amount to the router. The taker imports that export, checks all terms and token addresses, connects the paying wallet, and refreshes the review. The taker approves the exact payment separately, then fills the complete offer. The app refreshes state, simulates, and checks for a successful receipt with the matching settlement event. Used, expired, or cancelled offers cannot be filled.
 
@@ -67,3 +67,20 @@ Only use test assets. Keep private keys and recovery phrases in your wallet or p
 Open Agents → Live assistant for vault, signed-order, and bounded-permission guidance. With Google conversation configured by the operator, you can ask in your own words. Live reads are used for network, wallet, or vault claims; replies stream with observations and timestamps. The assistant cannot sign transactions or grant allowances. If the native RPC is unavailable, your balance remains unknown.
 
 Pending vault transaction hashes are retained only for receipt reconciliation, never as a record of success. If a receipt cannot be read, keep the hash and inspect wallet activity before another submission. Vault spending requires runtime code hashes imported from finalized deployment evidence.
+
+
+## RFQ invitations and bounded trading
+
+Create an RFQ signs a local invitation with one named solver, asset pair, exact integer
+receipt/payment bounds and one-hour expiry. Verify imported invitations and compare
+quotes explicitly. Export through your access-controlled channel; no hosted inbox or
+solver qualification is supplied. An invitation is not an on-chain order and cannot
+restrict or cancel the v1 router's bearer quotes. On-chain settlement remains public.
+
+The separate RFQ mandates tab in Agents supports reviewed owner/delegate trading policies,
+not deposit-policy escalation. New mandates use a 24-hour expiry, fixed maker/pair,
+minimum base-unit ratio and token-unit caps. Owner authorization, budget allowance,
+delegate execution and revocation are distinct operations. No continuous strategy runs.
+
+Credit & RWA lists no verified offerings. The new facility is a local unbacked test model.
+Confidential transfers, recipient recovery and cryptographic audit viewing remain disabled.

@@ -1,5 +1,8 @@
 # Kudex engineering review — 2026-10-28
 
+Current RFQ-first direction, capability inventory and release gates: [October 29 restoration](ENGINEERING_RESTORATION_2026-10-29.md). Earlier AMM priorities below are historical and superseded.
+
+
 This is an internal implementation review, not an independent audit. Integration target: `main` in `Oluwa-Laughter/kudex`. The clean checkout was pulled with `git pull --ff-only origin main`; source reviewed: `e817ca7312720c5ead19854d22b3686e48f2ce01`. No push, external deployment, or public financial transaction was performed.
 
 ## Initial findings and root causes

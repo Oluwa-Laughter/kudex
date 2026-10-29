@@ -1,0 +1,3449 @@
+
+> kudex@1.0.0 test:vault-ui /home/laughter/Desktop/Hackathon/kudex
+> forge build --root contracts && node --experimental-strip-types tests/local-vault-ui.mjs
+
+Warning: lib/forge-std: dependency submodule is missing (expected f3dae6e6ee381f25eb6a246f7da9b85c91a68219)
+Warning: lib/openzeppelin-contracts: dependency submodule is missing (expected cab19933c33c2ad1d4c7a84864a3601dddfd16f3)
+No files changed, compilation skipped
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ contracts/src/KudexPolicyRegistry.sol:11:25
+   │
+11 │     uint256[48] private __gap;
+   │                         ━━━━━ help: consider using: `_gap`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexVault.sol:20:39
+   │
+20 │     IGroth16Verifier public immutable verifier;
+   │                                       ━━━━━━━━ help: consider using: `VERIFIER`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+  ╭▸ contracts/test/KudexVaultIntegrity.t.sol:9:10
+  │
+9 │ contract TaxAsset is MockERC20 {
+  │          ━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:21:10
+   │
+21 │ contract CallbackAsset is MockERC20 {
+   │          ━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:36:10
+   │
+36 │ contract VaultHandler is Test {
+   │          ━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/src/KudexVault.sol:10:11
+   │
+10 │ interface IGroth16Verifier {
+   │           ━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/src/KudexVault.sol:19:10
+   │
+19 │ contract KudexVault is ERC4626, Ownable, ReentrancyGuard {
+   │          ━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexDaaSAdapter.t.sol:28:47
+   │
+28 │         adapter.registerVault(address(vault), 12000); // 120% collateralization ratio
+   │                                               ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexDaaSAdapter.t.sol:34:22
+   │
+34 │         assertEq(hf, 12000);
+   │                      ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexDaaSAdapter.t.sol:44:28
+   │
+44 │         vault.setRiskScore(9000);
+   │                            ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexDaaSAdapter.t.sol:45:37
+   │
+45 │         assertEq(vault.riskScore(), 9000);
+   │                                     ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexDaaSAdapter.t.sol:56:28
+   │
+56 │         vault.setRiskScore(9000);
+   │                            ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:52:10
+   │
+52 │ contract KudexVaultIntegrityTest is Test {
+   │          ━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:129:10
+    │
+129 │ contract VaultAccountingInvariantTest is StdInvariant, Test {
+    │          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:15:53
+   │
+15 │             super._update(from, address(0), value / 100);
+   │                                                     ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:16:30
+   │
+16 │             value -= value / 100;
+   │                              ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[unused-state-variables]: state variable is never used
+   ╭▸ contracts/src/KudexPolicyRegistry.sol:11:5
+   │
+11 │     uint256[48] private __gap;
+   │     ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-state-variables
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:28:25
+   │
+28 │         buy.mint(maker, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:29:33
+   │
+29 │         pay.mint(address(this), 1000000);
+   │                                 ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:10:10
+   │
+10 │ contract ContractMaker is IERC1271 {
+   │          ━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:79:80
+   │
+79 │         assertEq(h.pay().balanceOf(address(h)) + h.pay().balanceOf(h.maker()), 1000000);
+   │                                                                                ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:80:80
+   │
+80 │         assertEq(h.buy().balanceOf(address(h)) + h.buy().balanceOf(h.maker()), 1000000);
+   │                                                                                ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:23:10
+   │
+23 │ contract TransferTaxToken is MockERC20 {
+   │          ━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:36:10
+   │
+36 │ contract KudexRFQMarketTest is Test {
+   │          ━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:10:10
+   │
+10 │ contract RfqHandler is Test {
+   │          ━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:63:10
+   │
+63 │ contract RfqAuthorityInvariantTest is StdInvariant, Test {
+   │          ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:87:10
+   │
+87 │ contract CreditHandler is Test {
+   │          ━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:123:10
+    │
+123 │ contract CreditCashInvariantTest is StdInvariant, Test {
+    │          ━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:26:41
+   │
+26 │         buy = new MockERC20("Buy", "B", 6);
+   │                                         ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:27:41
+   │
+27 │         pay = new MockERC20("Pay", "P", 6);
+   │                                         ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:25:27
+   │
+25 │         token.mint(owner, 1000e6);
+   │                           ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:27:42
+   │
+27 │         token.approve(address(executor), 300e6);
+   │                                          ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:28:87
+   │
+28 │         id = executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 3 days), 100e6, 150e6, 300e6);
+   │                                                                                       ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexAgentExecutor.sol:14:43
+   │
+14 │     IKudexPolicyRegistry public immutable registry;
+   │                                           ━━━━━━━━ help: consider using: `REGISTRY`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:28:25
+   │
+28 │         buy.mint(maker, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:29:33
+   │
+29 │         pay.mint(address(this), 1000000);
+   │                                 ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:35:25
+   │
+35 │                 address(0xD),
+   │                         ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:28:96
+   │
+28 │         id = executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 3 days), 100e6, 150e6, 300e6);
+   │                                                                                                ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[arbitrary-send-erc20]: `transferFrom` uses an arbitrary `from`; require it to equal `msg.sender` or `address(this)`
+   ╭▸ contracts/src/KudexRFQMarket.sol:86:9
+   │
+86 │         IERC20(order.tokenIn).safeTransferFrom(order.maker, msg.sender, order.amountIn);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/arbitrary-send-erc20
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+  ╭▸ contracts/src/KudexAgentExecutor.sol:9:11
+  │
+9 │ interface IKudexPolicyRegistry { function approvedVaults(address vault) external view returns (bool); }
+  │           ━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/src/KudexAgentExecutor.sol:12:10
+   │
+12 │ contract KudexAgentExecutor is ReentrancyGuard {
+   │          ━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexVault.sol:86:13
+   │
+86 │         if (block.timestamp > deadline) revert TransactionExpired();
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:18:29
+   │
+18 │     IERC20 public immutable asset;
+   │                             ━━━━━ help: consider using: `ASSET`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexAgentExecutor.sol:59:140
+   │
+59 │ … false, perActionCap, dailyCap, totalCap, 0, block.timestamp / 1 days, 0);
+   │                                                                 ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexAgentExecutor.sol:75:43
+   │
+75 │         uint256 today = block.timestamp / 1 days;
+   │                                           ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:28:110
+   │
+28 │         id = executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 3 days), 100e6, 150e6, 300e6);
+   │                                                                                                              ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:19:30
+   │
+19 │     address public immutable administrator;
+   │                              ━━━━━━━━━━━━━ help: consider using: `ADMINISTRATOR`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:20:30
+   │
+20 │     address public immutable borrower;
+   │                              ━━━━━━━━ help: consider using: `BORROWER`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:21:30
+   │
+21 │     bytes32 public immutable documentHash;
+   │                              ━━━━━━━━━━━━ help: consider using: `DOCUMENT_HASH`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:42:17
+   │
+42 │                 100,
+   │                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:43:17
+   │
+43 │                 1000,
+   │                 ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:44:17
+   │
+44 │                 1000
+   │                 ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:50:29
+   │
+50 │         uint256 remaining = 1000 - paid;
+   │                             ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:52:48
+   │
+52 │         uint256 n = bound(seed, 1, remaining > 100 ? 100 : remaining);
+   │                                                ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:52:54
+   │
+52 │         uint256 n = bound(seed, 1, remaining > 100 ? 100 : remaining);
+   │                                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:15:9
+   │
+15 │         token.approve(spender, type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:22:30
+   │
+22 │     uint256 public immutable seniorTarget;
+   │                              ━━━━━━━━━━━━ help: consider using: `SENIOR_TARGET`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexVault.sol:96:13
+   │
+96 │         if (block.timestamp > deadline) revert TransactionExpired();
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:56:26
+   │
+56 │         vm.prank(address(0xD));
+   │                          ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexRFQMarket.sol:74:13
+   │
+74 │         if (block.timestamp > order.deadline) revert OrderExpired();
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:31:56
+   │
+31 │         catch (bytes memory reason) { depositBlocked = bytes4(reason) == bytes4(keccak256("ReentrancyGuardReentrantCall()")); }
+   │                                                        ━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes4' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[named-struct-fields]: prefer initializing structs with named fields
+    ╭▸ contracts/src/KudexRFQMarket.sol:106:16
+    │
+106 │           return Balances(
+    │ ┏━━━━━━━━━━━━━━━━┛
+107 │ ┃             IERC20(order.tokenIn).balanceOf(order.maker),
+108 │ ┃             IERC20(order.tokenIn).balanceOf(taker),
+109 │ ┃             IERC20(order.tokenOut).balanceOf(order.maker),
+110 │ ┃             IERC20(order.tokenOut).balanceOf(taker)
+111 │ ┃         );
+    │ ┗━━━━━━━━━┛ help: consider using named fields: `Balances({ makerIn: IERC20(order.tokenIn).balanceOf(order.maker), takerIn: IERC20(order.tokenIn).balanceOf(taker), makerOut: IERC20(order.tokenOut).balanceOf(order.maker), takerOut: IERC20(order.tokenOut).balanceOf(taker) })`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/named-struct-fields
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:31:74
+   │
+31 │         catch (bytes memory reason) { depositBlocked = bytes4(reason) == bytes4(keccak256("ReentrancyGuardReentrantCall()")); }
+   │                                                                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes4' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:31:9
+   │
+31 │         buy.approve(address(router), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:32:50
+   │
+32 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                                                  ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:34:42
+   │
+34 │         assertEq(vault.balanceOf(owner), 100e6);
+   │                                          ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:42:30
+   │
+42 │         executor.execute(id, 100e6);
+   │                              ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:48:50
+   │
+48 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                                                  ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:49:35
+   │
+49 │         vm.warp(block.timestamp + 1 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:50:50
+   │
+50 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                                                  ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexDaaSAdapter.sol:59:44
+   │
+59 │                 collateralizationRatioBps: 12000,
+   │                                            ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexDaaSAdapter.sol:63:48
+   │
+63 │             emit VaultRegistered(initialVault, 12000);
+   │                                                ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:32:9
+   │
+32 │         pay.approve(address(executor), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexAgentExecutor.sol:52:65
+   │
+52 │         if (delegate == address(0) || delegate == msg.sender || expiresAt <= block.timestamp
+   │                                                                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexAgentExecutor.sol:53:16
+   │
+53 │             || expiresAt > block.timestamp + MAX_DURATION || perActionCap == 0
+   │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:39:17
+   │
+39 │                 uint64(block.timestamp + 30 days),
+   │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:23:30
+   │
+23 │     uint256 public immutable juniorTarget;
+   │                              ━━━━━━━━━━━━ help: consider using: `JUNIOR_TARGET`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:24:29
+   │
+24 │     uint64 public immutable fundingDeadline;
+   │                             ━━━━━━━━━━━━━━━ help: consider using: `FUNDING_DEADLINE`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:25:29
+   │
+25 │     uint64 public immutable maturity;
+   │                             ━━━━━━━━ help: consider using: `MATURITY`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:26:29
+   │
+26 │     uint64 public immutable grace;
+   │                             ━━━━━ help: consider using: `GRACE`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+warning[reentrancy-no-eth]: external call can be reentered before `paid` is updated
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:56:9
+   │
+56 │         vm.prank(address(0xD));
+   │         ━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-no-eth
+
+warning[reentrancy-no-eth]: external call can be reentered before `paid` is updated
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:57:9
+   │
+57 │         executor.execute(id, q, abi.encodePacked(r, s, v));
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-no-eth
+
+warning[missing-events-access-control]: `authorizedSentinels` is changed without an event but is used for access control
+   ╭▸ contracts/src/KudexDaaSAdapter.sol:69:9
+   │
+69 │         authorizedSentinels[sentinel] = authorized;
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/missing-events-access-control
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:51:35
+   │
+51 │         vm.warp(block.timestamp + 1 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:33:59
+   │
+33 │         catch (bytes memory reason) { redemptionBlocked = bytes4(reason) == bytes4(keccak256("ReentrancyGuardReentrantCall()")); }
+   │                                                           ━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes4' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:52:50
+   │
+52 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                                                  ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:56:89
+   │
+56 │         vm.expectRevert(KudexAgentExecutor.Unauthorized.selector); executor.execute(id, 1e6);
+   │                                                                                         ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:59:111
+   │
+59 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.InactivePolicy.selector); executor.execute(id, 1e6);
+   │                                                                                                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:63:113
+   │
+63 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.VaultUnavailable.selector); executor.execute(id, 1e6);
+   │                                                                                                                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:65:35
+   │
+65 │         vm.warp(block.timestamp + 3 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:66:111
+   │
+66 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.InactivePolicy.selector); executor.execute(id, 1e6);
+   │                                                                                                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:70:69
+   │
+70 │         vm.prank(delegate); vm.expectRevert(); executor.execute(id, 100e6);
+   │                                                                     ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:71:42
+   │
+71 │         assertEq(token.balanceOf(owner), 1000e6);
+   │                                          ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[named-struct-fields]: prefer initializing structs with named fields
+   ╭▸ contracts/src/KudexAgentExecutor.sol:59:24
+   │
+59 │ …d] = Policy(msg.sender, delegate, vault, asset, expiresAt, false, perActionCap, dailyCap, totalCap, 0, block.timestamp / 1 days, 0);
+   │       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using named fields: `Policy({ owner: msg.sender, delegate: delegate, vault: vault, asset: asset, expiresAt: expiresAt, revoked: false, perActionCap: perActionCap, dailyCap: dailyCap, totalCap: totalCap, spent: 0, day: block.timestamp / 1 days, daySpent: 0 })`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/named-struct-fields
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:79:80
+   │
+79 │         assertEq(h.pay().balanceOf(address(h)) + h.pay().balanceOf(h.maker()), 1000000);
+   │                                                                                ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:80:80
+   │
+80 │         assertEq(h.buy().balanceOf(address(h)) + h.buy().balanceOf(h.maker()), 1000000);
+   │                                                                                ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[unwrapped-modifier-logic]: wrap modifier logic to reduce code size
+   ╭▸ contracts/src/KudexDaaSAdapter.sol:45:5
+   │
+45 │ ┏     modifier onlySentinelOrOwner() {
+46 │ ┃         if (msg.sender != owner() && !authorizedSentinels[msg.sender]) {
+47 │ ┃             revert UnauthorizedSentinel();
+   ‡ ┃
+50 │ ┃     }
+   │ ┗━━━━━┛
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unwrapped-modifier-logic
+help: wrap modifier logic to reduce code size
+   ╭╴
+45 ±     modifier onlySentinelOrOwner() {
+46 +         _onlySentinelOrOwner();
+47 +         _;
+48 +     }
+49 +
+50 +     function _onlySentinelOrOwner() internal {
+51 +         if (msg.sender != owner() && !authorizedSentinels[msg.sender]) {
+52 +             revert UnauthorizedSentinel();
+53 +         }
+54 +     }
+   ╰╴
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:51:29
+   │
+51 │         tokenIn.mint(maker, 10_000 * 1e6);
+   │                             ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[arbitrary-send-erc20]: `transferFrom` uses an arbitrary `from`; require it to equal `msg.sender` or `address(this)`
+   ╭▸ contracts/src/KudexAgentExecutor.sol:84:9
+   │
+84 │         token.safeTransferFrom(policy.owner, address(this), assets);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/arbitrary-send-erc20
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexVault.sol:110:13
+    │
+110 │         if (IERC20(asset()).balanceOf(address(this)) != beforeAssets + assets) revert InexactAssetTransfer();
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+note[named-struct-fields]: prefer initializing structs with named fields
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:70:24
+   │
+70 │         targetSelector(FuzzSelector(address(h), selectors));
+   │                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using named fields: `FuzzSelector({ addr: address(h), selectors: selectors })`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/named-struct-fields
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:51:38
+   │
+51 │         tokenIn.mint(maker, 10_000 * 1e6);
+   │                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:52:30
+   │
+52 │         tokenOut.mint(taker, 10_000 * 1e14);
+   │                              ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:52:39
+   │
+52 │         tokenOut.mint(taker, 10_000 * 1e14);
+   │                                       ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:66:23
+   │
+66 │             amountIn: 1_000 * 1e6,
+   │                       ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:66:31
+   │
+66 │             amountIn: 1_000 * 1e6,
+   │                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:67:24
+   │
+67 │             amountOut: 500 * 1e14,
+   │                        ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:72:61
+   │
+72 │         assertEq(token.allowance(owner, address(executor)), 300e6);
+   │                                                             ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:80:98
+   │
+80 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 31 days), 1, 2, 3);
+   │                                                                                                  ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:82:82
+   │
+82 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 1 days), 2, 1, 3);
+   │                                                                                  ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:82:97
+   │
+82 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 1 days), 2, 1, 3);
+   │                                                                                                 ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:86:28
+   │
+86 │         vm.assume(amount > 100e6);
+   │                            ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ contracts/src/KudexDaaSAdapter.sol:122:13
+    │
+122 │             emit DefaultEnforced(vault, vaultAssets, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexVault.sol:119:13
+    │
+119 │         if (IERC20(asset()).balanceOf(address(this)) + assets != beforeAssets
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:67:30
+   │
+67 │             amountOut: 500 * 1e14,
+   │                              ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:68:41
+   │
+68 │             deadline: block.timestamp + 3600,
+   │                                         ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:80:44
+   │
+80 │         assertEq(tokenIn.balanceOf(taker), 1_000 * 1e6);
+   │                                            ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:80:52
+   │
+80 │         assertEq(tokenIn.balanceOf(taker), 1_000 * 1e6);
+   │                                                    ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexAgentExecutor.sol:73:31
+   │
+73 │         if (policy.revoked || block.timestamp >= policy.expiresAt) revert InactivePolicy();
+   │                               ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexAgentExecutor.sol:76:13
+   │
+76 │         if (policy.day != today) { policy.day = today; policy.daySpent = 0; }
+   │             ━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:33:77
+   │
+33 │         catch (bytes memory reason) { redemptionBlocked = bytes4(reason) == bytes4(keccak256("ReentrancyGuardReentrantCall()")); }
+   │                                                                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes4' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:81:45
+   │
+81 │         assertEq(tokenOut.balanceOf(maker), 500 * 1e14);
+   │                                             ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:81:51
+   │
+81 │         assertEq(tokenOut.balanceOf(maker), 500 * 1e14);
+   │                                                   ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:94:23
+   │
+94 │             amountIn: 1_000 * 1e6,
+   │                       ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:94:31
+   │
+94 │             amountIn: 1_000 * 1e6,
+   │                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:95:24
+   │
+95 │             amountOut: 500 * 1e14,
+   │                        ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:39:68
+   │
+39 │     constructor(KudexVault v, MockERC20 t) { vault = v; token = t; token.approve(address(v), type(uint256).max); }
+   │                                                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:27:9
+   │
+27 │         token.approve(address(executor), 300e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+   ╭▸ contracts/src/KudexAgentExecutor.sol:91:9
+   │
+91 │         emit DepositExecuted(id, assets, shares);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+note[custom-errors]: prefer using custom errors on revert and require calls
+   ╭▸ contracts/src/KudexTestToken.sol:10:9
+   │
+10 │         require(block.chainid == 420420777, "Testnet only");
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/custom-errors
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexVault.sol:120:16
+    │
+120 │             || IERC20(asset()).balanceOf(receiver) != beforeReceiver + assets) revert InexactAssetTransfer();
+    │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexTestToken.sol:11:45
+   │
+11 │         _mint(msg.sender, 1_000_000 * 10 ** 6);
+   │                                             ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexTestToken.sol:15:16
+   │
+15 │         return 6;
+   │                ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+   ╭▸ contracts/src/KudexAgentExecutor.sol:85:13
+   │
+85 │         if (token.balanceOf(address(this)) - beforeAssets != assets) revert UnsupportedAsset();
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:43:9
+   │
+43 │         vault.depositWithMinimum(assets, address(this), assets, block.timestamp);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexProtocolInvariants.t.sol:99:13
+   │
+99 │             600,
+   │             ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:100:13
+    │
+100 │             400,
+    │             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:105:35
+    │
+105 │         token.mint(address(this), 1000);
+    │                                   ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[boolean-cst]: misuse of a boolean constant
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:28:108
+   │
+28 │         bytes memory data = abi.encodeCall(KudexPolicyRegistry.setVaultApproved, (address(implementation), true));
+   │                                                                                                            ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/boolean-cst
+
+warning[missing-events-access-control]: `eligible` is changed without an event but is used for access control
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:79:9
+   │
+79 │         eligible[investor] = permitted;
+   │         ━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/missing-events-access-control
+
+warning[missing-zero-check]: address parameter is used in a state write or value transfer without a zero-address check
+    ╭▸ contracts/src/KudexVault.sol:137:35
+    │
+137 │     function setDefaultController(address controller) external onlyOwner {
+    │                                   ━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/missing-zero-check
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+   ╭▸ contracts/src/KudexAgentExecutor.sol:89:28
+   │
+89 │         if (shares == 0 || IERC20(policy.vault).balanceOf(policy.owner) - beforeShares != shares) revert NoSharesReceived();
+   │                            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:95:30
+   │
+95 │             amountOut: 500 * 1e14,
+   │                              ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:119:29
+    │
+119 │             amountIn: 100 * 1e6,
+    │                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:120:29
+    │
+120 │             amountOut: 50 * 1e14,
+    │                             ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:121:41
+    │
+121 │             deadline: block.timestamp + 3600,
+    │                                         ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:138:78
+    │
+138 │             KudexRFQMarket.Order(maker, address(tokenIn), address(tokenOut), 100e6, 50e14, block.timestamp + 1 hours, 9);
+    │                                                                              ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+   ╭▸ contracts/src/KudexAgentExecutor.sol:90:13
+   │
+90 │         if (token.balanceOf(address(this)) != beforeAssets) revert UnsupportedAsset();
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:28:62
+   │
+28 │         id = executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 3 days), 100e6, 150e6, 300e6);
+   │                                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:138:110
+    │
+138 │             KudexRFQMarket.Order(maker, address(tokenIn), address(tokenOut), 100e6, 50e14, block.timestamp + 1 hours, 9);
+    │                                                                                                              ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:189:43
+    │
+189 │         vm.assume(amount > 0 && amount != 100e6);
+    │                                           ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:108:34
+    │
+108 │         facility.subscribe(true, 600);
+    │                                  ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:109:35
+    │
+109 │         facility.subscribe(false, 400);
+    │                                   ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:49:9
+   │
+49 │         vault.redeemWithMinimum(shares, address(this), shares, block.timestamp);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:63:82
+   │
+63 │                 || senior_ > type(uint128).max || junior_ > type(uint128).max || funding_ <= block.timestamp
+   │                                                                                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ contracts/src/KudexRfqExecutor.sol:14:37
+   │
+14 │     KudexRFQMarket public immutable router;
+   │                                     ━━━━━━ help: consider using: `ROUTER`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:32:29
+   │
+32 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+  ╭▸ contracts/test/KudexVault.t.sol:9:10
+  │
+9 │ contract MockVerifier is IGroth16Verifier {
+  │          ━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexVault.t.sol:19:10
+   │
+19 │ contract KudexVaultTest is Test {
+   │          ━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+  ╭▸ contracts/test/KudexPolicyRegistry.t.sol:9:10
+  │
+9 │ contract RegistryV2 is KudexPolicyRegistry { function version() external pure returns (uint256) { return 2; } }
+  │          ━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:10:10
+   │
+10 │ contract KudexPolicyRegistryTest is Test {
+   │          ━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:114:24
+    │
+114 │         uint256 left = 1000 - facility.repaid();
+    │                        ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:41:69
+   │
+41 │         vm.expectRevert(KudexAgentExecutor.LimitExceeded.selector); executor.execute(id, 101e6);
+   │                                                                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:72:34
+   │
+72 │         vault.depositWithMinimum(100, address(this), 101, block.timestamp);
+   │                                  ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:72:54
+   │
+72 │         vault.depositWithMinimum(100, address(this), 101, block.timestamp);
+   │                                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:75:23
+   │
+75 │         vault.deposit(100, address(this));
+   │                       ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:77:33
+   │
+77 │         vault.redeemWithMinimum(100, address(this), 101, block.timestamp);
+   │                                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:77:53
+   │
+77 │         vault.redeemWithMinimum(100, address(this), 101, block.timestamp);
+   │                                                     ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:78:50
+   │
+78 │         assertEq(vault.balanceOf(address(this)), 100);
+   │                                                  ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:79:17
+   │
+79 │         vm.warp(100);
+   │                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:81:55
+   │
+81 │         vault.depositWithMinimum(1, address(this), 1, 99);
+   │                                                       ━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:83:54
+   │
+83 │         vault.redeemWithMinimum(1, address(this), 1, 99);
+   │                                                      ━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:101:13
+    │
+101 │             uint64(block.timestamp + 1 days),
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │
+    │       // casting to 'uint64' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:17:43
+   │
+17 │         timelock = new TimelockController(2 days, members, members, address(0));
+   │                                           ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:30:79
+   │
+30 │         timelock.schedule(address(registry), 0, data, bytes32(0), bytes32(0), 2 days);
+   │                                                                               ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:32:35
+   │
+32 │         vm.warp(block.timestamp + 2 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:41:86
+   │
+41 │         timelock.schedule(address(admin), 0, data, bytes32(0), bytes32("upgrade-2"), 2 days);
+   │                                                                                      ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:43:35
+   │
+43 │         vm.warp(block.timestamp + 2 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:84:39
+   │
+84 │         if (state != State.Funding || block.timestamp >= fundingDeadline) revert InvalidState();
+   │                                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexRfqExecutor.sol:70:79
+   │
+70 │         _policies[id] = Policy(msg.sender, false, terms, 0, block.timestamp / 1 days, 0);
+   │                                                                               ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/src/KudexRfqExecutor.sol:91:41
+   │
+91 │         uint256 day = block.timestamp / 1 days;
+   │                                         ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:42:9
+   │
+42 │         executor.execute(id, 100e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:32:56
+   │
+32 │         asset = new MockERC20("Portaldot USD", "pUSD", 6);
+   │                                                        ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:55:9
+   │
+55 │         tokenIn.approve(address(market), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:43:69
+   │
+43 │         vm.expectRevert(KudexAgentExecutor.LimitExceeded.selector); executor.execute(id, 51e6);
+   │                                                                     ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:44:9
+   │
+44 │         executor.execute(id, 50e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:102:13
+    │
+102 │             uint64(block.timestamp + 2 days),
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │
+    │       // casting to 'uint64' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:107:9
+    │
+107 │         token.approve(address(facility), type(uint256).max);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:41:64
+   │
+41 │         timelock.schedule(address(admin), 0, data, bytes32(0), bytes32("upgrade-2"), 2 days);
+   │                                                                ━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes32' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:42:82
+   │
+42 │         vm.expectRevert(); timelock.execute(address(admin), 0, data, bytes32(0), bytes32("upgrade-2"));
+   │                                                                                  ━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes32' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexPolicyRegistry.t.sol:44:63
+   │
+44 │         timelock.execute(address(admin), 0, data, bytes32(0), bytes32("upgrade-2"));
+   │                                                               ━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'bytes32' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexRfqExecutor.sol:65:20
+   │
+65 │                 || terms.expiresAt <= block.timestamp || terms.expiresAt > block.timestamp + MAX_DURATION
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexRfqExecutor.sol:65:58
+   │
+65 │                 || terms.expiresAt <= block.timestamp || terms.expiresAt > block.timestamp + MAX_DURATION
+   │                                                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexRFQMarket.t.sol:58:9
+   │
+58 │         tokenOut.approve(address(market), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:48:29
+   │
+48 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[named-struct-fields]: prefer initializing structs with named fields
+    ╭▸ contracts/test/KudexProtocolInvariants.t.sol:131:24
+    │
+131 │         targetSelector(FuzzSelector(address(h), selectors));
+    │                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using named fields: `FuzzSelector({ addr: address(h), selectors: selectors })`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/named-struct-fields
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexTestCreditFacility.sol:98:39
+   │
+98 │             state != State.Funding || block.timestamp >= fundingDeadline || seniorFunded != seniorTarget
+   │                                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:36:37
+   │
+36 │         asset.mint(alice, 100_000 * 1e6);
+   │                                     ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:53:41
+   │
+53 │         uint256 depositAmount = 1_000 * 1e6;
+   │                                         ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:68:82
+   │
+68 │         uint256[2][2] memory b = [[uint256(3), uint256(4)], [uint256(5), uint256(6)]];
+   │                                                                                  ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:27:25
+   │
+27 │         buy.mint(maker, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:96:23
+   │
+96 │         vault.deposit(1e6, alice);
+   │                       ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVault.t.sol:98:20
+   │
+98 │         vault.mint(1e6, alice);
+   │                    ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[named-struct-fields]: prefer initializing structs with named fields
+   ╭▸ contracts/src/KudexRfqExecutor.sol:70:25
+   │
+70 │         _policies[id] = Policy(msg.sender, false, terms, 0, block.timestamp / 1 days, 0);
+   │                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using named fields: `Policy({ owner: msg.sender, revoked: false, terms: terms, spent: 0, day: block.timestamp / 1 days, daySpent: 0 })`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/named-struct-fields
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:28:25
+   │
+28 │         pay.mint(owner, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:50:29
+   │
+50 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:107:39
+    │
+107 │         if (state != State.Funding || block.timestamp < fundingDeadline) revert InvalidState();
+    │                                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:16:17
+   │
+16 │         vm.warp(1000);
+   │                 ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:18:94
+   │
+18 │         f = new Facility(token, address(this), borrower, keccak256("unbacked test fixture"), 600, 400, 2000, 3000, 100);
+   │                                                                                              ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:18:99
+   │
+18 │         f = new Facility(token, address(this), borrower, keccak256("unbacked test fixture"), 600, 400, 2000, 3000, 100);
+   │                                                                                                   ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:18:104
+   │
+18 │         f = new Facility(token, address(this), borrower, keccak256("unbacked test fixture"), 600, 400, 2000, 3000, 100);
+   │                                                                                                        ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:19:34
+   │
+19 │         for (uint256 i = 1; i <= 3; i++) {
+   │                                  ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:21:27
+   │
+21 │             token.mint(a, 1000);
+   │                           ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:24:39
+   │
+24 │             token.approve(address(f), 1000);
+   │                                       ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:89:34
+   │
+89 │         vault.depositWithMinimum(100, address(this), 100, block.timestamp);
+   │                                  ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:89:54
+   │
+89 │         vault.depositWithMinimum(100, address(this), 100, block.timestamp);
+   │                                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:94:38
+   │
+94 │         taxToken.mint(address(this), 1000);
+   │                                      ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:95:45
+   │
+95 │         taxToken.approve(address(taxVault), 1000);
+   │                                             ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:98:26
+   │
+98 │         taxVault.deposit(1000, address(this));
+   │                          ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:108:40
+    │
+108 │         assertEq(pay.balanceOf(owner), 1000000);
+    │                                        ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:126:38
+    │
+126 │         if (state != State.Active || block.timestamp < uint256(maturity) + grace) revert InvalidState();
+    │                                      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:99:53
+   │
+99 │         assertEq(taxToken.balanceOf(address(this)), 1000);
+   │                                                     ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:102:26
+    │
+102 │         taxVault.deposit(1000, address(this));
+    │                          ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:105:25
+    │
+105 │         taxVault.redeem(1000, address(this), address(this));
+    │                         ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:106:53
+    │
+106 │         assertEq(taxVault.balanceOf(address(this)), 1000);
+    │                                                     ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:107:42
+    │
+107 │         assertEq(taxVault.totalAssets(), 1000);
+    │                                          ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:113:38
+    │
+113 │         callback.mint(address(this), 1000);
+    │                                      ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:114:44
+    │
+114 │         callback.approve(address(guarded), 1000);
+    │                                            ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:115:45
+    │
+115 │         assertEq(guarded.depositWithMinimum(1000, address(this), 1000, block.timestamp), 1000);
+    │                                             ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:115:66
+    │
+115 │         assertEq(guarded.depositWithMinimum(1000, address(this), 1000, block.timestamp), 1000);
+    │                                                                  ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:115:90
+    │
+115 │         assertEq(guarded.depositWithMinimum(1000, address(this), 1000, block.timestamp), 1000);
+    │                                                                                          ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:118:41
+    │
+118 │         assertEq(guarded.totalAssets(), 1000);
+    │                                         ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:119:52
+    │
+119 │         assertEq(guarded.balanceOf(address(this)), 1000);
+    │                                                    ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:213:9
+    │
+213 │         tokenOut.approve(address(market), 0);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:52:29
+   │
+52 │         vm.prank(delegate); executor.execute(id, 100e6);
+   │                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexRfqExecutor.sol:85:26
+   │
+85 │         if (p.revoked || block.timestamp >= t.expiresAt) revert Inactive();
+   │                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:59:9
+   │
+59 │         token.approve(address(vault), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:53:89
+   │
+53 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.LimitExceeded.selector); executor.execute(id, 1);
+   │                                                                                         ━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ contracts/src/KudexRfqExecutor.sol:92:13
+   │
+92 │         if (p.day != day) {
+   │             ━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:30:27
+   │
+30 │         f.subscribe(true, 600);
+   │                           ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:135:63
+    │
+135 │         assertEq(pay.balanceOf(owner) + pay.balanceOf(maker), 1000000);
+    │                                                               ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:32:28
+   │
+32 │         f.subscribe(false, 400);
+   │                            ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:40:17
+   │
+40 │         f.repay(500);
+   │                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:136:63
+    │
+136 │         assertEq(buy.balanceOf(owner) + buy.balanceOf(maker), 1000000);
+    │                                                               ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:105:29
+    │
+105 │         vault.shieldDeposit(1e6, commitment, alice);
+    │                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:107:29
+    │
+107 │         vault.shieldDeposit(1e6, commitment, alice);
+    │                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:114:40
+    │
+114 │         uint256 shares = vault.deposit(100e6, alice);
+    │                                        ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:122:28
+    │
+122 │         vault.setRiskScore(4200);
+    │                            ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[too-many-digits]: numeric literal with many digits is error-prone; use scientific notation, sub-denominations, or underscore separators
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:189:40
+    │
+189 │         assertEq(pay.balanceOf(owner), 1000000);
+    │                                        ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/too-many-digits
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:56:68
+   │
+56 │         vm.expectRevert(KudexAgentExecutor.Unauthorized.selector); executor.execute(id, 1e6);
+   │                                                                    ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:41:45
+   │
+41 │         assertEq(f.claimable(senior, true), 500);
+   │                                             ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:49:17
+   │
+49 │         f.repay(500);
+   │                 ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:50:38
+   │
+50 │         assertEq(uint256(f.state()), 3);
+   │                                      ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:55:36
+   │
+55 │         assertEq(f.totalClaimed(), 1000);
+   │                                    ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:64:27
+   │
+64 │         f.subscribe(true, 200);
+   │                           ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:65:17
+   │
+65 │         vm.warp(2000);
+   │                 ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:71:43
+   │
+71 │         assertEq(token.balanceOf(senior), 1000);
+   │                                           ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:72:37
+   │
+72 │         assertEq(f.totalRefunded(), 200);
+   │                                     ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:95:38
+   │
+95 │         uint256 n = bound(amount, 1, 1000);
+   │                                      ━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:101:21
+    │
+101 │         assertLe(j, 400);
+    │                     ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:102:21
+    │
+102 │         assertLe(s, 600);
+    │                     ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:119:17
+    │
+119 │         f.repay(600);
+    │                 ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:122:36
+    │
+122 │         assertEq(f.totalClaimed(), 600);
+    │                                    ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:127:27
+    │
+127 │         f.subscribe(true, 200);
+    │                           ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:59:90
+   │
+59 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.InactivePolicy.selector); executor.execute(id, 1e6);
+   │                                                                                          ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexRFQMarket.t.sol:246:9
+    │
+246 │         taxed.approve(address(market), amount);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:72:9
+   │
+72 │         vault.depositWithMinimum(100, address(this), 101, block.timestamp);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:123:37
+    │
+123 │         assertEq(vault.riskScore(), 4200);
+    │                                     ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:132:35
+    │
+132 │         vault.shieldDeposit(100 * 1e6, commitment, alice);
+    │                                   ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:137:40
+    │
+137 │         uint256 shares = vault.deposit(100e6, alice);
+    │                                        ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexVault.t.sol:140:54
+    │
+140 │         assertEq(vault.redeem(shares, alice, alice), 100e6);
+    │                                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ contracts/src/KudexRfqExecutor.sol:100:9
+    │
+100 │         emit RfqExecuted(id, router.hashOrder(order), p.owner, order.amountOut, order.amountIn);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:63:92
+   │
+63 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.VaultUnavailable.selector); executor.execute(id, 1e6);
+   │                                                                                            ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:129:27
+    │
+129 │         f.subscribe(true, 400);
+    │                           ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:75:9
+   │
+75 │         vault.deposit(100, address(this));
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:131:28
+    │
+131 │         f.subscribe(false, 400);
+    │                            ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexTestCreditFacility.t.sol:147:36
+    │
+147 │         assertEq(f.totalClaimed(), 1000);
+    │                                    ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVault.t.sol:38:9
+   │
+38 │         asset.approve(address(vault), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:25:41
+   │
+25 │         buy = new MockERC20("Buy", "B", 6);
+   │                                         ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:26:41
+   │
+26 │         pay = new MockERC20("Pay", "P", 6);
+   │                                         ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVault.t.sol:41:9
+   │
+41 │         asset.approve(address(mockVault), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:27:25
+   │
+27 │         buy.mint(maker, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:28:25
+   │
+28 │         pay.mint(owner, 1000000);
+   │                         ━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:33:21
+   │
+33 │         id = create(100, 150, 300);
+   │                     ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:33:26
+   │
+33 │         id = create(100, 150, 300);
+   │                          ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:21:13
+   │
+21 │             token.mint(a, 1000);
+   │             ━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:77:9
+   │
+77 │         vault.redeemWithMinimum(100, address(this), 101, block.timestamp);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:33:31
+   │
+33 │         id = create(100, 150, 300);
+   │                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:66:90
+   │
+66 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.InactivePolicy.selector); executor.execute(id, 1e6);
+   │                                                                                          ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:81:9
+   │
+81 │         vault.depositWithMinimum(1, address(this), 1, 99);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:22:13
+   │
+22 │             f.setEligibility(a, true);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:23:13
+   │
+23 │             vm.prank(a);
+   │             ━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:24:13
+   │
+24 │             token.approve(address(f), 1000);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:83:9
+   │
+83 │         vault.redeemWithMinimum(1, address(this), 1, 99);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:44:42
+   │
+44 │                 uint64(block.timestamp + 7 days),
+   │                                          ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:72:23
+   │
+72 │         fill(quote(1, 50, 100));
+   │                       ━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:72:27
+   │
+72 │         fill(quote(1, 50, 100));
+   │                           ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:74:40
+   │
+74 │         assertEq(buy.balanceOf(owner), 100);
+   │                                        ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVault.t.sol:96:9
+   │
+96 │         vault.deposit(1e6, alice);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:86:9
+   │
+86 │         vault.deposit(1, address(this));
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:78:38
+   │
+78 │         assertEq(e.policy(id).spent, 50);
+   │                                      ━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:82:50
+   │
+82 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+   │                                                  ━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:152:13
+    │
+152 │         if (asset.balanceOf(address(this)) != beforeBalance + amount || asset.balanceOf(msg.sender) != payer - amount) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:152:73
+    │
+152 │         if (asset.balanceOf(address(this)) != beforeBalance + amount || asset.balanceOf(msg.sender) != payer - amount) {
+    │                                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:20:33
+   │
+20 │             address a = address(uint160(i));
+   │                                 ━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint160' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVault.t.sol:98:9
+   │
+98 │         vault.mint(1e6, alice);
+   │         ━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[arbitrary-send-erc20]: `transferFrom` uses an arbitrary `from`; require it to equal `msg.sender` or `address(this)`
+    ╭▸ contracts/src/KudexRfqExecutor.sol:110:9
+    │
+110 │         pay.safeTransferFrom(owner, address(this), order.amountOut);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/arbitrary-send-erc20
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexTestCreditFacility.t.sol:24:13
+   │
+24 │             token.approve(address(f), 1000);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:161:13
+    │
+161 │         if (asset.balanceOf(address(this)) != beforeBalance - amount || asset.balanceOf(to) != receiver + amount) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:112:13
+    │
+112 │             pay.balanceOf(address(this)) != cash + order.amountOut
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:113:20
+    │
+113 │                 || pay.balanceOf(owner) != ownerCash - order.amountOut
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexTestCreditFacility.sol:161:73
+    │
+161 │         if (asset.balanceOf(address(this)) != beforeBalance - amount || asset.balanceOf(to) != receiver + amount) {
+    │                                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:70:48
+   │
+70 │         vm.prank(delegate); vm.expectRevert(); executor.execute(id, 100e6);
+   │                                                ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:87:9
+   │
+87 │         token.transfer(address(vault), 1e12);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:82:54
+   │
+82 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+   │                                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:91:23
+   │
+91 │         fill(quote(1, 100, 200));
+   │                       ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:89:9
+   │
+89 │         vault.depositWithMinimum(100, address(this), 100, block.timestamp);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVault.t.sol:105:9
+    │
+105 │         vault.shieldDeposit(1e6, commitment, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:91:28
+   │
+91 │         fill(quote(1, 100, 200));
+   │                            ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:92:25
+   │
+92 │         reject(quote(2, 100, 200), KudexRfqExecutor.OutsidePolicy.selector);
+   │                         ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:92:30
+   │
+92 │         reject(quote(2, 100, 200), KudexRfqExecutor.OutsidePolicy.selector);
+   │                              ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVault.t.sol:107:9
+    │
+107 │         vault.shieldDeposit(1e6, commitment, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:120:13
+    │
+120 │         if (pay.balanceOf(address(this)) != cash || buy.balanceOf(address(this)) != inventory + order.amountIn) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:74:54
+   │
+74 │         (,,,,,,,,,uint256 spent,,uint256 daySpent) = executor.policies(id);
+   │                                                      ━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:120:53
+    │
+120 │         if (pay.balanceOf(address(this)) != cash || buy.balanceOf(address(this)) != inventory + order.amountIn) {
+    │                                                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:80:9
+   │
+80 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 31 days), 1, 2, 3);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:124:13
+    │
+124 │         if (buy.balanceOf(address(this)) != inventory || buy.balanceOf(owner) != ownerBought + order.amountIn) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:93:35
+   │
+93 │         vm.warp(block.timestamp + 1 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:94:23
+   │
+94 │         fill(quote(2, 100, 200));
+   │                       ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[incorrect-strict-equality]: dangerous strict equality check on an externally-influenced value
+    ╭▸ contracts/src/KudexRfqExecutor.sol:124:58
+    │
+124 │         if (buy.balanceOf(address(this)) != inventory || buy.balanceOf(owner) != ownerBought + order.amountIn) {
+    │                                                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/incorrect-strict-equality
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:95:9
+   │
+95 │         taxToken.approve(address(taxVault), 1000);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexVaultIntegrity.t.sol:98:9
+   │
+98 │         taxVault.deposit(1000, address(this));
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:94:28
+   │
+94 │         fill(quote(2, 100, 200));
+   │                            ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:95:35
+   │
+95 │         vm.warp(block.timestamp + 1 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:96:20
+   │
+96 │         fill(quote(3, 100, 200));
+   │                    ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:96:23
+   │
+96 │         fill(quote(3, 100, 200));
+   │                       ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:96:28
+   │
+96 │         fill(quote(3, 100, 200));
+   │                            ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:97:35
+   │
+97 │         vm.warp(block.timestamp + 1 days);
+   │                                   ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:98:22
+   │
+98 │         reject(quote(4, 1, 2), KudexRfqExecutor.OutsidePolicy.selector);
+   │                      ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:80:57
+   │
+80 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 31 days), 1, 2, 3);
+   │                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVault.t.sol:116:9
+    │
+116 │         vault.redeem(shares, alice, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:99:38
+   │
+99 │         assertEq(e.policy(id).spent, 300);
+   │                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:103:50
+    │
+103 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                  ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:103:54
+    │
+103 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:108:40
+    │
+108 │         assertEq(pay.balanceOf(owner), 1000000);
+    │                                        ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:113:50
+    │
+113 │         KudexRFQMarket.Order memory q = quote(1, 50, 99);
+    │                                                  ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:115:22
+    │
+115 │         q = quote(1, 50, 100);
+    │                      ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:115:26
+    │
+115 │         q = quote(1, 50, 100);
+    │                          ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:118:22
+    │
+118 │         q = quote(1, 50, 100);
+    │                      ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:118:26
+    │
+118 │         q = quote(1, 50, 100);
+    │                          ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:121:22
+    │
+121 │         q = quote(1, 50, 100);
+    │                      ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:121:26
+    │
+121 │         q = quote(1, 50, 100);
+    │                          ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:124:22
+    │
+124 │         q = quote(1, 50, 100);
+    │                      ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:124:26
+    │
+124 │         q = quote(1, 50, 100);
+    │                          ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:127:38
+    │
+127 │         assertEq(e.policy(id).spent, 50);
+    │                                      ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:128:35
+    │
+128 │         vm.warp(block.timestamp + 7 days);
+    │                                   ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVault.t.sol:132:9
+    │
+132 │         vault.shieldDeposit(100 * 1e6, commitment, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:82:9
+   │
+82 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 1 days), 2, 1, 3);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:102:9
+    │
+102 │         taxVault.deposit(1000, address(this));
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:133:38
+    │
+133 │         uint256 n = bound(amount, 1, 100);
+    │                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:135:63
+    │
+135 │         assertEq(pay.balanceOf(owner) + pay.balanceOf(maker), 1000000);
+    │                                                               ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:136:63
+    │
+136 │         assertEq(buy.balanceOf(owner) + buy.balanceOf(maker), 1000000);
+    │                                                               ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:138:38
+    │
+138 │         assertLe(e.policy(id).spent, 300);
+    │                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:87
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                                                       ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:96
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                                                                ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:102
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:107
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                                                                           ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:112
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                                                                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:148:25
+    │
+148 │         reject(quote(1, 3, 4), KudexRfqExecutor.OutsidePolicy.selector);
+    │                         ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:148:28
+    │
+148 │         reject(quote(1, 3, 4), KudexRfqExecutor.OutsidePolicy.selector);
+    │                            ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:82:57
+   │
+82 │         executor.createPolicy(delegate, address(vault), uint64(block.timestamp + 1 days), 2, 1, 3);
+   │                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:149:23
+    │
+149 │         fill(quote(1, 3, 5));
+    │                       ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:149:26
+    │
+149 │         fill(quote(1, 3, 5));
+    │                          ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:152:25
+    │
+152 │         reject(quote(2, 3, 5), KudexRFQMarket.OrderAlreadyCancelled.selector);
+    │                         ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:152:28
+    │
+152 │         reject(quote(2, 3, 5), KudexRFQMarket.OrderAlreadyCancelled.selector);
+    │                            ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:153:38
+    │
+153 │         assertEq(e.policy(id).spent, 3);
+    │                                      ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:158:25
+    │
+158 │         tax.mint(owner, 1000);
+    │                         ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:160:33
+    │
+160 │         tax.approve(address(e), 1000);
+    │                                 ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:163:87
+    │
+163 │                 delegate, maker, address(buy), address(tax), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                       ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:163:102
+    │
+163 │                 delegate, maker, address(buy), address(tax), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:163:107
+    │
+163 │                 delegate, maker, address(buy), address(tax), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                           ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexAgentExecutor.t.sol:87:89
+   │
+87 │         vm.prank(delegate); vm.expectRevert(KudexAgentExecutor.LimitExceeded.selector); executor.execute(id, amount);
+   │                                                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:105:9
+    │
+105 │         taxVault.redeem(1000, address(this), address(this));
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:163:112
+    │
+163 │                 delegate, maker, address(buy), address(tax), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:167:50
+    │
+167 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                  ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:167:54
+    │
+167 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:170:40
+    │
+170 │         assertEq(tax.balanceOf(owner), 1000);
+    │                                        ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:177:25
+    │
+177 │         tax.mint(maker, 1000);
+    │                         ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:179:33
+    │
+179 │         tax.approve(address(r), 1000);
+    │                                 ━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:183:87
+    │
+183 │                 delegate, maker, address(tax), address(pay), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                       ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:183:102
+    │
+183 │                 delegate, maker, address(tax), address(pay), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:183:107
+    │
+183 │                 delegate, maker, address(tax), address(pay), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                           ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:183:112
+    │
+183 │                 delegate, maker, address(tax), address(pay), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                                                                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexVaultIntegrity.t.sol:114:9
+    │
+114 │         callback.approve(address(guarded), 1000);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:186:50
+    │
+186 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                  ━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:186:54
+    │
+186 │         KudexRFQMarket.Order memory q = quote(1, 50, 100);
+    │                                                      ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:189:40
+    │
+189 │         assertEq(pay.balanceOf(owner), 1000000);
+    │                                        ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:30:9
+   │
+30 │         buy.approve(address(r), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:32:9
+   │
+32 │         pay.approve(address(e), type(uint256).max);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:44:17
+   │
+44 │                 uint64(block.timestamp + 7 days),
+   │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:145:62
+    │
+145 │                 delegate, maker, address(buy), address(pay), uint64(block.timestamp + 1 days), 3, 2, 100, 150, 300
+    │                                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │
+    │       // casting to 'uint64' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:160:9
+    │
+160 │         tax.approve(address(e), 1000);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:163:62
+    │
+163 │                 delegate, maker, address(buy), address(tax), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │
+    │       // casting to 'uint64' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:179:9
+    │
+179 │         tax.approve(address(r), 1000);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ contracts/test/KudexRfqExecutor.t.sol:183:62
+    │
+183 │                 delegate, maker, address(tax), address(pay), uint64(block.timestamp + 1 days), 2, 1, 100, 150, 300
+    │                                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │
+    │       // casting to 'uint64' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+note[missing-inheritance]: contract `Groth16Verifier` implements interface `IGroth16Verifier`'s external API but does not explicitly inherit from it
+  ╭▸ contracts/src/verifiers/Groth16Verifier.sol:9:10
+  │
+9 │ contract Groth16Verifier {
+  │          ━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/missing-inheritance
+
+note[missing-inheritance]: contract `KudexPolicyRegistry` implements interface `IKudexPolicyRegistry`'s external API but does not explicitly inherit from it
+  ╭▸ contracts/src/KudexPolicyRegistry.sol:8:10
+  │
+8 │ contract KudexPolicyRegistry is Initializable {
+  │          ━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/missing-inheritance
+
+note[unused-error]: custom error is never used
+   ╭▸ contracts/src/KudexVault.sol:37:5
+   │
+37 │     error NullifierAlreadySpent();
+   │     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-error
+
+note[unused-error]: custom error is never used
+   ╭▸ contracts/src/KudexVault.sol:38:5
+   │
+38 │     error InvalidZKProof();
+   │     ━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-error
+
+note[internal-function-used-once]: this internal function is used only once; consider inlining it into its caller
+   ╭▸ contracts/test/KudexRfqExecutor.t.sol:36:5
+   │
+36 │     function create(uint256 action, uint256 daily, uint256 total) internal returns (bytes32) {
+   │     ━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/internal-function-used-once
+
+note[modifier-used-only-once]: this modifier is used only once; consider inlining its checks into the function
+   ╭▸ contracts/src/KudexDaaSAdapter.sol:45:5
+   │
+45 │     modifier onlySentinelOrOwner() {
+   │     ━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/modifier-used-only-once
+
+(node:123470) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/laughter/Desktop/Hackathon/kudex/src/lib/contracts/vault-client.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /home/laughter/Desktop/Hackathon/kudex/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.4.3 (Turbopack)
+- Local:         http://localhost:3018
+- Network:       http://192.168.1.243:3018
+- Environments: .env.local
+✓ Ready in 711ms
+✓ Running next.config.ts took 86ms
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+    - include was updated to add '.next-vault-test/types/**/*.ts'
+    - include was updated to add '.next-vault-test/dev/types/**/*.ts'
+
+
+✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+(node:123604) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ GET /app/vaults 200 in 1726ms (next.js: 486ms, application-code: 1239ms)
+PASS: browser → injected local signer → compiled vault → verified receipts → chain-refreshed position → full redemption. Local Anvil only.

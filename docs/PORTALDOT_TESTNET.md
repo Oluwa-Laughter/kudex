@@ -113,3 +113,28 @@ pnpm build
 `test:runtime` executes the compiled diagnostic on the live EVM RPC using a read-only `eth_call` and temporary state overrides. It creates diagnostic assets only inside that discarded state. At block **72525**, it passed vault deposit/withdrawal, ERC-1271 RFQ settlement, nonce/replay and unsigned-order rejection, default freeze with exits available, and the disabled verifier check. It did not send a transaction, create durable assets or establish a live application deployment.
 
 Current local suite: 29 Solidity tests, five denomination/network regression tests and three deployment-import rejection tests pass. The production build and local HTTP checks for readiness/vault/marketing content also pass; the production dependency audit reports no high or critical advisories and three moderate wallet-dependency findings. Browser wallet signing, funded native deployment, successful manifest import and live application deposit/withdrawal receipts remain to be verified.
+
+## October 29 RFQ/credit restoration
+
+The native signing preference remains unchanged. `KudexRfqExecutor` and
+`KudexTestCreditFacility` are new immutable extensions, not upgrades or automatically
+included broadcasts. The unsigned review manifest now records their real artifact
+hashes and constructor schemas; it does not select an owner, collateral or signer.
+Resolve exact arguments and storage/fee funding, review the native Revive signing
+interface and request authorization before publishing. The EVM transaction UI does not
+supply native signing merely because an H160 is mapped.
+
+Read-only diagnostics:
+
+```sh
+pnpm inspect:portaldot
+pnpm probe:cryptography
+pnpm test:restoration-runtime
+```
+
+The latter two execute ephemeral constructor code using `eth_call` and a temporary
+caller-balance override. They do not create public assets, bytecode or receipts. Runtime
+3002 passed BN254 primitive probes and the new RFQ-policy/credit accounting assertions;
+this is neither a deployed verifier nor proof of a confidential transfer. Evidence and
+failed direct-call observations are in the October 29 restoration report. DaaS contract
+addresses, interface semantics and authorization remain unverified.

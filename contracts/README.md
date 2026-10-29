@@ -35,3 +35,26 @@ Before any broadcast: inspect current runtime, verify compilation, review asset 
 The October 28 vault change requires a new deployment. Existing immutable vaults are not upgraded by changing source or ABIs. New creation artifacts must be rebuilt before preparing native payloads. Never substitute invented deployment addresses.
 
 Read [the current engineering review](../docs/ENGINEERING_REVIEW_2026-10-28.md) for evidence, threat model and outstanding release gates.
+
+## RFQ-first restoration extensions
+
+- `KudexRfqExecutor` is a **separate**, immutable fixed-router executor. Each owner policy
+  fixes delegate/maker/pair, minimum rational base-unit exchange rate (rounded up), UTC-day,
+  action and lifetime payment caps, expiry and revocation. No arbitrary calls, receiver,
+  withdrawal, fee extraction or deposit-policy privilege escalation. Acquired tokens go
+  directly to the policy owner and temporary router allowances are cleared. Policies and
+  exact transfers are tested locally, including failed signature, cancelled/replayed quote,
+  price/expiry/cap failures and taxed-token rollback. It is not a hosted worker.
+- `KudexTestCreditFacility` is an immutable, unbacked, zero-interest chain-420420777 test
+  facility. Fixed senior/junior targets and funding/maturity/grace terms, permissioned
+  subscription, one-time debtor disbursement, failed-raise refunds, actual repayment,
+  cumulative senior-first claims and objective default/recovery. No issuer attestation,
+  legal title, yield, DaaS call, off-chain asset seizure or owner cash rescue.
+- `testnet/CryptoProbe.sol` and `testnet/RestorationSmoke.sol` are constructor diagnostics
+  used through `eth_call` only. Their ABI return bytes are not deployed runtime contracts.
+
+All new custody/execution bytecode needs independent review and separately authorized
+new deployments. Existing deployment scripts are **not** silently expanded to publish
+these extensions. `NEXT_PUBLIC_RFQ_EXECUTOR_*` remains blank. See
+[credit design](../docs/CREDIT_AND_DAAS.md) and
+[confidentiality specification](../docs/CONFIDENTIALITY_PROTOCOL.md).

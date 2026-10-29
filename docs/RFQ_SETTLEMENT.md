@@ -36,3 +36,32 @@ Only standard reviewed ERC-20 assets should be supported. Fee-on-transfer and re
 ## Scaling toward a marketplace
 
 A multi-user orderbook needs authenticated maker/solver submission, durable order storage, indexed cancellation/fill events, expiration, canonical-block reconciliation, cursor pagination, query limits, and abuse controls. A worker must reconcile nonce state before offering an order and again before execution. No generated bot ticker or database-free local list is presented as live liquidity.
+
+## October 29 restoration (takes precedence over historical positioning)
+
+RFQ is now the primary marketplace at `/app/marketplace`; `/app/rfq` remains compatible.
+`Create an RFQ` exports an EOA-signed invitation bound to chain/router, requester,
+named solver, asset pair, min receipt, max payment, expiry and nonce. It is a local
+negotiation document, not an on-chain order or durable request service. Verification
+and quote comparison are explicit actions. Changing input invalidates prior verification.
+No request content is sent to a public API or automatically logged. EOA-only request
+signatures are distinct from existing EIP-1271 support for settlement makers.
+
+The v1 router is unchanged: every signed quote is a bearer, full-fill, public exchange.
+Invitations cannot impose a private taker restriction on that contract. Sharing a quote
+can allow another taker to fill it. Request nonces are signed identifiers; no persistent
+request replay/cancellation database exists. Maker on-chain nonce cancellation remains
+authoritative for quotes, and an off-chain invitation cannot cancel a shared quote.
+
+All financial writes except allowance removal require exact reviewed router and token
+runtime pins (`NEXT_PUBLIC_RFQ_CODE_HASH`, `NEXT_PUBLIC_RFQ_ASSET_PINS`). Pins are not
+an audit and do not resolve mutable proxy/token economics. Signing quotes also checks
+pins. Receipt validation checks hash, sender, destination and exact operation event;
+canonicality/finalized-head reporting follows the vault implementation. Approval,
+cancellation and settlement are separate events. Transaction submission never implies fill.
+
+Only deployment/account-scoped submitted references are stored in sessionStorage,
+not signed terms, balances or successful settlements. Pending/error outcomes retain a
+reconciliation lock. Storage deletion, tab/device changes and nonce replacements still
+need a persistent journal; there is no blind automatic retry. The separate RFQ mandate
+panel retains pending references only while mounted and explicitly warns about reloads.

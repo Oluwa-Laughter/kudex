@@ -1,0 +1,30 @@
+
+> kudex@1.0.0 test:ui /home/laughter/Desktop/Hackathon/kudex
+> playwright test
+
+[WebServer] (node:124650) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:124663) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 4 workers
+
+(node:124688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:124690) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:124696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:124689) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 tests/browser/rfq-workspace.spec.ts:3:5 › malformed RFQ exports cannot enable settlement and expiry selection stays within the workspace (3.9s)
+  ✓  1 tests/browser/agent-workspace.spec.ts:3:5 › wallet dialog restores focus, native account context loads, and mobile menu is keyboard operable (4.4s)
+  ✓  3 tests/browser/financial-integrity.spec.ts:3:5 › legacy browser ledger cannot resurrect balances, filled swaps, privacy notes, or agent profits (6.0s)
+  ✓  5 tests/browser/agent-workspace.spec.ts:59:5 › policy draft can be reviewed and exported without activating any on-chain authority (2.1s)
+  ✓  4 tests/browser/restoration.spec.ts:4:7 › institutional RFQ workspace, navigation and privacy boundaries at 320px (7.2s)
+  ✓  6 tests/browser/financial-integrity.spec.ts:55:5 › failed native balance read displays unavailable rather than faucet allocation (1.9s)
+  ✓  7 tests/browser/agent-workspace.spec.ts:85:5 › conversation consumes progress and text chunks while keeping tool observations distinct (2.0s)
+  ✓  9 tests/browser/financial-integrity.spec.ts:83:5 › public marketing does not advertise fabricated financial metrics (2.1s)
+  ✓  8 tests/browser/restoration.spec.ts:4:7 › institutional RFQ workspace, navigation and privacy boundaries at 1280px (4.7s)
+
+  9 passed (16.1s)

@@ -75,3 +75,28 @@ Before public scale: deploy shared rate limiting and provider spend controls, a 
 The repository contains request validation/coalescing tests and browser tests for native-account UI fixtures, keyboard focus restoration, draft export, and streamed response rendering. Fixture responses prove UI behavior only; they do not verify a live extension, Google service, funding, or transaction signing.
 
 Live Google conversation still needs the project key and chosen model. Policy activation, allowance changes, revocation and delegated deposits still need funded, verified deployments and real wallet acceptance. The native RPC path needs a successful current finalized-account read before claiming its production reliability.
+
+## Separate RFQ mandates (October 29)
+
+`/app/agents` → `RFQ mandates` targets the new immutable `KudexRfqExecutor`, not the
+original deposit-only executor. No address is configured by this revision. A reviewed
+runtime hash and router binding are required before operations; token pins are required
+before authority or spending is granted.
+
+The owner fixes delegate, maker, buy/pay tokens, rational minimum exchange rate,
+per-action/daily/total token-unit payment caps and 24-hour expiry. The contract supports
+at most 30-day policies. Daily periods are UTC timestamp days, not rolling 24-hour windows.
+`minimumBuy / referencePay` is a minimum *base-unit* rate, with a rounded-up required
+receipt. Tokens with different decimals require deliberate conversion; no USD valuation
+or oracle is inferred. Review the full ratio and every cap before authorizing.
+
+Owner policy authorization and allowance are separate wallet transactions. The exact
+delegate can submit a signed eligible quote; the contract enforces limits and sends the
+received tokens to the owner, clearing temporary router approval. The model does not
+sign or hold credentials. Revocation stops new execution; allowance removal is separate.
+Anyone holding the maker's bearer signature can independently fill the router order.
+
+This is a manual testnet workflow with local browser/contract tests. It is not an active
+hosted worker, zero-popup session service, private trade or deployment receipt. A durable
+queue, account nonce manager, operator authorization, fee bounds, persistent submission
+journal, reorg/replacement handling and current native wallet signing remain release gates.

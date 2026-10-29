@@ -1,0 +1,55 @@
+
+> kudex@1.0.0 build /home/laughter/Desktop/Hackathon/kudex
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 50ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 6.8s
+  Running TypeScript ...
+  Finished TypeScript in 2.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/27) ...
+(node:124528) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:124501) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  Generating static pages using 7 workers (6/27)
+  Generating static pages using 7 workers (13/27)
+  Generating static pages using 7 workers (20/27)
+✓ Generating static pages using 7 workers (27/27) in 1244ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/agent/status
+├ ƒ /api/chat
+├ ƒ /api/portaldot/account
+├ ƒ /api/protocol/events
+├ ƒ /api/protocol/vault
+├ ○ /app/activity
+├ ○ /app/agents
+├ ○ /app/bridge
+├ ○ /app/compliance
+├ ○ /app/credit
+├ ○ /app/how-it-works
+├ ○ /app/infrastructure
+├ ○ /app/marketplace
+├ ○ /app/overview
+├ ○ /app/protection
+├ ○ /app/rfq
+├ ○ /app/settlement
+├ ○ /app/vaults
+├ ○ /bridge
+├ ○ /how-it-works
+├ ○ /marketplace
+├ ○ /solutions/autonomous-agents
+├ ○ /solutions/credit-tranches
+└ ○ /solutions/enterprise-payroll
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

@@ -36,3 +36,12 @@ Open Kudex Agent and ask: “How do I make and settle an offer?” Show its prod
 ## 2:40–3:00 — Current boundary
 
 Close with the live repository and product guide. State plainly whether the recording used Portaldot testnet or local contract tests. Do not claim private fills, a hosted solver book, RWA yield, automated background execution, or production scale until those capabilities are deployed and independently verified.
+
+## Current RFQ-first demonstration (October 29)
+
+Earlier AMM positioning is superseded. Open Overview, then RFQ Marketplace. Show local
+invitation creation, quote review, explicit public/bearer limitations and deployment
+availability. A repeatable actual local signing/settlement/delegate/revocation journey
+is `pnpm test:rfq-ui`; the preserved custody journey is `pnpm test:vault-ui`. Label both
+as isolated local tests, never public Portaldot transactions. Credit has no verified
+investor offering, private transfers remain disabled and no hosted agent worker runs.

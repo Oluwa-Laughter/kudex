@@ -1,0 +1,162 @@
+No files changed, compilation skipped
+
+Ran 4 tests for test/KudexDaaSAdapter.t.sol:KudexDaaSAdapterTest
+[PASS] test_CalculateHealthFactorHealthy() (gas: 26987)
+[PASS] test_RevokedControllerCannotFreezeVault() (gas: 149660)
+[PASS] test_SentinelRestructuringOnCriticalRisk() (gas: 175451)
+[PASS] test_UnauthorizedCallerCannotFreezeVault() (gas: 33997)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 22.48ms (20.43ms CPU time)
+
+Ran 3 tests for test/KudexPolicyRegistry.t.sol:KudexPolicyRegistryTest
+[PASS] test_AllowlistNeedsDelayedGovernance() (gas: 215376)
+[PASS] test_InitializationLocked() (gas: 68849)
+[PASS] test_UpgradeDelayedAndStoragePreserved() (gas: 605463)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 19.48ms (17.67ms CPU time)
+
+Ran 10 tests for test/KudexVault.t.sol:KudexVaultTest
+[PASS] test_ConfidentialTransferRevertsOnInvalidProof() (gas: 10726)
+[PASS] test_ConfidentialTransfersDisabledEvenWithPermissiveVerifier() (gas: 10777)
+[PASS] test_DefaultBlocksStandardDepositAndMint() (gas: 134847)
+[PASS] test_DefaultStillAllowsPublicWithdrawal() (gas: 218118)
+[PASS] test_DuplicateCommitmentRejected() (gas: 176093)
+[PASS] test_InitialState() (gas: 39781)
+[PASS] test_PublicDepositAndWithdrawal() (gas: 191368)
+[PASS] test_RiskScoreAndDefault() (gas: 150844)
+[PASS] test_ShieldDeposit() (gas: 161048)
+[PASS] test_ZeroProofRejected() (gas: 7805)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 23.93ms (18.36ms CPU time)
+
+Ran 1 test for test/RuntimeSmoke.t.sol:RuntimeSmokeTest
+[PASS] test_ConstructorDiagnostic() (gas: 5420562)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 4.53ms (3.54ms CPU time)
+
+Ran 8 tests for test/KudexAgentExecutor.t.sol:KudexAgentExecutorTest
+[PASS] testFuzz_CannotExceedPerActionCap(uint128) (runs: 256, μ: 65530, ~: 65537)
+[PASS] test_DailyAndActionCaps() (gas: 412793)
+[PASS] test_DepositOnlySharesToOwnerAndNoResidualAllowance() (gas: 235253)
+[PASS] test_ExpiryAndRegistryRemoval() (gas: 180518)
+[PASS] test_FailedDepositRollsBackBudget() (gas: 295588)
+[PASS] test_InvalidPolicyBounds() (gas: 64926)
+[PASS] test_UnauthorizedAndRevoked() (gas: 134031)
+[PASS] test_UtcDayResetAndLifetimeCap() (gas: 467413)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 195.17ms (191.20ms CPU time)
+
+Ran 2 tests for test/KudexTestToken.t.sol:KudexTestTokenTest
+[PASS] test_DeploymentRejectedOnOtherChains() (gas: 3748)
+[PASS] test_FixedSupplyOnTestnet() (gas: 29994)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 2.38ms (2.09ms CPU time)
+
+Ran 6 tests for test/KudexTestCreditFacility.t.sol:KudexTestCreditFacilityTest
+[PASS] testFuzz_WaterfallConservesMeasuredCash(uint96) (runs: 256, μ: 555480, ~: 529195)
+[PASS] test_AuthorizationOverpaymentAndDefaultBoundary() (gas: 401498)
+[PASS] test_FailedRaiseRefundAndNoLateDisbursement() (gas: 266204)
+[PASS] test_LifecycleSeniorFirstAndRecovery() (gas: 803500)
+[PASS] test_MultipleInvestorsHaveCumulativeRoundingAndNoOverclaim() (gas: 807033)
+[PASS] test_RevokedEligibilityCannotSeizeRepaymentClaims() (gas: 485971)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 370.55ms (389.19ms CPU time)
+
+Ran 15 tests for test/KudexRFQMarket.t.sol:KudexRFQMarketTest
+[PASS] testFuzz_ChangedAmountRejected(uint256) (runs: 256, μ: 80477, ~: 80405)
+[PASS] test_CancelOrder() (gas: 126420)
+[PASS] test_ContractWalletMakerCanAuthorizeOrder() (gas: 543652)
+[PASS] test_FailedSecondLegRollsBackFirstTransferAndNonce() (gas: 236936)
+[PASS] test_FillOrder() (gas: 281189)
+[PASS] test_MakerCannotConsumeNonceThroughSelfFill() (gas: 59437)
+[PASS] test_NonceCanOnlySettleOnce() (gas: 250331)
+[PASS] test_OrderExpired() (gas: 62277)
+[PASS] test_SignatureCannotReplayOnAnotherChain() (gas: 78019)
+[PASS] test_SignatureCannotReplayOnAnotherDeployment() (gas: 73192)
+[PASS] test_TamperedAmountRejected() (gas: 77339)
+[PASS] test_TransferTaxOnMakerLegRollsBackBothLegsAndNonce() (gas: 989474)
+[PASS] test_TransferTaxOnTakerLegRollsBackBothLegsAndNonce() (gas: 991651)
+[PASS] test_UnsignedOrderCannotDrainMaker() (gas: 70335)
+[PASS] test_ZeroAmountOrderRejected() (gas: 52882)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 495.49ms (498.53ms CPU time)
+
+Ran 6 tests for test/KudexVaultIntegrity.t.sol:KudexVaultIntegrityTest
+[PASS] testFuzz_BoundedRoundTrip(uint128) (runs: 256, μ: 180503, ~: 180281)
+[PASS] test_DonationCannotViolateReviewedMinimum() (gas: 196285)
+[PASS] test_MinimumOutputAndExpiryRollback() (gas: 386020)
+[PASS] test_OnlyOwnerMaySetRiskOrController() (gas: 83777)
+[PASS] test_TaxedDepositAndWithdrawalRevertAtomically() (gas: 1184338)
+[PASS] test_TokenCallbackCannotReenterStandardEntryPoints() (gas: 1067576)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 587.69ms (597.10ms CPU time)
+
+Ran 9 tests for test/KudexRfqExecutor.t.sol:KudexRfqExecutorTest
+[PASS] testFuzz_ExecutionConservesAssetsAndCaps(uint96) (runs: 256, μ: 352561, ~: 352625)
+[PASS] test_DailyAndLifetimeCaps() (gas: 847456)
+[PASS] test_ExactTradeNoCustodyOrResidualApproval() (gas: 327883)
+[PASS] test_FailedSignatureRollsBackBudgetAndFunds() (gas: 263849)
+[PASS] test_PriceCounterpartyPairExpiryAndReplay() (gas: 851266)
+[PASS] test_RationalFloorRoundsUpAndCancelledQuoteRollsBack() (gas: 868242)
+[PASS] test_TaxedMakerLegRollsBackOwnerFunding() (gas: 1399848)
+[PASS] test_TaxedOwnerFundingRollsBackAuthorityAndCash() (gas: 1234254)
+[PASS] test_UnauthorizedAndRevoked() (gas: 167404)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 690.07ms (762.52ms CPU time)
+
+Ran 1 test for test/KudexProtocolInvariants.t.sol:CreditCashInvariantTest
+[PASS] invariant_RepaymentAndClaimsAreBacked() (runs: 256, calls: 128000, reverts: 0)
+
+╭---------------+----------+-------+---------+----------╮
+| Contract      | Selector | Calls | Reverts | Discards |
++=======================================================+
+| CreditHandler | claim    | 63792 | 0       | 0        |
+|---------------+----------+-------+---------+----------|
+| CreditHandler | repay    | 64208 | 0       | 0        |
+╰---------------+----------+-------+---------+----------╯
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 35.09s (35.06s CPU time)
+
+Ran 1 test for test/KudexVaultIntegrity.t.sol:VaultAccountingInvariantTest
+[PASS] invariant_AssetsMatchIssuedSharesWithoutDonations() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+----------+-------+---------+----------╮
+| Contract     | Selector | Calls | Reverts | Discards |
++======================================================+
+| VaultHandler | deposit  | 64008 | 0       | 0        |
+|--------------+----------+-------+---------+----------|
+| VaultHandler | redeem   | 63992 | 0       | 0        |
+╰--------------+----------+-------+---------+----------╯
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 55.86s (55.84s CPU time)
+
+Ran 1 test for test/KudexProtocolInvariants.t.sol:RfqAuthorityInvariantTest
+[PASS] invariant_BudgetAndCustodyConservation() (runs: 256, calls: 128000, reverts: 0)
+
+╭------------+----------+--------+---------+----------╮
+| Contract   | Selector | Calls  | Reverts | Discards |
++=====================================================+
+| RfqHandler | trade    | 128000 | 0       | 0        |
+╰------------+----------+--------+---------+----------╯
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 62.46s (62.42s CPU time)
+
+╭------------------------------+--------+--------+---------╮
+| Test Suite                   | Passed | Failed | Skipped |
++==========================================================+
+| KudexAgentExecutorTest       | 8      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexDaaSAdapterTest         | 4      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexPolicyRegistryTest      | 3      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| CreditCashInvariantTest      | 1      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| RfqAuthorityInvariantTest    | 1      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexRFQMarketTest           | 15     | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexRfqExecutorTest         | 9      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexTestCreditFacilityTest  | 6      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexTestTokenTest           | 2      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexVaultTest               | 10     | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| KudexVaultIntegrityTest      | 6      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| VaultAccountingInvariantTest | 1      | 0      | 0       |
+|------------------------------+--------+--------+---------|
+| RuntimeSmokeTest             | 1      | 0      | 0       |
+╰------------------------------+--------+--------+---------╯

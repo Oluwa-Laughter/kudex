@@ -1,0 +1,102 @@
+Progress: resolved 0, reused 1, downloaded 0, added 0
+ WARN  deprecated recharts@2.15.4: 1.x and 2.x branches are no longer active. Bump to Recharts v3 to receive latest features and bugfixes. See https://github.com/recharts/recharts/wiki/3.0-migration-guide
+Progress: resolved 137, reused 114, downloaded 0, added 0
+Progress: resolved 383, reused 298, downloaded 0, added 0
+Progress: resolved 683, reused 633, downloaded 0, added 0
+Progress: resolved 688, reused 638, downloaded 0, added 0
+ WARN  15 deprecated subdependencies found: @metamask/sdk-analytics@0.0.5, @metamask/sdk-communication-layer@0.33.1, @metamask/sdk-install-modal-web@0.32.1, @metamask/sdk@0.33.1, @paulmillr/qr@0.2.1, @safe-global/safe-gateway-typescript-sdk@3.23.1, @substrate/connect@0.8.11, @walletconnect/ethereum-provider@2.21.1, @walletconnect/sign-client@2.21.0, @walletconnect/sign-client@2.21.1, @walletconnect/universal-provider@2.21.0, @walletconnect/universal-provider@2.21.1, node-domexception@1.0.0, uuid@8.3.2, uuid@9.0.1
+Progress: resolved 692, reused 642, downloaded 0, added 0
+Packages: +1 -1
++-
+Progress: resolved 692, reused 642, downloaded 0, added 1, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ wagmi 2.19.5
+  └─┬ @wagmi/connectors 6.2.0
+    ├─┬ @walletconnect/ethereum-provider 2.21.1
+    │ └─┬ @reown/appkit 1.7.8
+    │   └─┬ valtio 1.13.2
+    │     └─┬ use-sync-external-store 1.2.0
+    │       └── ✕ unmet peer react@"^16.8.0 || ^17.0.0 || ^18.0.0": found 19.3.0
+    └─┬ @base-org/account 2.4.0
+      └─┬ @coinbase/cdp-sdk 1.58.0
+        └─┬ @solana/kit 5.5.1
+          ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/accounts 5.5.1
+          │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/addresses 5.5.1
+          │ │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/errors 5.5.1
+          │ │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/nominal-types 5.5.1
+          │ │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/codecs-core 5.5.1
+          │ │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/codecs-strings 5.5.1
+          │ │ │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ │ └─┬ @solana/codecs-numbers 5.5.1
+          │ │ │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ └─┬ @solana/assertions 5.5.1
+          │ │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/rpc-types 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ └─┬ @solana/rpc-spec 5.5.1
+          │   ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │   └─┬ @solana/rpc-spec-types 5.5.1
+          │     └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/instructions 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/codecs 5.5.1
+          │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/codecs-data-structures 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ └─┬ @solana/options 5.5.1
+          │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/functional 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/instruction-plans 5.5.1
+          │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/keys 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/transaction-messages 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/transactions 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ └─┬ @solana/promises 5.5.1
+          │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/offchain-messages 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/plugin-core 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/programs 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/rpc 5.5.1
+          │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/rpc-api 5.5.1
+          │ │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/rpc-parsed-types 5.5.1
+          │ │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ └─┬ @solana/rpc-transformers 5.5.1
+          │ │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/fast-stable-stringify 5.5.1
+          │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ └─┬ @solana/rpc-transport-http 5.5.1
+          │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/rpc-subscriptions 5.5.1
+          │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ ├─┬ @solana/rpc-subscriptions-channel-websocket 5.5.1
+          │ │ ├── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ ├─┬ @solana/subscribable 5.5.1
+          │ │ │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ │ └─┬ @solana/rpc-subscriptions-spec 5.5.1
+          │ │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          │ └─┬ @solana/rpc-subscriptions-api 5.5.1
+          │   └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/signers 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          ├─┬ @solana/sysvars 5.5.1
+          │ └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+          └─┬ @solana/transaction-confirmation 5.5.1
+            └── ✕ unmet peer typescript@^5.0.0: found 7.0.2
+
+Done in 6.7s using pnpm v10.34.6

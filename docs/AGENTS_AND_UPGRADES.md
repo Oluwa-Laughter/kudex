@@ -63,3 +63,14 @@ A production worker still needs authenticated job submission, durable transactio
 - Registry tests: locked/repeated initialization, unauthorized writes/upgrades, timelock delay, and V2 storage preservation.
 - Web draft tests: exact token precision, fixed chain, explicit draft status, expiry bounds, invalid accounts and inconsistent caps.
 - Runtime compatibility for the new governance and agent infrastructure still needs a funded deployment or dedicated live read-only constructor test. Existing core-vault runtime smoke evidence does not validate the new proxy stack.
+
+## RFQ-specific immutable authority
+
+The October 29 extension uses a distinct immutable `KudexRfqExecutor` and policy namespace.
+It does not upgrade `KudexAgentExecutor`, inherit its policies or obtain its allowances.
+Its router, maker/pair/rate restrictions, expiry and token-unit caps define a separate
+reviewed authority. Policy creation and allowance require the owner; execution requires
+the exact delegate; revocation never depends on an AI suggestion or worker cooperation.
+No arbitrary call, upgrade hook or mutable governance router is provided. Governance and
+incident response must account for immutable deployments rather than assume an upgrade
+can change custody. No new extension has been publicly deployed by this work.

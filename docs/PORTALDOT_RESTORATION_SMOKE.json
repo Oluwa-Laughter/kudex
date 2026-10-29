@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-10-29T19:08:21.697Z",
+  "chainId": 420420777,
+  "block": "242203",
+  "blockHash": "0xdac5e903bdeaf0634d11605a9c7ff3606843364ec01a625dbd36a41f0688321f",
+  "mode": "read-only ephemeral constructor eth_call with diagnostic balance override; no deployment or transaction receipt",
+  "creationCodeHash": "0xa7f1663959ee8badfc3fea0cf5f21301a023209186273dddcfdb2b54ef74ba99",
+  "checks": {
+    "policyBoundRfqExactTransfersAndRevocation": true,
+    "creditSubscriptionRepaymentWaterfallAndClaims": true
+  }
+}
