@@ -96,7 +96,7 @@ export function UserGuide() {
             </li>
           ))}
         </ol>
-        <Link className="action-link mt-6" href="/app/rfq">
+        <Link className="action-link mt-6" href="/app/marketplace">
           Open RFQ trading <FiArrowRight aria-hidden="true" />
         </Link>
       </section>

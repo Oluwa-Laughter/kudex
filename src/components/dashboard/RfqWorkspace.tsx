@@ -6,11 +6,12 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { FiArrowRight, FiFileText, FiRepeat } from 'react-icons/fi';
 import { zeroAddress } from 'viem';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
+import { RfqRequestBuilder } from './RfqRequestBuilder';
 import { RfqOfferBuilder } from './RfqOfferBuilder';
 import { RfqOfferReview } from './RfqOfferReview';
 
 export function RfqWorkspace() {
-  const [tab, setTab] = useState('review');
+  const [tab, setTab] = useState('request');
   const [raw, setRaw] = useState('');
   const [signed, setSigned] = useState(false);
   const [operating, setOperating] = useState(false);
@@ -19,10 +20,10 @@ export function RfqWorkspace() {
       <header className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
           <p className="eyebrow">RFQ marketplace</p>
-          <h1 className="page-title">Trade on your terms.</h1>
+          <h1 className="page-title">Negotiate. Review. Settle.</h1>
           <p className="page-description">
-            Review a counterparty’s offer or create your own. Approve exact amounts, then
-            settle the complete exchange through your wallet.
+            Request institutional liquidity, exchange signed quotes, and review exact
+            token movements before public atomic settlement.
           </p>
         </div>
         <Link className="quiet-link" href="/app/agents">
@@ -57,6 +58,9 @@ export function RfqWorkspace() {
           aria-label="RFQ workflow"
           className="mb-6 flex flex-wrap gap-2 border-b border-border pb-4"
         >
+          <Tabs.Trigger value="request" disabled={operating} className="workspace-tab">
+            Create an RFQ
+          </Tabs.Trigger>
           <Tabs.Trigger value="review" disabled={operating} className="workspace-tab">
             <FiFileText aria-hidden="true" /> Review an offer
           </Tabs.Trigger>
@@ -64,6 +68,9 @@ export function RfqWorkspace() {
             <FiRepeat aria-hidden="true" /> Create an offer
           </Tabs.Trigger>
         </Tabs.List>
+        <Tabs.Content value="request" forceMount className="data-[state=inactive]:hidden">
+          <RfqRequestBuilder onBusyChange={setOperating} quote={raw} />
+        </Tabs.Content>
         <Tabs.Content value="create" forceMount className="data-[state=inactive]:hidden">
           <RfqOfferBuilder
             onBusyChange={setOperating}

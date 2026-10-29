@@ -27,7 +27,7 @@ import { Providers } from './providers';
 export const metadata: Metadata = {
   title: 'Kudex | Confidential Settlement & Autonomous Finance on Portaldot 3.0',
   description:
-    'Confidential settlement, structured waterfall credit facilities, instant token swaps, fiat ramps, and autonomous agent fleet on Portaldot 3.0 Revive.',
+    'Private negotiated settlement, institutional RFQ markets and bounded financial agents on Portaldot V3. Testnet development; confidential transfers remain disabled.',
   icons: {
     icon: '/logo.svg',
   },

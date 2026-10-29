@@ -86,7 +86,7 @@ export function ConnectWalletButton() {
           ) : native.selected ? (
             truncateAddress(native.selected.address)
           ) : (
-            'Connect Wallet'
+            'Connect wallets'
           )}
         </span>
       </Dialog.Trigger>

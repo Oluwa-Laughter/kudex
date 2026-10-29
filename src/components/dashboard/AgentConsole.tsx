@@ -28,7 +28,7 @@ const productPrompts = [
     icon: FiLayers,
   },
   {
-    label: 'How do instant DeFi swaps, liquidity pools, and agent autopilot work?',
+    label: 'How do RFQ requests, signed quotes and bounded mandates work?',
     icon: FiRepeat,
   },
   {
@@ -378,7 +378,7 @@ export function AgentConsole() {
                 onChange={(event) => setMessage(event.target.value)}
                 maxLength={1500}
                 rows={2}
-                placeholder="Ask about a vault, swap route, or agent policy"
+                placeholder="Ask about settlement, an RFQ, or agent permissions"
                 className="min-h-12 min-w-0 flex-1 resize-y bg-transparent px-3 py-2 text-base"
                 disabled={pending}
               />

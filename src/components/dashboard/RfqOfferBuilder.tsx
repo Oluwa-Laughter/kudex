@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { useAccount, usePublicClient, useSignTypedData } from 'wagmi';
 import { formatUnits, isAddress, zeroAddress, type Address } from 'viem';
 import { CustomSelect } from '@/components/ui/CustomSelect';
-import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
+import { assertRfqProvenance } from '@/lib/contracts/rfq-execution';
+import {
+  RFQ_CODE_HASH,
+  RFQ_ASSET_PINS,
+  CONTRACT_ADDRESSES,
+} from '@/lib/contracts/addresses';
 import { kudexRFQMarketAbi } from '@/lib/contracts/abis';
 import { assertDeployment } from '@/lib/contracts/readiness';
 import { readRfqToken } from '@/lib/contracts/rfq-client';
@@ -160,6 +165,10 @@ export function RfqOfferBuilder({
         requested.symbol !== review.requested.symbol
       )
         throw new Error('Token metadata changed. Review the token amounts again.');
+      await assertRfqProvenance(client!, router, RFQ_CODE_HASH, RFQ_ASSET_PINS, [
+        review.order.tokenIn,
+        review.order.tokenOut,
+      ]);
       const signature = await signTypedDataAsync({
         account: address,
         domain: rfqDomain(portaldotTestnet.id, router),

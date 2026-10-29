@@ -33,3 +33,6 @@ test-results/
 playwright-report/
 
 .next-vault-test/
+
+# Temporary upstream dependency compatibility review.
+.dependency-review/

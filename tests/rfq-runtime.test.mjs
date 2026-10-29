@@ -216,3 +216,136 @@ test(
     }
   },
 );
+
+test(
+  'separate RFQ delegate policy executes compiled contracts, clears allowance and respects revocation',
+  { timeout: 30000 },
+  async () => {
+    const { localChain } = await import('./helpers-local-chain.mjs');
+    const { verifyRfqReceipt } = await import('../src/lib/contracts/rfq-execution.ts');
+    const env = await localChain();
+    try {
+      const { client, accounts, deploy, artifact, wait, wallet } = env;
+      const buy = await deploy('KudexTestToken'),
+        pay = await deploy('KudexTestToken'),
+        router = await deploy('KudexRFQMarket'),
+        executor = await deploy('KudexRfqExecutor', [router]);
+      const maker = createWalletClient({
+        chain: client.chain,
+        transport: http(client.chain.rpcUrls.default.http[0]),
+        account: accounts[1],
+      });
+      const delegate = createWalletClient({
+        chain: client.chain,
+        transport: http(client.chain.rpcUrls.default.http[0]),
+        account: accounts[2],
+      });
+      const a = await artifact('KudexRfqExecutor');
+      const { rfqExecutorAbi } = await import('../src/lib/contracts/rfq-executor-abi.ts');
+      assert.deepEqual(
+        rfqExecutorAbi,
+        a.abi.filter((x) => ['function', 'event', 'error'].includes(x.type)),
+      );
+      const write = async (w, address, abi, functionName, args) =>
+        wait(await w.writeContract({ address, abi, functionName, args }));
+      await write(wallet, buy, erc20Abi, 'transfer', [accounts[1], 200n]);
+      await write(maker, buy, erc20Abi, 'approve', [router, 200n]);
+      await write(wallet, pay, erc20Abi, 'approve', [executor, 100n]);
+      const now = (await client.getBlock()).timestamp;
+      const terms = {
+        delegate: accounts[2],
+        maker: accounts[1],
+        buyToken: buy,
+        payToken: pay,
+        expiresAt: now + 3600n,
+        minimumBuy: 2n,
+        referencePay: 1n,
+        perActionCap: 50n,
+        dailyCap: 75n,
+        totalCap: 100n,
+      };
+      const sim = await client.simulateContract({
+        address: executor,
+        abi: a.abi,
+        functionName: 'createPolicy',
+        args: [terms],
+        account: accounts[0],
+      });
+      const id = sim.result;
+      await wait(await wallet.writeContract(sim.request));
+      const order = {
+        maker: accounts[1],
+        tokenIn: buy,
+        tokenOut: pay,
+        amountIn: 100n,
+        amountOut: 50n,
+        deadline: now + 1800n,
+        nonce: 1n,
+      };
+      const signature = await maker.signTypedData({
+        domain: rfqDomain(client.chain.id, router),
+        types: rfqOrderTypes,
+        primaryType: 'Order',
+        message: order,
+      });
+      const tx = await client.simulateContract({
+        address: executor,
+        abi: a.abi,
+        functionName: 'execute',
+        args: [id, order, signature],
+        account: accounts[2],
+      });
+      const receipt = await wait(await delegate.writeContract(tx.request));
+      const { parseEventLogs } = await import('viem');
+      const events = parseEventLogs({
+        abi: a.abi,
+        eventName: 'RfqExecuted',
+        logs: receipt.logs.filter(
+          (l) => l.address.toLowerCase() === executor.toLowerCase(),
+        ),
+      });
+      assert.equal(events.length, 1);
+      assert.equal(events[0].args.id, id);
+      assert.equal(events[0].args.received, 100n);
+      assert.equal(events[0].args.paid, 50n);
+      for (const token of [buy, pay])
+        assert.equal(
+          await client.readContract({
+            address: token,
+            abi: erc20Abi,
+            functionName: 'balanceOf',
+            args: [executor],
+          }),
+          0n,
+        );
+      assert.equal(
+        await client.readContract({
+          address: pay,
+          abi: erc20Abi,
+          functionName: 'allowance',
+          args: [executor, router],
+        }),
+        0n,
+      );
+      const policy = await client.readContract({
+        address: executor,
+        abi: a.abi,
+        functionName: 'policy',
+        args: [id],
+      });
+      assert.equal(policy.spent, 50n);
+      await write(wallet, executor, a.abi, 'revokePolicy', [id]);
+      await assert.rejects(
+        client.simulateContract({
+          address: executor,
+          abi: a.abi,
+          functionName: 'execute',
+          args: [id, { ...order, nonce: 2n }, signature],
+          account: accounts[2],
+        }),
+      );
+    } finally {
+      env.close();
+    }
+  },
+);

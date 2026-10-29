@@ -77,8 +77,8 @@ try {
       client.getBytecode({ address: tx.contractAddress }),
     ]);
     const [canonical, finalized] = await Promise.all([
-      client.getBlock({blockNumber: receipt.blockNumber}),
-      client.getBlock({blockTag: 'finalized'}),
+      client.getBlock({ blockNumber: receipt.blockNumber }),
+      client.getBlock({ blockTag: 'finalized' }),
     ]);
     if (canonical.hash !== receipt.blockHash || finalized.number < receipt.blockNumber)
       throw new Error('Deployment is not canonical and finalized');
@@ -173,6 +173,7 @@ try {
     NEXT_PUBLIC_VAULT_CODE_HASH: confirmed.KudexVault.runtimeCodeHash,
     NEXT_PUBLIC_COLLATERAL_CODE_HASH: keccak256(assetCode),
     NEXT_PUBLIC_RFQ_ROUTER_ADDRESS: router,
+    NEXT_PUBLIC_RFQ_CODE_HASH: confirmed.KudexRFQMarket.runtimeCodeHash,
     NEXT_PUBLIC_DAAS_ADAPTER_ADDRESS: adapter,
     NEXT_PUBLIC_VERIFIER_ADDRESS: verifier,
     NEXT_PUBLIC_USDC_ADDRESS: asset,

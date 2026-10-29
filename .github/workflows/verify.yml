@@ -21,6 +21,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm test:dependency
       - run: pnpm test:network
       - run: pnpm test:deployment
       - run: pnpm test:agents
@@ -36,6 +37,7 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:ui
+      - run: pnpm test:rfq-ui
       - run: pnpm test:vault-ui
       - uses: actions/upload-artifact@v4
         if: failure()

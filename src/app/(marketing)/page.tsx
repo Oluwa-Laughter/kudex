@@ -1,26 +1,33 @@
 import Link from 'next/link';
-import { FiArrowRight, FiLayers, FiRepeat, FiCpu } from 'react-icons/fi';
+import { FiArrowRight, FiLayers, FiRepeat, FiCpu, FiShield } from 'react-icons/fi';
 const capabilities = [
   {
-    title: 'Public vault',
-    icon: FiLayers,
-    text: 'ERC-4626 collateral custody with exact shares, bounded deposits and redemption. Availability depends on verified deployment.',
-    href: '/app/vaults',
-    status: 'Implemented · deployment required',
+    title: 'Confidential settlement',
+    icon: FiShield,
+    text: 'Protect commercial details with reviewed proof systems, note ownership and scoped disclosure. Public custody is the current foundation; private transfers remain disabled.',
+    href: '/app/settlement',
+    status: 'Privacy protocol in development',
   },
   {
-    title: 'Trading',
+    title: 'Institutional RFQ markets',
     icon: FiRepeat,
-    text: 'Signed RFQ offers preserve exact counterparty terms. AMM swaps and liquidity await verified pool infrastructure.',
+    text: 'Negotiate exact commercial terms with counterparties. Sign and review full-fill quotes before public atomic token settlement.',
     href: '/app/marketplace',
-    status: 'RFQ implemented · AMM unavailable',
+    status: 'Signed settlement implemented · deployment required',
   },
   {
-    title: 'Bounded agents',
+    title: 'Bounded financial agents',
     icon: FiCpu,
-    text: 'Deposit-only contract policies separate owner authorization from delegate execution. The assistant explains observed data.',
+    text: 'Separate assistance from authority. Owner-reviewed token-unit policies limit deposit execution; trading mandates require separately reviewed contracts.',
     href: '/app/agents',
-    status: 'Policy contracts implemented · worker unavailable',
+    status: 'Policy foundation · hosted execution unavailable',
+  },
+  {
+    title: 'Structured credit & default',
+    icon: FiLayers,
+    text: 'Build from verified origination through repayment and recovery. Custody alone does not create credit rights or off-chain recovery powers.',
+    href: '/app/credit',
+    status: 'Credit markets in development',
   },
 ];
 export default function HomePage() {
@@ -31,14 +38,12 @@ export default function HomePage() {
           Portaldot V3 Testnet · Revive EVM & Substrate
         </p>
         <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-          Financial infrastructure.
-          <br />
-          <span className="text-primary">Verifiable on-chain.</span>
+          Kudex — The Autonomous Confidential Economy
         </h1>
         <p className="mx-auto max-w-2xl text-lg leading-8 text-muted-foreground">
-          Kudex connects public vaults, signed trading and bounded agent permissions.
-          Review actual accounts and deployment readiness before signing a testnet
-          transaction.
+          Private settlement, institutional RFQ markets, and bounded financial agents,
+          engineered for Portaldot. Build commercial workflows without granting
+          unrestricted custody.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Link className="action-link" href="/app/overview">
@@ -54,7 +59,7 @@ export default function HomePage() {
           accounts and confirmed receipts.
         </p>
       </section>
-      <section className="grid gap-6 md:grid-cols-3">
+      <section className="grid gap-6 md:grid-cols-2">
         {capabilities.map((item) => (
           <article key={item.title} className="panel flex flex-col gap-5">
             <item.icon className="text-primary" size={28} aria-hidden="true" />
@@ -76,10 +81,12 @@ export default function HomePage() {
         </div>
         <div className="space-y-4 leading-7 text-muted-foreground">
           <p>
-            Structured tokenized credit, reviewed AMM liquidity, cross-chain settlement
-            and confidential transfers remain development workstreams.
+            Public financial rails reveal amounts and relationships. Kudex is building
+            toward selective commercial confidentiality, with explicit cryptographic and
+            deployment gates.
           </p>
           <p>
+            Portaldot V3 supplies native Substrate identities and Revive execution.
             Current vault shares and token transfers are public. No principal protection,
             APY, private settlement or automated profits are promised.
           </p>

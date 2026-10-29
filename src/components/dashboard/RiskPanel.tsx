@@ -42,7 +42,7 @@ export function RiskPanel() {
     <div className="space-y-8">
       <header>
         <p className="eyebrow">
-          <FiShield aria-hidden="true" /> Pool protection
+          <FiShield aria-hidden="true" /> Risk & DaaS
         </p>
         <h1 className="page-title">Read the risk. Know the controls.</h1>
         <p className="page-description">

@@ -17,35 +17,6 @@ export const CONTRACT_ADDRESSES = {
   daasAdapter,
   verifier,
   usdc,
-  portaldotVaultPUSD: vault,
-  portaldotVaultWPOT: configuredAddress(process.env.NEXT_PUBLIC_WPOT_VAULT_ADDRESS),
-  rfqMarketRouter: rfqMarket,
-  tokens: {
-    pUSD: {
-      address: usdc,
-      symbol: 'pUSD',
-      name: 'Test collateral',
-      decimals: 6,
-    },
-    wPOT: {
-      address: configuredAddress(process.env.NEXT_PUBLIC_WPOT_ADDRESS),
-      symbol: 'wPOT',
-      name: 'Wrapped POT',
-      decimals: 18,
-    },
-    POT: {
-      address: zeroAddress,
-      symbol: 'POT',
-      name: 'Portaldot Token',
-      decimals: 18,
-    },
-    kRealEstate: {
-      address: configuredAddress(process.env.NEXT_PUBLIC_RWA_ADDRESS),
-      symbol: 'kRE-Prime',
-      name: 'RWA token',
-      decimals: 6,
-    },
-  },
 } as const;
 
 export const isVaultConfigured = vault !== zeroAddress && usdc !== zeroAddress;
@@ -57,3 +28,35 @@ export const isVaultProvenanceConfigured =
   isVaultConfigured &&
   /^0x[0-9a-fA-F]{64}$/.test(VAULT_CODE_HASH ?? '') &&
   /^0x[0-9a-fA-F]{64}$/.test(COLLATERAL_CODE_HASH ?? '');
+
+// Execution allowlist populated only after asset/source and deployment review.
+export const RFQ_CODE_HASH = process.env.NEXT_PUBLIC_RFQ_CODE_HASH;
+export function parseRfqAssetPins(
+  raw: string | undefined,
+): Readonly<Record<string, string>> {
+  if (!raw) return {};
+  try {
+    if (raw.length > 6000) return {};
+    const value: unknown = JSON.parse(raw);
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+    const entries = Object.entries(value);
+    if (
+      entries.length > 32 ||
+      entries.some(
+        ([a, h]) =>
+          !isAddress(a) ||
+          a.toLowerCase() === zeroAddress ||
+          typeof h !== 'string' ||
+          !/^0x[0-9a-f]{64}$/i.test(h),
+      )
+    )
+      return {};
+    return Object.fromEntries(entries.map(([a, h]) => [a.toLowerCase(), h as string]));
+  } catch {
+    return {};
+  }
+}
+export const RFQ_ASSET_PINS: Readonly<Record<string, string>> = {
+  ...(isVaultProvenanceConfigured ? { [usdc.toLowerCase()]: COLLATERAL_CODE_HASH! } : {}),
+  ...parseRfqAssetPins(process.env.NEXT_PUBLIC_RFQ_ASSET_PINS),
+};

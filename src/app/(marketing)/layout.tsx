@@ -23,7 +23,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
               How it works
             </Link>
             <Link className="py-3 hover:text-primary" href="/marketplace">
-              Trade
+              RFQ markets
             </Link>
             <Link
               className="whitespace-nowrap py-3 hover:text-primary"
@@ -56,8 +56,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           <nav aria-label="Product">
             <p className="mb-3 font-semibold">Explore Kudex</p>
             <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-              <Link href="/app/vaults">Structured Credit Vaults</Link>
-              <Link href="/app/marketplace">Instant Swaps & Agent Desk</Link>
+              <Link href="/app/vaults">Public custody vault</Link>
+              <Link href="/app/marketplace">Institutional RFQ marketplace</Link>
               <Link href="/solutions/autonomous-agents">Autonomous Agents</Link>
             </div>
           </nav>
@@ -72,8 +72,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
         <p className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
-          Kudex · Public vaults, signed trading and bounded permissions on Portaldot V3
-          Testnet.
+          Kudex · Confidential settlement, RFQs and bounded financial agents on Portaldot
+          V3 Testnet.
         </p>
       </footer>
     </div>

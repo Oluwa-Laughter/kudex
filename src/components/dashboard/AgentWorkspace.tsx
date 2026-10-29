@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { FiCpu, FiSliders, FiShield, FiActivity } from 'react-icons/fi';
+import { RfqMandatePanel } from './RfqMandatePanel';
 import { AgentFleetManager } from './AgentFleetManager';
 import { AgentConsole } from './AgentConsole';
 import { AgentPolicyBuilder } from './AgentPolicyBuilder';
@@ -10,7 +11,8 @@ import { AgentPolicyManager } from './AgentPolicyManager';
 import { NativeAccountCard } from './NativeAccountCard';
 
 const tabs = [
-  { value: 'fleet', label: 'Autonomous Fleet', icon: FiActivity },
+  { value: 'rfq', label: 'RFQ mandates', icon: FiShield },
+  { value: 'fleet', label: 'Execution service', icon: FiActivity },
   { value: 'assistant', label: 'AI Assistant', icon: FiCpu },
   { value: 'builder', label: 'Session Keys & Policies', icon: FiSliders },
   { value: 'controls', label: 'Policy Registry Controls', icon: FiShield },
@@ -23,7 +25,7 @@ export function AgentWorkspace() {
     <div className="space-y-8">
       <header className="grid items-end gap-6 lg:grid-cols-[1fr_auto]">
         <div>
-          <p className="eyebrow">Kudex Autonomous Engine</p>
+          <p className="eyebrow">Kudex Agents</p>
           <h1 className="page-title">
             Programmatic Agents
             <br />
@@ -37,7 +39,7 @@ export function AgentWorkspace() {
         <p className="max-w-xs border-l-2 border-primary pl-4 text-sm leading-6 text-muted-foreground">
           Deposit-only contract permissions.
           <br />
-          Cryptographic Session Spend Ceilings.
+          Token-unit spending limits.
           <br />
           Automation service awaiting implementation.
         </p>
@@ -67,6 +69,9 @@ export function AgentWorkspace() {
           ))}
         </Tabs.List>
 
+        <Tabs.Content value="rfq" forceMount className="data-[state=inactive]:hidden">
+          <RfqMandatePanel />
+        </Tabs.Content>
         <Tabs.Content
           value="fleet"
           forceMount

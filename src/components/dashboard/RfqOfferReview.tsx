@@ -1,10 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
-import { decodeEventLog, erc20Abi, formatUnits, zeroAddress, type Hex } from 'viem';
+import { erc20Abi, formatUnits, zeroAddress, type Hex } from 'viem';
 import { FiDownload } from 'react-icons/fi';
-import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
+import {
+  assertRfqProvenance,
+  verifyRfqReceipt,
+  encodeRfqReference,
+  decodeRfqReference,
+  type RfqEvidence,
+} from '@/lib/contracts/rfq-execution';
+import { receiptFinality } from '@/lib/contracts/vault-client';
+import {
+  RFQ_CODE_HASH,
+  RFQ_ASSET_PINS,
+  CONTRACT_ADDRESSES,
+} from '@/lib/contracts/addresses';
 import { kudexRFQMarketAbi } from '@/lib/contracts/abis';
 import { parseSignedOffer } from '@/lib/contracts/orders';
 import { inspectSignedOffer, type RfqInspection } from '@/lib/contracts/rfq-client';
@@ -34,6 +46,7 @@ export function RfqOfferReview({
   const { writeContractAsync } = useWriteContract();
   const [review, setReview] = useState<{ raw: string; data: RfqInspection }>();
   const [busy, setBusy] = useState(false);
+  const actionLock = useRef(false);
   function updateBusy(value: boolean) {
     setBusy(value);
     onBusyChange(value);
@@ -42,6 +55,65 @@ export function RfqOfferReview({
   const [status, setStatus] = useState('');
   const [hash, setHash] = useState<Hex>();
   const router = CONTRACT_ADDRESSES.rfqMarket;
+  const [recoveryBlocked, setRecoveryBlocked] = useState(false);
+  const [pending, setPending] = useState<RfqEvidence>();
+  const recoveryKey = address
+    ? `kudex-rfq-submitted:${portaldotTestnet.id}:${router.toLowerCase()}:${address.toLowerCase()}`
+    : undefined;
+  useEffect(() => {
+    setPending(undefined);
+    setRecoveryBlocked(false);
+    setHash(undefined);
+    setStatus('');
+    if (recoveryKey) {
+      try {
+        const raw = sessionStorage.getItem(recoveryKey);
+        if (raw) {
+          const value = decodeRfqReference(raw);
+          if (
+            value.owner.toLowerCase() !== address?.toLowerCase() ||
+            value.router.toLowerCase() !== router.toLowerCase()
+          )
+            throw Error('Recovery scope mismatch.');
+          setPending(value);
+        }
+      } catch {
+        setRecoveryBlocked(true);
+        setError(
+          'Invalid submitted reference. Inspect transaction activity before proceeding.',
+        );
+      }
+    }
+  }, [recoveryKey, address, router]);
+  async function reconcile(e: RfqEvidence) {
+    if (!client) throw Error('Network client unavailable.');
+    const receipt = await client.waitForTransactionReceipt({ hash: e.hash });
+    verifyRfqReceipt(receipt, e);
+    const finality = await receiptFinality(client, receipt);
+    if (finality === 'unknown')
+      throw Error('Receipt block is no longer canonical. Requires reconciliation.');
+    if (recoveryKey) sessionStorage.removeItem(recoveryKey);
+    setPending(undefined);
+    return finality;
+  }
+  async function resume() {
+    if (actionLock.current) return;
+    actionLock.current = true;
+    updateBusy(true);
+    setError('');
+    try {
+      if (!pending) throw Error('No submitted reference.');
+      const finality = await reconcile(pending);
+      setStatus(
+        `RFQ ${pending.action} ${finality}. Review the offer again to refresh chain state.`,
+      );
+    } catch (e) {
+      setError(getReadableErrorMessage(e));
+    } finally {
+      actionLock.current = false;
+      updateBusy(false);
+    }
+  }
   const signingReady = Boolean(
     address && chainId === portaldotTestnet.id && router !== zeroAddress,
   );
@@ -71,11 +143,18 @@ export function RfqOfferReview({
       setStatus('');
       setError(getReadableErrorMessage(cause));
     } finally {
+      actionLock.current = false;
       updateBusy(false);
     }
   }
 
   async function transact(action: 'approve' | 'fill' | 'cancel' | 'clear') {
+    if (actionLock.current) return;
+    if (pending || recoveryBlocked) {
+      setError('Reconcile the submitted transaction before another action.');
+      return;
+    }
+    actionLock.current = true;
     updateBusy(true);
     setError('');
     setHash(undefined);
@@ -95,13 +174,27 @@ export function RfqOfferReview({
       )
         throw new Error('Token metadata changed. Review the offer again before signing.');
       setReview({ raw, data: fresh });
+      if (action !== 'clear')
+        await assertRfqProvenance(client, router, RFQ_CODE_HASH, RFQ_ASSET_PINS, [
+          fresh.offer.order.tokenIn,
+          fresh.offer.order.tokenOut,
+        ]);
+      let approval: { token: `0x${string}`; amount: bigint } | undefined;
+      let finality = 'confirmed';
       const wait = async (tx: Hex) => {
         setHash(tx);
         setStatus('Transaction submitted. Waiting for a successful receipt…');
-        const receipt = await client.waitForTransactionReceipt({ hash: tx });
-        if (receipt.status !== 'success')
-          throw new Error('The transaction reverted. No settlement is being reported.');
-        return receipt;
+        const base = { owner: address, router, hash: tx };
+        const e: RfqEvidence =
+          action === 'fill'
+            ? { ...base, action, maker: fresh.offer.order.maker, orderHash: fresh.hash }
+            : action === 'cancel'
+              ? { ...base, action, nonce: fresh.offer.order.nonce }
+              : { ...base, action, token: approval!.token, amount: approval!.amount };
+        setPending(e);
+        if (recoveryKey) sessionStorage.setItem(recoveryKey, encodeRfqReference(e));
+        finality = await reconcile(e);
+        return tx;
       };
       if (action === 'approve' || action === 'clear') {
         const token = isMaker ? fresh.offered : fresh.requested;
@@ -136,6 +229,7 @@ export function RfqOfferReview({
             args: [router, value],
             account: address,
           });
+          approval = { token: token.address, amount: value };
           await wait(
             await writeContractAsync({
               ...simulation.request,
@@ -197,37 +291,15 @@ export function RfqOfferReview({
           account: address,
         });
         setStatus('Review the complete token exchange in your wallet.');
-        const receipt = await wait(
+        await wait(
           await writeContractAsync({
             ...simulation.request,
             account: address,
             chainId: portaldotTestnet.id,
           }),
         );
-        const matched = receipt.logs.some((log) => {
-          if (log.address.toLowerCase() !== router.toLowerCase()) return false;
-          try {
-            const event = decodeEventLog({
-              abi: kudexRFQMarketAbi,
-              data: log.data,
-              topics: log.topics,
-            });
-            return (
-              event.eventName === 'RFQSettled' &&
-              event.args.orderHash.toLowerCase() === fresh.hash.toLowerCase() &&
-              event.args.taker.toLowerCase() === address.toLowerCase() &&
-              event.args.maker.toLowerCase() === fresh.offer.order.maker.toLowerCase()
-            );
-          } catch {
-            return false;
-          }
-        });
-        if (!matched)
-          throw new Error(
-            'The receipt succeeded but contained no matching settlement event. Inspect the transaction before attempting another fill.',
-          );
         setStatus(
-          'Offer filled. Both token transfers were confirmed in the matching settlement receipt.',
+          `Offer settlement ${finality}. A matching router event confirms the exact-transfer exchange. This settlement is public.`,
         );
       }
       try {
@@ -244,6 +316,7 @@ export function RfqOfferReview({
       setStatus('');
       setError(getReadableErrorMessage(cause));
     } finally {
+      actionLock.current = false;
       updateBusy(false);
     }
   }
@@ -289,7 +362,7 @@ export function RfqOfferReview({
         />
         <div className="flex flex-wrap gap-3">
           <button
-            disabled={busy || !raw.trim()}
+            disabled={busy || Boolean(pending) || recoveryBlocked || !raw.trim()}
             onClick={() => void inspect()}
             className="action-link disabled:opacity-50"
           >
@@ -402,6 +475,8 @@ export function RfqOfferReview({
             <button
               disabled={
                 busy ||
+                Boolean(pending) ||
+                recoveryBlocked ||
                 !signingReady ||
                 !currentAccount ||
                 !current.active ||
@@ -418,6 +493,8 @@ export function RfqOfferReview({
               <button
                 disabled={
                   busy ||
+                  Boolean(pending) ||
+                  recoveryBlocked ||
                   !signingReady ||
                   !currentAccount ||
                   !current.active ||
@@ -436,6 +513,8 @@ export function RfqOfferReview({
               <button
                 disabled={
                   busy ||
+                  Boolean(pending) ||
+                  recoveryBlocked ||
                   !signingReady ||
                   !currentAccount ||
                   current.used ||
@@ -451,6 +530,8 @@ export function RfqOfferReview({
             <button
               disabled={
                 busy ||
+                Boolean(pending) ||
+                recoveryBlocked ||
                 !signingReady ||
                 !currentAccount ||
                 (maker
@@ -464,6 +545,17 @@ export function RfqOfferReview({
             </button>
           </div>
         </section>
+      )}
+      {pending && (
+        <div className="rounded-xl border border-border p-5">
+          <p className="break-all">
+            Submitted {pending.action}: {pending.hash}. Settlement requires
+            reconciliation.
+          </p>
+          <button className="quiet-link" disabled={busy} onClick={() => void resume()}>
+            Reconcile submitted RFQ transaction
+          </button>
+        </div>
       )}
       <div className="space-y-3">
         {status && (

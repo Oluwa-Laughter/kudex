@@ -19,14 +19,18 @@
     "agent:run": "node --env-file-if-exists=.env.local scripts/run-agent.mjs",
     "agent:check": "node --env-file-if-exists=.env.local scripts/check-agent.mjs",
     "test:agent-service": "node --experimental-strip-types --test tests/agent-service.test.mjs",
-    "test:rfq": "node --experimental-strip-types --test tests/rfq-orders.test.mjs",
+    "test:rfq": "node --experimental-strip-types --test tests/rfq-orders.test.mjs tests/rfq-integrity.test.mjs",
     "test:rfq-runtime": "forge build --root contracts && node --experimental-strip-types --test tests/rfq-runtime.test.mjs",
     "test:ui": "playwright test",
     "probe:ui": "node scripts/probe-ui.mjs",
     "test:vault": "node --experimental-strip-types --test tests/vault-client.test.mjs",
     "test:vault-runtime": "forge build --root contracts && node --experimental-strip-types --test tests/vault-runtime.test.mjs",
     "test:vault-ui": "forge build --root contracts && node --experimental-strip-types tests/local-vault-ui.mjs",
-    "prepare:deployment": "forge build --root contracts && node scripts/prepare-deployment-manifest.mjs"
+    "prepare:deployment": "forge build --root contracts && node scripts/prepare-deployment-manifest.mjs",
+    "probe:cryptography": "forge build --root contracts testnet/CryptoProbe.sol --quiet && node --env-file-if-exists=.env.local scripts/probe-cryptography-runtime.mjs",
+    "test:rfq-ui": "forge build --root contracts --quiet && node --experimental-strip-types tests/local-rfq-ui.mjs",
+    "test:dependency": "node --test tests/dependency-compat.test.mjs",
+    "test:restoration-runtime": "forge build --root contracts testnet/RestorationSmoke.sol --quiet && node --env-file-if-exists=.env.local scripts/smoke-restoration.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.99",
@@ -68,7 +72,11 @@
   "pnpm": {
     "overrides": {
       "ws@>=8.0.0 <8.21.0": "8.21.0",
-      "zod@<4.6.6": "4.6.7"
+      "zod@<4.6.6": "4.6.7",
+      "decode-uri-component@<0.5.1": "0.5.1"
+    },
+    "patchedDependencies": {
+      "decode-uri-component@0.5.1": "patches/decode-uri-component@0.5.1.patch"
     }
   }
 }

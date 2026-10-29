@@ -15,7 +15,6 @@ import {
   FiArrowUpRight,
   FiShield,
   FiSend,
-  FiGlobe,
   FiFileText,
 } from 'react-icons/fi';
 import { Logo } from '@/components/brand/Logo';
@@ -24,14 +23,14 @@ import { ConnectWalletButton } from '@/components/navigation/ConnectWalletButton
 
 export const APP_NAV_ITEMS = [
   { name: 'Overview', href: '/app/overview', icon: FiGrid },
-  { name: 'Public Vault', href: '/app/vaults', icon: FiLayers },
-  { name: 'Swap & Liquidity', href: '/app/marketplace', icon: FiRepeat },
   { name: 'Confidential Settlement', href: '/app/settlement', icon: FiSend },
-  { name: 'Autonomous Agents', href: '/app/agents', icon: FiCpu },
-  { name: 'Solvency Risk Matrix', href: '/app/protection', icon: FiShield },
-  { name: 'Audit & Viewing Keys', href: '/app/compliance', icon: FiFileText },
-  { name: 'Bridge Gateway', href: '/app/bridge', icon: FiGlobe },
-  { name: 'How It Works', href: '/app/how-it-works', icon: FiBookOpen },
+  { name: 'RFQ Marketplace', href: '/app/marketplace', icon: FiRepeat },
+  { name: 'Credit & RWA', href: '/app/credit', icon: FiLayers },
+  { name: 'Kudex Agents', href: '/app/agents', icon: FiCpu },
+  { name: 'Risk & DaaS', href: '/app/protection', icon: FiShield },
+  { name: 'Compliance', href: '/app/compliance', icon: FiFileText },
+  { name: 'Activity', href: '/app/activity', icon: FiGrid },
+  { name: 'Developer infrastructure', href: '/app/infrastructure', icon: FiBookOpen },
 ];
 
 export default function AppWorkspaceLayout({ children }: { children: React.ReactNode }) {

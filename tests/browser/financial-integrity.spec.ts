@@ -43,10 +43,10 @@ test('legacy browser ledger cannot resurrect balances, filled swaps, privacy not
   }
   await page.goto('/app/marketplace');
   await expect(
-    page.getByRole('button', { name: 'Swap unavailable', exact: true }),
+    page.getByRole('button', { name: 'Sign request invitation', exact: true }),
   ).toBeDisabled();
   await page.goto('/app/agents');
-  await page.getByRole('tab', { name: 'Autonomous Fleet', exact: true }).click();
+  await page.getByRole('tab', { name: 'Execution service', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Activate automation unavailable', exact: true }),
   ).toBeDisabled();
