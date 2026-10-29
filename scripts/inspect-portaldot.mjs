@@ -63,6 +63,12 @@ try {
     nativeToEthRatio: ratio.toString(),
     evmDecimals,
     allowEVMBytecode,
+    palletNames: api.runtimeMetadata.asLatest.pallets.map((pallet) =>
+      pallet.name.toString(),
+    ),
+    daasNamedInterfaces: Object.keys(api.tx)
+      .filter((name) => /daas|default|bankrupt|liquidat|recover|court/i.test(name))
+      .map((name) => ({ name, methods: Object.keys(api.tx[name]) })),
   };
   if (nativeAddress) {
     const accountId = api.createType('AccountId', nativeAddress);

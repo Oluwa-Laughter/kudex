@@ -106,6 +106,80 @@
       },
       "creationCodeHash": "0x91ba522c4989959f291942b357ca99b95d3e3bc0e175a387c5f2786104184997",
       "constructorInputs": []
+    },
+    {
+      "name": "KudexRfqExecutor",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xfece8222056cf37f099daea1132410ea5313c6c590de6667a2d073fa01f42774",
+      "constructorInputs": [
+        {
+          "name": "market",
+          "type": "address",
+          "internalType": "contract KudexRFQMarket"
+        }
+      ]
+    },
+    {
+      "name": "KudexTestCreditFacility",
+      "compiler": "0.8.24+commit.e11b9ed9",
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "creationCodeHash": "0xabda062d3d32515599b93e773876d61c09e66104f47627ddb7f04389053ca9b4",
+      "constructorInputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "contract IERC20"
+        },
+        {
+          "name": "admin",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "debtor",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "reference_",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "senior_",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "junior_",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "funding_",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "maturity_",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "grace_",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ]
     }
   ],
   "requirements": [
