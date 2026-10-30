@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
@@ -20,15 +21,16 @@ import {
 } from '@/lib/contracts/vault-client';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { getReadableErrorMessage } from '@/lib/utils';
-
 import {
   decodePendingVault,
   encodePendingVault,
   type VaultReview as Review,
   type PendingVaultTransaction as Pending,
 } from '@/lib/contracts/pending-vault';
+
 const { vault, usdc: asset } = CONTRACT_ADDRESSES;
-export function PublicVault() {
+
+export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
@@ -47,6 +49,7 @@ export function PublicVault() {
   const [status, setStatus] = useState('');
   const [restored, setRestored] = useState(false);
   const pendingKey = `kudex-pending-vault-420420777-${vault.toLowerCase()}`;
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(pendingKey);
@@ -58,6 +61,7 @@ export function PublicVault() {
     }
     setRestored(true);
   }, [pendingKey]);
+
   useEffect(() => {
     if (!restored) return;
     try {
@@ -70,6 +74,7 @@ export function PublicVault() {
       );
     }
   }, [pending, pendingKey, restored]);
+
   const state = useQuery({
     queryKey: ['public-vault', portaldotTestnet.id, vault, asset, address],
     enabled: isVaultConfigured && Boolean(client && address),
@@ -78,10 +83,12 @@ export function PublicVault() {
     refetchInterval: 30_000,
     queryFn: () => readVault(client!, vault, asset, address!),
   });
+
   const data = state.data;
   const usableReview =
     review?.owner.toLowerCase() === address?.toLowerCase() ? review : undefined;
   const connected = Boolean(address && chainId === portaldotTestnet.id);
+
   async function guarded(work: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -97,12 +104,13 @@ export function PublicVault() {
       setBusy(false);
     }
   }
+
   async function inspect() {
     await guarded(async () => {
       setReview(undefined);
       if (!client || !address || !connected || pending)
         throw new Error(
-          'Connect the owner EVM wallet on Portaldot and reconcile pending transactions first.',
+          'Connect the owner transaction wallet on the settlement network and reconcile pending transactions first.',
         );
       const fresh = await readVault(client, vault, asset, address);
       const input = exactAmount(
@@ -144,6 +152,7 @@ export function PublicVault() {
       });
     });
   }
+
   async function reconcile(tx: Pending, wait: boolean) {
     if (!client) throw new Error('Network client unavailable.');
     const receipt = wait
@@ -202,13 +211,13 @@ export function PublicVault() {
       );
     else setStatus('Position refreshed from chain.');
   }
+
   async function transact(approval?: bigint) {
     await guarded(async () => {
       if (!client || !address || !connected || pending)
         throw new Error(
-          'Correct EVM signer and network required; reconcile pending transactions first.',
+          'Correct transaction signer and network required; reconcile pending transactions first.',
         );
-      // Allowance removal remains available even when provenance changed.
       if (approval !== 0n)
         await assertVaultProvenance(
           client,
@@ -285,141 +294,163 @@ export function PublicVault() {
       await reconcile(tx, true);
     });
   }
+
   const disabled = !restored || busy || Boolean(pending);
+
   return (
-    <div className="space-y-7">
-      <header>
-        <p className="eyebrow">Portaldot testnet · public ERC-4626 custody</p>
-        <h1 className="page-title">Public vault</h1>
-        <p className="page-description">
-          Deposit collateral for vault shares or redeem your shares for available assets.
-          No APY, principal guarantee, credit tranches, or confidentiality is provided.
-        </p>
-      </header>
+    <div className="space-y-6">
+      {!hideHeader && (
+        <header>
+          <p className="eyebrow">Institutional Liquidity</p>
+          <h1 className="page-title">Yield Pools & Custody</h1>
+          <p className="page-description">
+            Supply collateral to mint pool shares or redeem shares for underlying assets
+            with slippage-protected execution.
+          </p>
+        </header>
+      )}
+
       {!isVaultConfigured && (
-        <p role="status" className="panel">
-          Vault deployment pending. Verified vault and collateral addresses are required.
-          No transaction is available.
+        <p role="status" className="panel text-sm text-muted-foreground">
+          Pool contract address awaiting configuration. Connect your wallet to prepare
+          treasury operations once active.
         </p>
       )}
+
       {isVaultConfigured && !isVaultProvenanceConfigured && (
-        <p role="status" className="panel">
-          Deployment provenance pending. Import finalized receipts and compiled creation
-          artifacts to configure runtime code hashes before spending.
+        <p role="status" className="panel text-sm text-muted-foreground">
+          Contract code provenance verification required before submitting deposits.
         </p>
       )}
+
       {!address && (
-        <p className="panel">
-          Connect an EVM wallet to inspect your actual position. Native account mapping
-          does not grant EVM signing authority.
+        <p className="panel text-sm text-muted-foreground">
+          Connect your transaction wallet to view live pool balances, shares, and
+          withdrawal limits.
         </p>
       )}
+
       {address && !connected && (
-        <p role="alert">Switch your wallet to Portaldot V3 Testnet before signing.</p>
-      )}
-      {state.error && (
-        <p role="alert">
-          Vault data unavailable. {getReadableErrorMessage(state.error)}{' '}
-          {data ? 'The displayed observation is stale.' : ''}
+        <p role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+          Switch your wallet to the active settlement network before signing.
         </p>
       )}
+
+      {state.error && (
+        <p role="alert" className="text-sm text-destructive">
+          Pool state unavailable: {getReadableErrorMessage(state.error)}{' '}
+          {data ? 'Showing previous verified read.' : ''}
+        </p>
+      )}
+
       {data && (
         <section className="panel space-y-5">
-          <h2 className="text-xl font-semibold">On-chain position</h2>
-          <p className="break-all text-xs">
-            Vault: {vault}
-            <br />
-            Collateral: {asset}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">On-chain position</h2>
+            <span className="rounded-full bg-secondary px-3 py-1 text-sm font-medium text-primary tabular-nums">
+              Block #{data.block.toString()} · {data.frozen ? 'Deposits Paused' : 'Active'}
+            </span>
+          </div>
+
+          <p className="break-all font-mono text-sm text-muted-foreground">
+            Pool: {vault} · Asset: {asset}
           </p>
-          <dl className="grid gap-5 sm:grid-cols-2">
-            <div>
-              <dt>Wallet collateral</dt>
-              <dd>
+
+          <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Wallet collateral</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
                 {formatUnits(data.balance, data.decimals)} {data.symbol}
               </dd>
             </div>
-            <div>
-              <dt>Vault shares</dt>
-              <dd>{formatUnits(data.shares, data.shareDecimals)}</dd>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Vault shares</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
+                {formatUnits(data.shares, data.shareDecimals)}
+              </dd>
             </div>
-            <div>
-              <dt>Position assets (conversion)</dt>
-              <dd>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Position value</dt>
+              <dd className="mt-1 text-xl font-bold text-primary tabular-nums">
                 {formatUnits(data.assets, data.decimals)} {data.symbol}
               </dd>
             </div>
-            <div>
-              <dt>Total vault assets</dt>
-              <dd>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Total vault assets</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
                 {formatUnits(data.totalAssets, data.decimals)} {data.symbol}
               </dd>
             </div>
-            <div>
-              <dt>Maximum withdrawal</dt>
-              <dd>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Maximum withdrawal</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
                 {formatUnits(data.maxWithdraw, data.decimals)} {data.symbol}
               </dd>
             </div>
-            <div>
-              <dt>Token allowance to vault</dt>
-              <dd>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Approved allowance</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
                 {formatUnits(data.allowance, data.decimals)} {data.symbol}
               </dd>
             </div>
           </dl>
-          <p className="text-sm">
-            Observed block {data.block.toString()} ·{' '}
-            {data.frozen ? 'Deposits frozen' : 'Deposits not frozen'}
-          </p>
-          <button
-            className="quiet-link"
-            disabled={disabled || state.isFetching}
-            onClick={() => void state.refetch()}
-          >
-            Refresh position
-          </button>
-          {data.allowance > 0n && (
+
+          <div className="flex flex-wrap gap-3">
             <button
-              className="quiet-link"
-              disabled={disabled || !connected}
-              onClick={() => void transact(0n)}
+              className="quiet-link text-sm"
+              disabled={disabled || state.isFetching}
+              onClick={() => void state.refetch()}
             >
-              Remove vault allowance
+              Refresh position
             </button>
-          )}
+            {data.allowance > 0n && (
+              <button
+                className="quiet-link text-sm"
+                disabled={disabled || !connected}
+                onClick={() => void transact(0n)}
+              >
+                Remove vault allowance
+              </button>
+            )}
+          </div>
         </section>
       )}
+
       <section className="panel space-y-5">
-        <h2 className="text-xl font-semibold">Review a transaction</h2>
-        <label className="block">
-          Operation
-          <select
-            aria-label="Operation"
-            className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3"
-            disabled={disabled}
-            value={operation}
-            onChange={(e) => {
-              setOperation(e.target.value as 'deposit' | 'redeem');
-              setReview(undefined);
-            }}
-          >
-            <option value="deposit">Deposit assets</option>
-            <option value="redeem">Redeem shares</option>
-          </select>
-        </label>
-        <label className="block">
-          {operation === 'deposit' ? 'Collateral amount' : 'Shares to redeem'}
-          <input
-            className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3"
-            inputMode="decimal"
-            value={amount}
-            disabled={disabled}
-            onChange={(e) => {
-              setAmount(e.target.value);
-              setReview(undefined);
-            }}
-          />
-        </label>
+        <h2 className="text-xl font-bold">Execute Pool Operation</h2>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block text-sm font-medium">
+            Operation
+            <select
+              aria-label="Operation"
+              className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 text-base"
+              disabled={disabled}
+              value={operation}
+              onChange={(e) => {
+                setOperation(e.target.value as 'deposit' | 'redeem');
+                setReview(undefined);
+              }}
+            >
+              <option value="deposit">Deposit assets</option>
+              <option value="redeem">Redeem shares</option>
+            </select>
+          </label>
+          <label className="block text-sm font-medium">
+            {operation === 'deposit' ? 'Collateral amount' : 'Shares to redeem'}
+            <input
+              className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 text-base tabular-nums"
+              inputMode="decimal"
+              placeholder="0.00"
+              value={amount}
+              disabled={disabled}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                setReview(undefined);
+              }}
+            />
+          </label>
+        </div>
+
         <button
           className="action-link disabled:opacity-40"
           disabled={
@@ -433,9 +464,10 @@ export function PublicVault() {
         >
           Review vault transaction
         </button>
+
         {usableReview && data && (
-          <div className="space-y-4 rounded-xl border border-border p-4">
-            <p>
+          <div className="space-y-4 rounded-xl border border-border bg-secondary p-5">
+            <p className="text-base font-semibold tabular-nums">
               Expected output:{' '}
               {formatUnits(
                 usableReview.preview,
@@ -443,56 +475,51 @@ export function PublicVault() {
               )}{' '}
               {operation === 'deposit' ? 'shares' : data.symbol}
             </p>
-            <p>
-              Minimum output (0.5% tolerance):{' '}
+            <p className="text-sm text-muted-foreground tabular-nums">
+              Protected minimum (0.5% max slippage):{' '}
               {formatUnits(
                 usableReview.minimum,
                 operation === 'deposit' ? data.shareDecimals : data.decimals,
-              )}
-              . Deadline: {new Date(Number(usableReview.deadline) * 1000).toISOString()}.
-              Gas is additional.
+              )}{' '}
+              · Valid until {new Date(Number(usableReview.deadline) * 1000).toLocaleTimeString()}
             </p>
-            {operation === 'deposit' && data.allowance < usableReview.input && (
+            <div className="flex flex-wrap gap-3">
+              {operation === 'deposit' && data.allowance < usableReview.input && (
+                <button
+                  className="quiet-link"
+                  disabled={disabled || data.allowance > 0n || !connected}
+                  onClick={() => void transact(usableReview.input)}
+                >
+                  Approve exact deposit amount
+                </button>
+              )}
               <button
-                className="quiet-link"
-                disabled={disabled || data.allowance > 0n || !connected}
-                onClick={() => void transact(usableReview.input)}
+                className="action-link disabled:opacity-40"
+                disabled={
+                  disabled ||
+                  !connected ||
+                  (operation === 'deposit' && data.allowance < usableReview.input)
+                }
+                onClick={() => void transact()}
               >
-                Approve exact deposit amount
+                Confirm {operation} in wallet
               </button>
-            )}
-            <button
-              className="action-link disabled:opacity-40"
-              disabled={
-                disabled ||
-                !connected ||
-                (operation === 'deposit' && data.allowance < usableReview.input)
-              }
-              onClick={() => void transact()}
-            >
-              Confirm {operation} in wallet
-            </button>
+            </div>
           </div>
         )}
-        <p className="text-sm text-muted-foreground">
-          Approvals and execution are separate signatures. Review the minimum output,
-          expiry and gas in your wallet. If receipt history is unavailable, retain the
-          transaction hash and reconcile before submitting again.
-        </p>
       </section>
-      {busy && <p role="status">Waiting for wallet or chain…</p>}
-      {status && <p role="status">{status}</p>}
+
+      {busy && <p role="status" className="text-sm text-muted-foreground">Waiting for wallet or chain confirmation…</p>}
+      {status && <p role="status" className="text-sm font-medium text-primary">{status}</p>}
       {error && (
-        <p role="alert" className="break-words text-destructive">
+        <p role="alert" className="break-words text-sm text-destructive">
           {error}
         </p>
       )}
       {pending && (
-        <section className="panel space-y-4">
-          <p className="break-all">Submitted / requires reconciliation: {pending.hash}</p>
-          <p>
-            A submitted hash is not success. Actions remain locked until a receipt is
-            verified.
+        <section className="panel space-y-3">
+          <p className="break-all font-mono text-sm">
+            Submitted transaction: {pending.hash}
           </p>
           <button
             className="quiet-link"
@@ -504,10 +531,12 @@ export function PublicVault() {
         </section>
       )}
       {evidence && evidence.owner.toLowerCase() === address?.toLowerCase() && (
-        <p className="panel break-words">
+        <p className="panel break-words text-sm">
           {evidence.text}
           <br />
-          Transaction: {evidence.hash}
+          <span className="font-mono text-muted-foreground">
+            Transaction: {evidence.hash}
+          </span>
         </p>
       )}
     </div>

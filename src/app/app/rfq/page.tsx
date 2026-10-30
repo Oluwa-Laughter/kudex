@@ -1,4 +1,5 @@
-import { RfqWorkspace } from '@/components/dashboard/RfqWorkspace';
-export default function Page() {
-  return <RfqWorkspace />;
+import { redirect } from 'next/navigation';
+
+export default function RfqRedirectPage() {
+  redirect('/app/marketplace');
 }

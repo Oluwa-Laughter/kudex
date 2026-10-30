@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
+
 const nativeAddress = '5Di9KJM56vFGFzwpq3UDhwsFkvUvVkTW5bogPzyYgP5hXzFd';
+
 test('wallet dialog restores focus, native account context loads, and mobile menu is keyboard operable', async ({
   page,
 }) => {
@@ -37,7 +39,7 @@ test('wallet dialog restores focus, native account context loads, and mobile men
   await wallet.click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page
-    .getByRole('button', { name: 'Connect Portaldot Native Extension', exact: true })
+    .getByRole('button', { name: 'Connect Native Extension', exact: true })
     .click();
   await expect(page.getByText(nativeAddress, { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
@@ -56,6 +58,7 @@ test('wallet dialog restores focus, native account context loads, and mobile men
     await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
   ).toBe(true);
 });
+
 test('policy draft can be reviewed and exported without activating any on-chain authority', async ({
   page,
 }) => {
@@ -82,7 +85,8 @@ test('policy draft can be reviewed and exported without activating any on-chain 
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(page.getByLabel('Per-deposit cap', { exact: true })).toHaveValue('1');
 });
-test('conversation consumes progress and text chunks while keeping tool observations distinct', async ({
+
+test('KUDEX AGENT conversation consumes progress and text chunks while keeping tool observations distinct', async ({
   page,
 }) => {
   await page.route('**/api/agent/status', (route) =>
@@ -120,7 +124,7 @@ test('conversation consumes progress and text chunks while keeping tool observat
   );
   await page.goto('/app/agents');
   await page
-    .getByLabel('Ask Kudex Agent about the product or a workflow', { exact: true })
+    .getByLabel('Ask KUDEX AGENT about the product or a workflow', { exact: true })
     .fill('What blocks my deposit?');
   await page.getByRole('button', { name: 'Send message', exact: true }).click();
   await expect(page.getByText('Review your account.', { exact: true })).toBeVisible();

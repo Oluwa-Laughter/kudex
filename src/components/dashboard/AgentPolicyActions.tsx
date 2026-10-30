@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
@@ -10,6 +11,7 @@ import { getReadableErrorMessage } from '@/lib/utils';
 import type { prepareAgentPolicy } from '@/lib/agent-policy';
 
 type PolicyDraft = ReturnType<typeof prepareAgentPolicy>;
+
 export function AgentPolicyActions({
   policy,
   onCreated,
@@ -20,11 +22,12 @@ export function AgentPolicyActions({
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState(''),
-    [status, setStatus] = useState(''),
-    [hash, setHash] = useState<`0x${string}`>(),
-    [created, setCreated] = useState<`0x${string}`>();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
+  const [hash, setHash] = useState<`0x${string}`>();
+  const [created, setCreated] = useState<`0x${string}`>();
+
   const checks = useQuery({
     queryKey: [
       'agent-infrastructure',
@@ -43,6 +46,7 @@ export function AgentPolicyActions({
     queryFn: () =>
       checkAgentInfrastructure(client!, policy.vault, policy.asset, policy.decimals),
   });
+
   async function authorize() {
     setBusy(true);
     setError('');
@@ -50,10 +54,10 @@ export function AgentPolicyActions({
     try {
       if (!client || !address || chainId !== portaldotTestnet.id)
         throw new Error(
-          'Connect the owner EVM wallet on Portaldot V3 testnet. Native extension signing is not integrated into this control.',
+          'Connect the owner transaction wallet on the settlement network.',
         );
       if (address.toLowerCase() !== policy.owner.toLowerCase())
-        throw new Error('The connected EVM signer does not match the draft owner.');
+        throw new Error('The connected wallet does not match the policy owner.');
       await checkAgentInfrastructure(client, policy.vault, policy.asset, policy.decimals);
       const block = await client.getBlock();
       if (BigInt(policy.expiresAt) <= block.timestamp)
@@ -73,17 +77,17 @@ export function AgentPolicyActions({
         account: address,
       });
       setStatus(
-        'Review policy creation in your wallet. This step grants no token allowance.',
+        'Review policy creation in your wallet. Token allowance is approved separately.',
       );
       const tx = await writeContractAsync({
         ...simulation.request,
         chainId: portaldotTestnet.id,
       });
       setHash(tx);
-      setStatus('Policy transaction submitted. Waiting for a receipt…');
+      setStatus('Policy transaction submitted. Waiting for confirmation…');
       const receipt = await client.waitForTransactionReceipt({ hash: tx });
       if (receipt.status !== 'success')
-        throw new Error('Policy creation reverted. No activation is being reported.');
+        throw new Error('Policy creation reverted. No activation recorded.');
       const events = parseEventLogs({
         abi: executorAbi,
         eventName: 'PolicyCreated',
@@ -92,11 +96,11 @@ export function AgentPolicyActions({
         ),
       });
       const event = events.find(
-        (event) =>
-          event.args.owner.toLowerCase() === address.toLowerCase() &&
-          event.args.delegate.toLowerCase() === policy.delegate.toLowerCase() &&
-          event.args.vault.toLowerCase() === policy.vault.toLowerCase() &&
-          event.args.expiresAt === BigInt(policy.expiresAt),
+        (ev) =>
+          ev.args.owner.toLowerCase() === address.toLowerCase() &&
+          ev.args.delegate.toLowerCase() === policy.delegate.toLowerCase() &&
+          ev.args.vault.toLowerCase() === policy.vault.toLowerCase() &&
+          ev.args.expiresAt === BigInt(policy.expiresAt),
       );
       if (!event)
         throw new Error(
@@ -104,7 +108,7 @@ export function AgentPolicyActions({
         );
       setCreated(event.args.policyId);
       setStatus(
-        'Policy created on-chain. Open policy controls to review allowance and delegate execution.',
+        'Policy created on-chain. Open Policy Registry Controls to manage allowance or revoke.',
       );
       onCreated?.(event.args.policyId);
     } catch (cause) {
@@ -114,22 +118,18 @@ export function AgentPolicyActions({
       setBusy(false);
     }
   }
+
   return (
     <section className="mt-6 space-y-4 border-t border-border pt-6">
-      <h3 className="text-lg font-semibold">Authorize on the testnet</h3>
-      <p className="text-sm leading-6 text-muted-foreground">
-        Policy creation records these limits on-chain. Collateral approval is a separate
-        owner action in Policy controls. This check does not establish an independent
-        security audit.
-      </p>
+      <h3 className="text-lg font-bold">On-Chain Policy Authorization</h3>
       {AGENT_EXECUTOR === zeroAddress || POLICY_REGISTRY === zeroAddress ? (
-        <p className="rounded-xl bg-secondary p-4 text-sm">
-          Waiting for the executor and registry deployment. The draft is ready for review;
-          no policy has been created.
+        <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
+          Session executor contracts awaiting configuration. Export your reviewed policy
+          JSON above or connect once deployed.
         </p>
       ) : checks.isFetching ? (
-        <p role="status" className="text-sm">
-          Checking registry approval, asset precision, and governance delay…
+        <p role="status" className="text-sm text-muted-foreground">
+          Verifying registry approval and asset precision…
         </p>
       ) : checks.error ? (
         <p role="alert" className="text-sm text-destructive">
@@ -137,12 +137,12 @@ export function AgentPolicyActions({
         </p>
       ) : (
         checks.data && (
-          <p className="text-sm text-primary">
-            The configured registry, vault asset, precision, and governance delay passed
-            the current on-chain checks.
+          <p className="text-sm font-medium text-primary">
+            Registry, pool asset, and decimal checks verified.
           </p>
         )
       )}
+
       <button
         type="button"
         className="action-link disabled:opacity-40"
@@ -163,15 +163,15 @@ export function AgentPolicyActions({
             ? 'Policy created'
             : 'Authorize policy in wallet'}
       </button>
+
       {!address && (
-        <p className="text-xs text-muted-foreground">
-          Connect the owner’s EVM signing account to authorize. A native extension
-          connection identifies the account but does not enable this signing control.
+        <p className="text-sm text-muted-foreground">
+          Connect the owner transaction wallet to authorize this session policy.
         </p>
       )}
       {address && address.toLowerCase() !== policy.owner.toLowerCase() && (
         <p className="text-sm text-muted-foreground">
-          Switch to the policy owner’s signing account.
+          Switch to the policy owner wallet ({policy.owner}) to sign.
         </p>
       )}
       {error && (
@@ -180,18 +180,18 @@ export function AgentPolicyActions({
         </p>
       )}
       {status && (
-        <p role="status" className="text-sm text-primary">
+        <p role="status" className="text-sm font-medium text-primary">
           {status}
         </p>
       )}
       {created && (
-        <p className="break-all rounded-xl bg-background p-3 font-mono text-xs">
+        <p className="break-all rounded-xl bg-secondary p-3 font-mono text-sm">
           Policy ID: {created}
         </p>
       )}
       {hash && (
-        <p className="break-all text-xs text-muted-foreground">
-          Transaction: {hash}. A submitted hash alone does not confirm success.
+        <p className="break-all font-mono text-sm text-muted-foreground">
+          Transaction: {hash}
         </p>
       )}
     </section>

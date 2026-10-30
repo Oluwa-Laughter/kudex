@@ -12,7 +12,9 @@ export function ThemeToggle() {
       type="button"
       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-secondary"
       disabled={!mounted}
-      aria-label={dark ? 'Use light theme' : 'Use dark theme'}
+      aria-label={
+        mounted ? (dark ? 'Use light theme' : 'Use dark theme') : 'Toggle color theme'
+      }
       onClick={() => setTheme(dark ? 'light' : 'dark')}
     >
       {mounted && (dark ? <FiSun aria-hidden="true" /> : <FiMoon aria-hidden="true" />)}

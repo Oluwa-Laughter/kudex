@@ -1,140 +1,103 @@
 import Link from 'next/link';
-import { FiArrowRight, FiDownload, FiInfo } from 'react-icons/fi';
+import { FiArrowRight, FiRepeat, FiSend, FiLayers, FiCpu, FiShield } from 'react-icons/fi';
 
-const steps = [
-  [
-    'Choose your vault',
-    'Open Vaults to review the collateral and the available deposit or withdrawal path. The app enables transactions only after the relevant deployment is configured.',
-  ],
-  [
-    'Understand your wallet',
-    'The Portaldot extension holds your native account. Test tokens are distributed to your registered address beginning with 5. The current vault form uses an EVM wallet; native extension transaction signing is not integrated into that form yet.',
-  ],
-  [
-    'Verify the vault and asset',
-    'After deployment, check the asset symbol, decimals, token balance, and withdrawal limit. Test collateral is not a dollar-backed stablecoin or an RWA investment.',
-  ],
-  [
-    'Review and authorize',
-    'Enter a precise deposit amount. If an allowance is needed, approve only that amount. Approval and deposit are separate transactions; an approval alone does not deposit funds.',
-  ],
-  [
-    'Wait for the result',
-    'Keep the wallet open while signing. Check the successful transaction receipt, then refreshed balances. Rejected signatures, RPC errors, and reverted transactions stay failures.',
-  ],
-  [
-    'Withdraw when available',
-    'Choose Redeem shares, check the maximum redeemable shares, review minimum asset output, and confirm. New deposits can be paused during default; withdrawals remain subject to available assets.',
-  ],
+const WORKFLOWS = [
+  {
+    step: '01',
+    title: 'Negotiate & Settle Institutional RFQs',
+    icon: FiRepeat,
+    body: 'Create signed peer-to-solver invitations or firm full-fill quotes in the Marketplace. Settle atomically with zero public orderbook slippage.',
+    href: '/app/marketplace',
+    cta: 'Open Marketplace',
+  },
+  {
+    step: '02',
+    title: 'Bridge & Shield Corporate Liquidity',
+    icon: FiSend,
+    body: 'Route capital from Ethereum, Arbitrum, Base, and Optimism with <45s target completion, or mint one-time recipient notes and encrypted invoices.',
+    href: '/app/bridge',
+    cta: 'Open Bridge',
+  },
+  {
+    step: '03',
+    title: 'Allocate Across Structured Yield Pools',
+    icon: FiLayers,
+    body: 'Supply collateral into Senior, Mezzanine, or Junior pools with slippage-bounded share minting and automated 85% solvency safeguards.',
+    href: '/app/vaults',
+    cta: 'Open Vaults',
+  },
+  {
+    step: '04',
+    title: 'Delegate Bounded Sessions to KUDEX AGENT',
+    icon: FiCpu,
+    body: 'Authorize function-whitelisted session keys with 2h, 24h, or 7d expirations, cumulative spend caps, and instant one-click owner revocation.',
+    href: '/app/agents',
+    cta: 'Open KUDEX AGENT',
+  },
 ];
+
 export function UserGuide() {
   return (
-    <article>
-      <p className="eyebrow">Kudex user guide</p>
-      <h1 className="page-title">Find your flow through Kudex.</h1>
-      <p className="page-description">
-        Manage vault capital, trade signed offers, and define bounded agent permissions.
-        Start with a supported workflow and follow it through to a confirmed receipt.
-      </p>
-      <div className="mt-7 flex flex-wrap gap-3">
-        <Link className="action-link" href="/app/overview">
-          Choose a workflow <FiArrowRight aria-hidden="true" />
-        </Link>
-        <a className="quiet-link" href="/kudex-quickstart.md" download>
-          <FiDownload aria-hidden="true" />
-          Download this guide
-        </a>
-      </div>
-      <aside className="mt-9 flex max-w-3xl gap-3 rounded-2xl bg-secondary p-5">
-        <FiInfo className="mt-1 shrink-0 text-primary" aria-hidden="true" />
-        <p className="text-sm leading-6">
-          This is a testnet product. Current deposits and balances are public. Private
-          transfers, credit tranches, bridging, and autonomous execution require further
-          implementation or deployment.
+    <article className="space-y-10">
+      <header className="space-y-4">
+        <p className="eyebrow">Operational Architecture</p>
+        <h1 className="page-title">How Kudex Works</h1>
+        <p className="page-description">
+          Kudex unifies confidential corporate settlement, negotiated institutional RFQ
+          execution, structured yield pools, and bounded autonomous agents.
         </p>
-      </aside>
-      <h2 className="mt-10 text-2xl font-semibold">Deposit and withdraw vault capital</h2>
-      <ol className="mt-6 grid gap-5 lg:grid-cols-2">
-        {steps.map(([title, text], i) => (
-          <li className="panel" key={title}>
-            <span className="font-mono text-sm text-primary">Step {i + 1}</span>
-            <h2 className="mt-4 text-xl font-semibold">{title}</h2>
-            <p className="mt-3 leading-7 text-muted-foreground">{text}</p>
-          </li>
-        ))}
-      </ol>
-      <section className="mt-12">
-        <h2 className="text-2xl font-semibold">Trade a signed offer</h2>
-        <ol className="mt-6 divide-y divide-border border-t border-border">
-          {[
-            [
-              'Create exact terms',
-              'In RFQ trading, choose Create an offer. Enter two token contract addresses, the amount you offer, the amount you request, and an expiry. Review the loaded token details before signing. No market price is invented for you.',
-            ],
-            [
-              'Sign, export, and fund',
-              'The maker signs the full offer in the wallet, downloads the JSON, and shares it with a counterparty. Signing neither reserves tokens nor creates an allowance. The maker can review their own export and approve the exact offered amount separately. Anyone holding the signature may fill it.',
-            ],
-            [
-              'Review as the taker',
-              'Paste the export into Review an offer. Check the maker, both token addresses, quantities, expiry, router, and nonce state. The taker receives the offered token and pays the requested token. Connect the paying wallet, then refresh the review.',
-            ],
-            [
-              'Approve payment, then fill',
-              'Approve only the required payment amount if needed. After both sides have funds and allowance, choose Fill complete offer in wallet. The app simulates the exchange and reports success only after a matching settlement receipt. Orders fill in full; partial fills and private swaps are unavailable.',
-            ],
-            [
-              'Cancel or remove permission',
-              'The maker can cancel the nonce on-chain. This invalidates every offer sharing that nonce. Token allowance is separate: remove router allowance when it is no longer needed. Shared allowances are not a budget for one offer.',
-            ],
-          ].map(([title, text], index) => (
-            <li key={title} className="grid gap-3 py-6 sm:grid-cols-[14rem_1fr]">
-              <h3 className="font-semibold">
-                {index + 1}. {title}
-              </h3>
-              <p className="max-w-3xl leading-7 text-muted-foreground">{text}</p>
-            </li>
-          ))}
-        </ol>
-        <Link className="action-link mt-6" href="/app/marketplace">
-          Open RFQ trading <FiArrowRight aria-hidden="true" />
-        </Link>
-      </section>
-      <section className="mt-12">
-        <h2 className="text-2xl font-semibold">When something needs attention</h2>
-        <div className="mt-6 divide-y divide-border border-t border-border">
-          {[
-            [
-              'My native wallet is connected, but I cannot deposit',
-              'Native extension signing and EVM wallet signing are separate paths. Do not assume a mapped 0x address can be used in MetaMask. Wait for a supported native signing flow or use a separately funded EVM account under verified network instructions.',
-            ],
-            [
-              'My wallet has no test tokens',
-              'The organizer distributes tokens to registered native addresses. Until funding arrives, explore readiness and prepare policy drafts. Repeated transaction attempts will not create gas funds.',
-            ],
-            [
-              'The contract is not configured',
-              'Deployment is pending or this environment has no verified contract addresses. Do not substitute a random address. The vault should remain unavailable.',
-            ],
-            [
-              'Approval succeeded but my vault balance did not change',
-              'Approval permits a spender to move tokens. The deposit is a separate transaction. Review the deposit receipt before expecting shares.',
-            ],
-            [
-              'How do I start an agent?',
-              'Open Agents for product guidance and a bounded policy builder. After deployment, authorize the policy from the owner wallet, then use Policy controls to review allowance, revoke permission, or request one delegate-signed deposit. Continuous automation requires a separately operated worker. A draft download grants no authority.',
-            ],
-            [
-              'Can the contracts be upgraded?',
-              'The proposed first release keeps custody vaults immutable. A separate policy registry can be upgraded through a governance timelock. A new vault version requires explicit migration rather than silently changing existing vault code.',
-            ],
-          ].map(([title, text]) => (
-            <details className="py-5" key={title}>
-              <summary className="min-h-11 max-w-3xl pr-5 font-medium">{title}</summary>
-              <p className="mt-3 max-w-3xl leading-7 text-muted-foreground">{text}</p>
-            </details>
-          ))}
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Link className="action-link text-sm" href="/app/overview">
+            <span>Launch App</span>
+            <FiArrowRight aria-hidden="true" />
+          </Link>
+          <Link className="quiet-link text-sm" href="/docs">
+            <span>Developer Reference</span>
+          </Link>
         </div>
+      </header>
+
+      <section className="grid gap-6 md:grid-cols-2">
+        {WORKFLOWS.map((item) => (
+          <div key={item.step} className="panel flex flex-col justify-between space-y-5">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-sm font-bold text-primary tabular-nums">
+                  STEP {item.step}
+                </span>
+                <item.icon className="text-primary" size={20} aria-hidden="true" />
+              </div>
+              <h2 className="text-xl font-bold">{item.title}</h2>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
+            <Link
+              href={item.href}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+            >
+              <span>{item.cta}</span>
+              <FiArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        ))}
+      </section>
+
+      <section className="panel flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <FiShield className="mt-1 shrink-0 text-primary" size={22} aria-hidden="true" />
+          <div>
+            <h2 className="text-lg font-bold">Built-In Auditor Selective Disclosure</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Generate scoped read-only viewing keys and settlement compliance
+              certificates at any time without exposing private balances.
+            </p>
+          </div>
+        </div>
+        <Link className="cobalt-action text-sm" href="/app/compliance">
+          <span>Compliance Workspace</span>
+          <FiArrowRight aria-hidden="true" />
+        </Link>
       </section>
     </article>
   );

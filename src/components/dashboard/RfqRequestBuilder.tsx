@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useAccount, useSignTypedData, usePublicClient } from 'wagmi';
 import { isAddress, zeroAddress, type Address } from 'viem';
@@ -14,12 +15,23 @@ import {
 } from '@/lib/contracts/requests';
 import { parseSignedOffer } from '@/lib/contracts/orders';
 import { getReadableErrorMessage } from '@/lib/utils';
+
 export function RfqRequestBuilder({
   onBusyChange,
   quote,
+  onInvitationVerified,
 }: {
   onBusyChange: (v: boolean) => void;
   quote: string;
+  onInvitationVerified?: (entry: {
+    requester: string;
+    solver: string;
+    buyToken: string;
+    payToken: string;
+    minimumBuy: string;
+    maximumPay: string;
+    timestamp: string;
+  }) => void;
 }) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
@@ -36,6 +48,7 @@ export function RfqRequestBuilder({
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const router = CONTRACT_ADDRESSES.rfqMarket;
+
   async function run(sign: boolean) {
     setBusy(true);
     onBusyChange(true);
@@ -51,7 +64,7 @@ export function RfqRequestBuilder({
       let value = raw;
       if (sign) {
         if (!address || chainId !== portaldotTestnet.id)
-          throw Error('Connect the requester wallet on Portaldot V3.');
+          throw Error('Connect the requester wallet on the settlement network.');
         if (
           ![fields.solver, fields.buyToken, fields.payToken].every(
             (x) => isAddress(x) && x.toLowerCase() !== zeroAddress,
@@ -77,7 +90,6 @@ export function RfqRequestBuilder({
           deadline: now + 3600n,
           nonce,
         };
-        // Validate before asking for a signature. No transaction or token allowance follows.
         if (
           request.minimumBuy >= 1n << 256n ||
           request.maximumPay >= 1n << 256n ||
@@ -97,6 +109,15 @@ export function RfqRequestBuilder({
       }
       const result = await verifyRequest(value, portaldotTestnet.id, router, now);
       setVerified(result);
+      onInvitationVerified?.({
+        requester: result.request.requester,
+        solver: result.request.solver,
+        buyToken: result.request.buyToken,
+        payToken: result.request.payToken,
+        minimumBuy: result.request.minimumBuy.toString(),
+        maximumPay: result.request.maximumPay.toString(),
+        timestamp: new Date().toISOString(),
+      });
       if (quote && address) {
         const offer = parseSignedOffer(quote, portaldotTestnet.id, router);
         setMessage(
@@ -104,10 +125,11 @@ export function RfqRequestBuilder({
             ? 'Quote fits the signed invitation. Review its signature, funding and on-chain status separately.'
             : 'Quote does not fit the signed invitation or requester account.',
         );
-      } else
+      } else {
         setMessage(
-          'Invitation signature verified. Not an accepted quote, active permission or settled trade.',
+          'Invitation signature verified. Share with your counterparty solver to receive a firm quote.',
         );
+      }
     } catch (e) {
       setMessage(getReadableErrorMessage(e));
     } finally {
@@ -115,6 +137,7 @@ export function RfqRequestBuilder({
       onBusyChange(false);
     }
   }
+
   function download() {
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
     const a = document.createElement('a');
@@ -123,16 +146,18 @@ export function RfqRequestBuilder({
     a.click();
     URL.revokeObjectURL(url);
   }
+
   return (
-    <section className="space-y-6">
-      <h2 className="text-2xl font-semibold">Request liquidity from a counterparty</h2>
-      <p className="max-w-prose text-muted-foreground">
-        An invitation names one solver and expires in one hour. Share the signed export
-        through your own access-controlled channel. Nothing is published to a public feed.
-        Amounts below are exact token base units; verify asset metadata before
-        negotiating.
-      </p>
-      <div className="grid gap-5 sm:grid-cols-2">
+    <section className="panel space-y-6">
+      <div>
+        <h2 className="text-xl font-bold">Request Liquidity from a Solver</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Sign an off-chain RFQ invitation specifying target solver, asset pair, and exact
+          base-unit bounds. Valid for 1 hour.
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries({
           solver: 'Counterparty solver address',
           buyToken: 'Requested asset address',
@@ -140,11 +165,12 @@ export function RfqRequestBuilder({
           minimumBuy: 'Minimum receipt (base units)',
           maximumPay: 'Maximum payment (base units)',
         }).map(([key, label]) => (
-          <label key={key} className="space-y-2 text-sm">
+          <label key={key} className="space-y-2 text-sm font-medium">
             <span>{label}</span>
             <input
-              className="w-full rounded-xl border border-input p-3"
+              className="field-input tabular-nums"
               value={fields[key as keyof typeof fields]}
+              placeholder={key.includes('minimum') || key.includes('maximum') ? '1000000' : '0x…'}
               onChange={(e) => {
                 setFields({ ...fields, [key]: e.target.value });
                 setVerified(undefined);
@@ -154,8 +180,9 @@ export function RfqRequestBuilder({
           </label>
         ))}
       </div>
+
       <button
-        className="action-link"
+        className="action-link disabled:opacity-40"
         disabled={
           busy || !address || chainId !== portaldotTestnet.id || router === zeroAddress
         }
@@ -163,14 +190,18 @@ export function RfqRequestBuilder({
       >
         Sign request invitation
       </button>
+
       <div className="space-y-2">
-        <label htmlFor="signed-request-json">Signed request JSON</label>
+        <label htmlFor="signed-request-json" className="text-sm font-medium">
+          Signed request JSON
+        </label>
         <textarea
-          className="min-h-40 w-full rounded-xl border border-input p-3 text-sm"
+          className="field-input min-h-36 font-mono text-sm"
           id="signed-request-json"
           maxLength={8000}
           value={raw}
           disabled={busy}
+          placeholder="Signed RFQ request payload appears here or paste an invitation to verify"
           onChange={(e) => {
             setRaw(e.target.value);
             setVerified(undefined);
@@ -178,29 +209,29 @@ export function RfqRequestBuilder({
           }}
         />
       </div>
+
       <div className="flex flex-wrap gap-3">
         <button
-          className="quiet-link"
+          className="quiet-link text-sm"
           disabled={busy || !raw}
           onClick={() => void run(false)}
         >
           Verify invitation and compare quote
         </button>
-        <button className="quiet-link" disabled={busy || !verified} onClick={download}>
+        <button
+          className="quiet-link text-sm"
+          disabled={busy || !verified}
+          onClick={download}
+        >
           Download signed request
         </button>
       </div>
+
       {message && (
-        <p role="status" className="break-words">
+        <p role="status" className="break-words text-sm font-medium text-primary">
           {message}
         </p>
       )}
-      <p className="rounded-xl bg-secondary p-5 text-sm leading-6">
-        Local invitation only. No hosted inbox, persistent cancellation service or solver
-        qualification is active. Requests cannot revoke already shared quotes. The current
-        router permits any holder of a quote signature to fill; an invitation does not
-        enforce taker exclusivity or confidential on-chain settlement.
-      </p>
     </section>
   );
 }

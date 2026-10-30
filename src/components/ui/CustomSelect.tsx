@@ -2,12 +2,14 @@
 import type { ReactNode } from 'react';
 import * as Menu from '@radix-ui/react-dropdown-menu';
 import { FiCheck, FiChevronDown } from 'react-icons/fi';
+
 export interface SelectOption {
   value: string;
   label: string;
   description?: string;
   icon?: ReactNode;
 }
+
 export interface CustomSelectProps {
   options: SelectOption[];
   value: string;
@@ -19,6 +21,7 @@ export interface CustomSelectProps {
   variant?: 'default' | 'compact' | 'input-addon';
   label?: string;
 }
+
 export function CustomSelect({
   options,
   value,
@@ -37,13 +40,13 @@ export function CustomSelect({
         <Menu.Trigger
           disabled={disabled}
           aria-label={label}
-          className={`flex min-h-11 items-center justify-between gap-3 rounded-xl border border-input bg-card px-4 py-3 text-sm font-medium disabled:opacity-50 ${variant === 'default' ? 'w-full' : ''} ${buttonClassName}`}
+          className={`flex min-h-11 items-center justify-between gap-3 rounded-xl border border-input bg-card px-4 py-2.5 text-sm font-medium text-foreground disabled:opacity-50 ${variant === 'default' ? 'w-full' : ''} ${buttonClassName}`}
         >
           <span className="flex min-w-0 items-center gap-2">
             {selected?.icon}
             <span className="truncate">{selected?.label ?? placeholder}</span>
           </span>
-          <FiChevronDown aria-hidden="true" />
+          <FiChevronDown aria-hidden="true" className="shrink-0" />
         </Menu.Trigger>
         <Menu.Portal>
           <Menu.Content
@@ -62,16 +65,16 @@ export function CustomSelect({
               >
                 {option.icon}
                 <span className="min-w-0 flex-1">
-                  <span className="block">{option.label}</span>
+                  <span className="block font-medium">{option.label}</span>
                   {option.description && (
-                    <span className="block text-xs text-muted-foreground">
+                    <span className="block text-sm text-muted-foreground">
                       {option.description}
                     </span>
                   )}
                 </span>
                 {value === option.value && (
                   <>
-                    <FiCheck aria-hidden="true" />
+                    <FiCheck aria-hidden="true" className="shrink-0 text-primary" />
                     <span className="sr-only">Selected</span>
                   </>
                 )}

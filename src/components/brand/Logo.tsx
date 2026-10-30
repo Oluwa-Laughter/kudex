@@ -11,22 +11,21 @@ interface LogoProps {
 
 export function Logo({ size = 'md', showSubtitle = false }: LogoProps) {
   const dimensions = {
-    sm: { img: 30, text: 'text-lg', sub: 'text-xs' },
-    md: { img: 38, text: 'text-2xl', sub: 'text-xs' },
-    lg: { img: 50, text: 'text-3xl', sub: 'text-sm' },
+    sm: { img: 30, text: 'text-xl', sub: 'text-sm' },
+    md: { img: 38, text: 'text-2xl', sub: 'text-sm' },
+    lg: { img: 48, text: 'text-3xl', sub: 'text-sm' },
   }[size];
 
   return (
-    <Link href="/" className="flex items-center gap-2.5 group">
+    <Link href="/" className="group flex items-center gap-2.5">
       <div className="relative flex items-center justify-center">
-        {/* Dark and light responsive logo */}
         <div className="dark:hidden">
           <Image
             src="/logo.svg"
             alt="Kudex Logo"
             width={dimensions.img}
             height={dimensions.img}
-            className="transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-200 group-hover:scale-105"
             priority
           />
         </div>
@@ -36,19 +35,21 @@ export function Logo({ size = 'md', showSubtitle = false }: LogoProps) {
             alt="Kudex Logo"
             width={dimensions.img}
             height={dimensions.img}
-            className="transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-200 group-hover:scale-105"
             priority
           />
         </div>
       </div>
       <div className="flex flex-col">
         <span
-          className={`font-bold tracking-tight text-foreground leading-none ${dimensions.text}`}
+          className={`font-heading font-bold leading-none tracking-tight text-foreground ${dimensions.text}`}
         >
           Kudex
         </span>
         {showSubtitle && (
-          <span className={`text-primary mt-0.5 ${dimensions.sub}`}>On Portaldot</span>
+          <span className={`mt-0.5 text-primary ${dimensions.sub}`}>
+            Confidential Settlement
+          </span>
         )}
       </div>
     </Link>

@@ -33,6 +33,7 @@ test('legacy browser ledger cannot resurrect balances, filled swaps, privacy not
     '/app/bridge',
     '/app/settlement',
     '/app/compliance',
+    '/app/protection',
     '/app/agents',
   ]) {
     await page.goto(path);
@@ -44,11 +45,6 @@ test('legacy browser ledger cannot resurrect balances, filled swaps, privacy not
   await page.goto('/app/marketplace');
   await expect(
     page.getByRole('button', { name: 'Sign request invitation', exact: true }),
-  ).toBeDisabled();
-  await page.goto('/app/agents');
-  await page.getByRole('tab', { name: 'Execution service', exact: true }).click();
-  await expect(
-    page.getByRole('button', { name: 'Activate automation unavailable', exact: true }),
   ).toBeDisabled();
 });
 
@@ -72,7 +68,7 @@ test('failed native balance read displays unavailable rather than faucet allocat
   await page.goto('/app/agents');
   await page.getByRole('button', { name: 'Connect wallets', exact: true }).click();
   await page
-    .getByRole('button', { name: 'Connect Portaldot Native Extension', exact: true })
+    .getByRole('button', { name: 'Connect Native Extension', exact: true })
     .click();
   await expect(
     page.getByRole('dialog').getByText('Unavailable', { exact: true }),
@@ -80,19 +76,30 @@ test('failed native balance read displays unavailable rather than faucet allocat
   await expect(page.getByText('500.00 tPOT', { exact: true })).toHaveCount(0);
 });
 
-test('public marketing does not advertise fabricated financial metrics', async ({
+test('public marketing and solutions routes render cleanly without fabricated financial claims or banned jargon', async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 320, height: 850 });
   for (const path of [
     '/',
     '/marketplace',
     '/bridge',
+    '/pricing',
+    '/docs',
+    '/solutions/enterprise-payroll',
     '/solutions/credit-tranches',
+    '/solutions/autonomous-agents',
     '/how-it-works',
   ]) {
     await page.goto(path);
     await expect(
       page.getByText(/\$24\.85M|\$142\.6M|22\.80% APY|8\.50% APY|Trade settled with 0%/),
     ).toHaveCount(0);
+    await expect(
+      page.getByText(/Portaldot V3|EVM 8890|Groth16|ERC-4626|ERC-7579|seal0|Vercel AI SDK/i),
+    ).toHaveCount(0);
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    ).toBe(true);
   }
 });

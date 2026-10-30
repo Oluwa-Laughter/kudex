@@ -1,80 +1,194 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import * as Dialog from '@radix-ui/react-dialog';
+import { FiArrowRight, FiMenu, FiX } from 'react-icons/fi';
 import { Logo } from '@/components/brand/Logo';
 import { ThemeToggle } from '@/components/brand/ThemeToggle';
-import { FiArrowUpRight } from 'react-icons/fi';
+
+const PRIMARY_LINKS = [
+  { label: 'Marketplace', href: '/marketplace' },
+  { label: 'Bridge', href: '/bridge' },
+  { label: 'Payroll', href: '/solutions/enterprise-payroll' },
+  { label: 'Credit Tranches', href: '/solutions/credit-tranches' },
+  { label: 'Agents', href: '/solutions/autonomous-agents' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Docs', href: '/docs' },
+];
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <div className="min-h-screen">
-      <a
-        href="#main-content"
-        className="sr-only z-50 rounded-xl bg-card p-4 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        Skip to content
-      </a>
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-10 lg:px-16">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto flex min-h-20 max-w-screen-2xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
           <Logo size="sm" />
+
           <nav
-            aria-label="Main navigation"
-            className="order-3 flex w-full gap-6 overflow-x-auto text-sm font-medium sm:order-none sm:w-auto"
+            aria-label="Primary"
+            className="hidden items-center gap-1 xl:flex"
           >
-            <Link className="py-3 hover:text-primary" href="/how-it-works">
-              How it works
-            </Link>
-            <Link className="py-3 hover:text-primary" href="/marketplace">
-              RFQ markets
-            </Link>
-            <Link
-              className="whitespace-nowrap py-3 hover:text-primary"
-              href="/solutions/autonomous-agents"
-            >
-              Agents
-            </Link>
+            {PRIMARY_LINKS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-xl px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
+
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link className="action-link px-3 sm:px-5" href="/app/overview">
-              Open app <FiArrowUpRight aria-hidden="true" />
+            <Link
+              href="/app/overview"
+              className="action-link hidden px-4 py-2.5 text-sm sm:inline-flex"
+            >
+              <span>Launch App</span>
+              <FiArrowRight aria-hidden="true" />
             </Link>
+
+            <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+              <Dialog.Trigger
+                aria-label="Open menu"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card xl:hidden"
+              >
+                <FiMenu size={18} />
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="drawer-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
+                <Dialog.Content className="drawer-content fixed inset-y-0 right-0 z-50 w-72 max-w-[90vw] overflow-y-auto border-l border-border bg-card p-5">
+                  <div className="flex items-center justify-between pb-4 border-b border-border">
+                    <Dialog.Title className="text-base font-bold">
+                      Navigation
+                    </Dialog.Title>
+                    <Dialog.Description className="sr-only">
+                      Explore Kudex solutions, pricing, documentation, and workspaces.
+                    </Dialog.Description>
+                    <Dialog.Close
+                      aria-label="Close menu"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-secondary"
+                    >
+                      <FiX size={18} />
+                    </Dialog.Close>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-1.5">
+                    {PRIMARY_LINKS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="rounded-xl px-3.5 py-3 text-base font-medium text-foreground hover:bg-secondary"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    <Link
+                      href="/app/overview"
+                      onClick={() => setMobileOpen(false)}
+                      className="action-link mt-4 w-full text-sm"
+                    >
+                      <span>Launch App</span>
+                      <FiArrowRight aria-hidden="true" />
+                    </Link>
+                  </div>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
           </div>
         </div>
       </header>
-      <main id="main-content">{children}</main>
-      <footer className="mt-16 border-t border-border">
-        <div className="mx-auto grid max-w-screen-2xl gap-10 px-5 py-12 sm:grid-cols-2 sm:px-10 lg:grid-cols-4 lg:px-16">
-          <div className="sm:col-span-2">
-            <Logo />
-            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              A settlement workspace built on Portaldot. Start with the essentials. Know
-              what you authorize.
-            </p>
-            <p className="mt-4 text-sm text-primary">
-              Testnet development · No real funds
+
+      <main className="mx-auto w-full max-w-screen-2xl flex-1 px-4 py-10 sm:px-8 sm:py-16">
+        {children}
+      </main>
+
+      <footer className="border-t border-border bg-card">
+        <div className="mx-auto grid max-w-screen-2xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+          <div className="space-y-3">
+            <Logo size="sm" />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              The Autonomous Confidential Settlement Layer for institutional liquidity,
+              corporate payroll, and bounded agent execution.
             </p>
           </div>
-          <nav aria-label="Product">
-            <p className="mb-3 font-semibold">Explore Kudex</p>
-            <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-              <Link href="/app/vaults">Public custody vault</Link>
-              <Link href="/app/marketplace">Institutional RFQ marketplace</Link>
-              <Link href="/solutions/autonomous-agents">Autonomous Agents</Link>
-            </div>
-          </nav>
-          <nav aria-label="Resources">
-            <p className="mb-3 font-semibold">Get started</p>
-            <div className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-              <Link href="/how-it-works">How It Works</Link>
-              <Link href="/solutions/credit-tranches">Credit Tranches</Link>
-              <Link href="/solutions/enterprise-payroll">Enterprise Payroll</Link>
-              <Link href="/app/overview">Product Workspace</Link>
-            </div>
-          </nav>
+
+          <div className="space-y-2.5 text-sm">
+            <h2 className="font-bold text-foreground">Solutions</h2>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>
+                <Link className="hover:text-foreground" href="/solutions/enterprise-payroll">
+                  Enterprise Payroll
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/solutions/credit-tranches">
+                  Credit Tranches
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/solutions/autonomous-agents">
+                  Autonomous Agents
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5 text-sm">
+            <h2 className="font-bold text-foreground">Platform</h2>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>
+                <Link className="hover:text-foreground" href="/marketplace">
+                  RFQ Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/bridge">
+                  Cross-Chain Bridge
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/pricing">
+                  Pricing & Fees
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/docs">
+                  Developer Docs
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5 text-sm">
+            <h2 className="font-bold text-foreground">Application</h2>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>
+                <Link className="hover:text-foreground" href="/app/overview">
+                  Portfolio Overview
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/app/settlement">
+                  Private Settlement
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/app/compliance">
+                  Compliance & Viewing Keys
+                </Link>
+              </li>
+              <li>
+                <Link className="hover:text-foreground" href="/app/protection">
+                  Solvency & Protection
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        <p className="border-t border-border px-5 py-5 text-center text-xs text-muted-foreground">
-          Kudex · Confidential settlement, RFQs and bounded financial agents on Portaldot
-          V3 Testnet.
-        </p>
       </footer>
     </div>
   );

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import './globals.css';
+import { Providers } from './providers';
 
 const bodyFont = localFont({
   src: [
@@ -11,6 +13,7 @@ const bodyFont = localFont({
   variable: '--font-sans',
   display: 'swap',
 });
+
 const headingFont = localFont({
   src: [
     { path: '../../public/fonts/sora-400.ttf', weight: '400', style: 'normal' },
@@ -21,13 +24,11 @@ const headingFont = localFont({
   variable: '--font-heading',
   display: 'swap',
 });
-import './globals.css';
-import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'Kudex | Confidential Settlement & Autonomous Finance on Portaldot 3.0',
+  title: 'Kudex | Autonomous Confidential Settlement & Institutional Credit',
   description:
-    'Private negotiated settlement, institutional RFQ markets and bounded financial agents on Portaldot V3. Testnet development; confidential transfers remain disabled.',
+    'Confidential settlement, institutional RFQ liquidity, structured yield vaults, and bounded KUDEX AGENT execution.',
   icons: {
     icon: '/logo.svg',
   },
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bodyFont.variable} ${headingFont.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
+        className={`${bodyFont.variable} ${headingFont.variable} min-h-dvh bg-background font-sans text-base leading-relaxed text-foreground antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

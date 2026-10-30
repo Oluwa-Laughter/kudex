@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
@@ -14,6 +15,7 @@ import {
 } from 'react-icons/fi';
 import { useNativeWallet } from '@/components/navigation/NativeWalletProvider';
 import type { AgentReply } from '@/lib/agent/types';
+
 interface Entry {
   id: string;
   question: string;
@@ -22,41 +24,45 @@ interface Entry {
   pending?: boolean;
   partial?: string;
 }
+
 const productPrompts = [
   {
-    label: 'How do vault deposits and withdrawals work?',
+    label: 'How do yield pool deposits and redemptions work?',
     icon: FiLayers,
   },
   {
-    label: 'How do RFQ requests, signed quotes and bounded mandates work?',
+    label: 'How do RFQ quotes, solver settlement, and mandates work?',
     icon: FiRepeat,
   },
   {
-    label: 'How do I give a deposit agent bounded permissions?',
+    label: 'How do I configure bounded session spend limits?',
     icon: FiSliders,
   },
 ] as const;
+
 const liveChecks = [
-  { mode: 'network', label: 'Check the testnet', icon: FiActivity },
+  { mode: 'network', label: 'Check network height', icon: FiActivity },
   { mode: 'account', label: 'Check wallet funding', icon: FiUser },
-  { mode: 'vault', label: 'Inspect the vault', icon: FiLayers },
+  { mode: 'vault', label: 'Inspect active pool', icon: FiLayers },
 ] as const;
+
 const labels: Record<string, string> = {
-  chainId: 'Chain ID',
+  chainId: 'Network ID',
   block: 'Observed block',
   observedAt: 'Observed at',
-  gasTPOT: 'EVM gas balance (tPOT)',
-  nativeFreeTPOT: 'Native free balance (tPOT)',
+  gasTPOT: 'Gas balance (tPOT)',
+  nativeFreeTPOT: 'Native free balance',
   finalizedBlock: 'Finalized block',
   contractAddress: 'Mapped contract address',
-  depositFrozen: 'Deposits frozen',
-  totalAssets: 'Total vault assets',
-  symbol: 'Collateral symbol',
+  depositFrozen: 'Deposits paused',
+  totalAssets: 'Total pool assets',
+  symbol: 'Asset symbol',
   status: 'Status',
   message: 'Next step',
   error: 'Check result',
   address: 'Account',
 };
+
 export function AgentConsole() {
   const { address } = useAccount();
   const { selected } = useNativeWallet();
@@ -65,6 +71,7 @@ export function AgentConsole() {
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState('');
   const controller = useRef<AbortController | null>(null);
+
   const availability = useQuery<{
     modelAvailable: boolean;
     provider: string;
@@ -73,13 +80,15 @@ export function AgentConsole() {
     queryKey: ['agent-availability'],
     queryFn: async () => {
       const r = await fetch('/api/agent/status');
-      if (!r.ok) throw new Error('Could not check agent availability.');
+      if (!r.ok) throw new Error('Could not check KUDEX AGENT availability.');
       return r.json();
     },
     staleTime: 30_000,
     retry: 0,
   });
+
   useEffect(() => () => controller.current?.abort(), []);
+
   async function send(
     text: string,
     mode: 'ask' | 'network' | 'account' | 'vault' = 'ask',
@@ -119,8 +128,8 @@ export function AgentConsole() {
         body,
       });
       if (!response.ok) {
-        const body = await response.json();
-        throw new Error(body.error || 'The agent could not complete the request.');
+        const payload = await response.json();
+        throw new Error(payload.error || 'KUDEX AGENT could not complete the request.');
       }
       if (!response.body) throw new Error('The response stream was unavailable.');
       const reader = response.body.getReader();
@@ -188,6 +197,7 @@ export function AgentConsole() {
       controller.current = null;
     }
   }
+
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border p-5 sm:p-7">
@@ -196,18 +206,19 @@ export function AgentConsole() {
             <FiCpu size={22} aria-hidden="true" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">Kudex Agent</h2>
+            <h2 className="text-xl font-bold">KUDEX AGENT</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {availability.data?.modelAvailable
-                ? 'Product guidance with live vault and account reads'
-                : 'Conversation setup pending · Live data checks available'}
+                ? 'Autonomous intelligence with live pool, network, and account telemetry'
+                : 'Live on-chain diagnostics ready'}
             </p>
           </div>
         </div>
-        <span className="rounded-full bg-secondary px-3 py-1 text-sm text-primary">
-          Your wallet stays in control
+        <span className="rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-sm font-semibold text-primary">
+          Owner-Controlled Signing
         </span>
       </div>
+
       <div className="p-5 sm:p-7">
         <div className="grid gap-3 lg:grid-cols-3">
           {productPrompts.map((prompt) => (
@@ -226,58 +237,57 @@ export function AgentConsole() {
             </button>
           ))}
         </div>
-        <details className="mt-4 rounded-xl border border-border px-4">
-          <summary className="min-h-12 cursor-pointer py-3 text-sm font-medium">
-            Check live network, wallet, or vault data
-          </summary>
-          <div className="grid gap-3 pb-4 sm:grid-cols-3">
-            {liveChecks.map((check) => (
-              <button
-                key={check.mode}
-                disabled={pending}
-                onClick={() => void send(check.label, check.mode)}
-                className="flex min-h-12 items-center gap-3 rounded-xl bg-secondary px-4 py-3 text-left text-sm font-medium transition-colors hover:border-primary disabled:opacity-50"
-              >
-                <check.icon
-                  className="shrink-0 text-primary"
-                  size={18}
-                  aria-hidden="true"
-                />
-                {check.label}
-              </button>
-            ))}
-          </div>
-        </details>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {liveChecks.map((check) => (
+            <button
+              key={check.mode}
+              disabled={pending}
+              onClick={() => void send(check.label, check.mode)}
+              className="flex min-h-12 items-center gap-3 rounded-xl border border-border bg-secondary px-4 py-3 text-left text-sm font-semibold transition-colors hover:border-primary disabled:opacity-50"
+            >
+              <check.icon
+                className="shrink-0 text-primary"
+                size={18}
+                aria-hidden="true"
+              />
+              {check.label}
+            </button>
+          ))}
+        </div>
+
         {!entries.length && (
-          <div className="py-10 sm:py-14">
-            <h3 className="max-w-lg text-2xl font-semibold sm:text-3xl">
-              Move from product intent
-              <br />
-              to a reviewed next step.
+          <div className="py-8">
+            <h3 className="max-w-lg text-2xl font-bold">
+              Ask KUDEX AGENT to inspect pools, quotes, or session limits.
             </h3>
-            <p className="mt-4 max-w-xl leading-7 text-muted-foreground">
-              Ask how vaults, signed orders, and bounded agents fit together. Kudex Agent
-              explains what the product can do today, checks live data when needed, and
-              guides you to the right workflow. Every transaction still needs your wallet.
+            <p className="mt-2 max-w-xl text-base leading-relaxed text-muted-foreground">
+              Run instant network, wallet, and vault reads or ask for step-by-step
+              execution guidance. Every settlement stays bounded by your wallet signature.
             </p>
           </div>
         )}
-        <div className="mt-6 space-y-6" role="region" aria-label="Agent conversation">
+
+        <div className="mt-4 space-y-6" role="region" aria-label="Agent conversation">
           {entries.map((entry) => (
             <article
               key={entry.id}
               className="agent-response border-t border-border pt-6"
             >
-              <p className="mb-4 text-sm font-semibold">{entry.question}</p>
+              <p className="mb-3 text-sm font-semibold text-foreground">
+                {entry.question}
+              </p>
               {entry.pending && entry.partial ? (
-                <p className="max-w-3xl whitespace-pre-wrap leading-7">{entry.partial}</p>
+                <p className="max-w-3xl whitespace-pre-wrap text-base leading-relaxed">
+                  {entry.partial}
+                </p>
               ) : entry.pending ? (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <span
                     className="agent-working h-2 w-2 rounded-full bg-primary"
                     aria-hidden="true"
                   />
-                  Reading the requested state…
+                  Reading live state…
                 </div>
               ) : entry.error ? (
                 <p role="alert" className="text-sm text-destructive">
@@ -286,17 +296,17 @@ export function AgentConsole() {
               ) : (
                 entry.reply && (
                   <>
-                    <p className="max-w-3xl whitespace-pre-wrap leading-7">
+                    <p className="max-w-3xl whitespace-pre-wrap text-base leading-relaxed">
                       {entry.reply.text}
                     </p>
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-4 space-y-3">
                       {entry.reply.evidence.map((item) => (
                         <details
                           key={item.tool}
                           className="rounded-xl border border-border bg-background p-4"
                           open={entry.reply!.evidence.length === 1}
                         >
-                          <summary className="min-h-11 cursor-pointer text-sm font-medium">
+                          <summary className="min-h-11 cursor-pointer text-sm font-semibold">
                             {item.title}{' '}
                             <span className="ml-2 text-sm text-muted-foreground">
                               {item.status === 'observed' ? 'Observed' : 'Unavailable'}
@@ -317,7 +327,7 @@ export function AgentConsole() {
                                   <dt className="text-sm text-muted-foreground">
                                     {labels[key]}
                                   </dt>
-                                  <dd className="mt-1 break-all text-sm">
+                                  <dd className="mt-1 break-all text-sm font-medium tabular-nums">
                                     {typeof value === 'boolean'
                                       ? value
                                         ? 'Yes'
@@ -327,32 +337,14 @@ export function AgentConsole() {
                                 </div>
                               ))}
                           </dl>
-                          {Array.isArray(item.data.contracts) && (
-                            <ul className="mt-4 space-y-2 text-sm">
-                              {(
-                                item.data.contracts as { name: string; status: string }[]
-                              ).map((contract) => (
-                                <li
-                                  key={contract.name}
-                                  className="flex flex-wrap justify-between gap-3 border-t border-border pt-2"
-                                >
-                                  <span>{contract.name}</span>
-                                  <span className="text-muted-foreground">
-                                    {contract.status.replaceAll('-', ' ')}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
                         </details>
                       ))}
                     </div>
-                    <p className="mt-4 text-sm text-muted-foreground">
+                    <p className="mt-4 text-sm text-muted-foreground tabular-nums">
                       {entry.reply.mode === 'gemini'
-                        ? 'Gemini response'
-                        : 'Guided live check'}{' '}
-                      · {new Date(entry.reply.observedAt).toLocaleTimeString()} ·
-                      Observations can change
+                        ? 'KUDEX AGENT Live Model'
+                        : 'KUDEX AGENT Telemetry Check'}{' '}
+                      · {new Date(entry.reply.observedAt).toLocaleTimeString()}
                     </p>
                   </>
                 )
@@ -360,16 +352,17 @@ export function AgentConsole() {
             </article>
           ))}
         </div>
+
         {availability.data?.modelAvailable && (
           <form
-            className="mt-7"
+            className="mt-6"
             onSubmit={(event) => {
               event.preventDefault();
               void send(message);
             }}
           >
             <label className="sr-only" htmlFor="agent-message">
-              Ask Kudex Agent about the product or a workflow
+              Ask KUDEX AGENT about the product or a workflow
             </label>
             <div className="flex items-end gap-2 rounded-2xl border border-input bg-background p-2">
               <textarea
@@ -378,7 +371,7 @@ export function AgentConsole() {
                 onChange={(event) => setMessage(event.target.value)}
                 maxLength={1500}
                 rows={2}
-                placeholder="Ask about settlement, an RFQ, or agent permissions"
+                placeholder="Ask KUDEX AGENT about settlement, an RFQ quote, or session spend caps"
                 className="min-h-12 min-w-0 flex-1 resize-y bg-transparent px-3 py-2 text-base"
                 disabled={pending}
               />
@@ -391,23 +384,21 @@ export function AgentConsole() {
                 <FiArrowUp size={20} />
               </button>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Your messages, connected public addresses, and tool observations may be sent
-              to Google. Never include keys or recovery phrases.
-            </p>
           </form>
         )}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <p role="status" className="text-sm text-muted-foreground">
             {status}
           </p>
           {pending && (
-            <button className="quiet-link" onClick={() => controller.current?.abort()}>
+            <button className="quiet-link text-sm" onClick={() => controller.current?.abort()}>
               <FiX aria-hidden="true" />
               Stop request
             </button>
           )}
         </div>
+
         {availability.error && (
           <p role="alert" className="mt-3 text-sm text-destructive">
             {availability.error.message}

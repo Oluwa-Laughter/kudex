@@ -1,14 +1,15 @@
 'use client';
+
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { zeroAddress } from 'viem';
+import { FiArrowRight, FiDownload, FiShield, FiEdit2, FiCheck, FiClock } from 'react-icons/fi';
 import { AgentPolicyActions } from './AgentPolicyActions';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
 import { AGENT_EXECUTOR, POLICY_REGISTRY } from '@/lib/agent/contracts';
-import { FiArrowRight, FiDownload, FiShield, FiEdit2, FiCheck } from 'react-icons/fi';
-import Link from 'next/link';
 import { prepareAgentPolicy, type AgentPolicyInput } from '@/lib/agent-policy';
+
 const initial: AgentPolicyInput = {
   owner: '',
   delegate: '',
@@ -20,6 +21,13 @@ const initial: AgentPolicyInput = {
   total: '',
   hours: '24',
 };
+
+const EXPIRY_PRESETS = [
+  { label: '2 Hours', hours: '2' },
+  { label: '24 Hours', hours: '24' },
+  { label: '7 Days', hours: '168' },
+];
+
 const fields: {
   key: keyof AgentPolicyInput;
   label: string;
@@ -29,58 +37,59 @@ const fields: {
   {
     key: 'owner',
     label: 'Contract-facing owner',
-    hint: 'Your 0x address, verified from your wallet or native runtime mapping.',
+    hint: 'Your connected 0x wallet address.',
     placeholder: '0x…',
   },
   {
     key: 'delegate',
     label: 'Agent delegate',
-    hint: 'A separate signing account you control. Never enter a private key.',
+    hint: 'Bounded session key address authorized to submit deposits.',
     placeholder: '0x…',
   },
   {
     key: 'vault',
     label: 'Vault address',
-    hint: 'Must be approved in the deployed policy registry.',
+    hint: 'Target yield pool registered in the policy registry.',
     placeholder: '0x…',
   },
   {
     key: 'asset',
     label: 'Collateral token',
-    hint: 'Must match the vault’s on-chain asset.',
+    hint: 'Underlying asset contract matching the target pool.',
     placeholder: '0x…',
   },
   {
     key: 'decimals',
     label: 'Collateral decimals',
-    hint: 'Verify the token’s precision. Native POT and EVM gas use different units.',
+    hint: 'Token decimal precision (e.g. 6 for USDC, 18 for standard tokens).',
     placeholder: '6',
   },
   {
     key: 'hours',
     label: 'Expires in hours',
-    hint: 'A whole number from 1 to 720 (30 days).',
+    hint: 'Session key duration from 1 to 720 hours.',
     placeholder: '24',
   },
   {
     key: 'perAction',
     label: 'Per-deposit cap',
-    hint: 'Maximum collateral tokens in one deposit.',
-    placeholder: 'e.g. 10',
+    hint: 'Maximum token units allowed per single transaction.',
+    placeholder: 'e.g. 1000',
   },
   {
     key: 'daily',
     label: 'Daily cap',
-    hint: 'Maximum per UTC calendar day; not a rolling 24-hour window.',
-    placeholder: 'e.g. 20',
+    hint: 'Maximum cumulative spend per UTC calendar day.',
+    placeholder: 'e.g. 5000',
   },
   {
     key: 'total',
     label: 'Total budget',
-    hint: 'Maximum collateral tokens across the policy lifetime.',
-    placeholder: 'e.g. 100',
+    hint: 'Maximum cumulative spend across the entire session lifetime.',
+    placeholder: 'e.g. 25000',
   },
 ];
+
 export function AgentPolicyBuilder({
   onCreated,
 }: {
@@ -90,6 +99,14 @@ export function AgentPolicyBuilder({
   const native = useNativeAccount();
   const contractsConfigured =
     AGENT_EXECUTOR !== zeroAddress && POLICY_REGISTRY !== zeroAddress;
+
+  const [input, setInput] = useState(initial);
+  const [policy, setPolicy] = useState<ReturnType<typeof prepareAgentPolicy> | null>(
+    null,
+  );
+  const [error, setError] = useState('');
+  const [exported, setExported] = useState(false);
+
   function fillKnownDetails() {
     setInput((current) => ({
       ...current,
@@ -102,12 +119,7 @@ export function AgentPolicyBuilder({
         CONTRACT_ADDRESSES.usdc !== zeroAddress ? CONTRACT_ADDRESSES.usdc : current.asset,
     }));
   }
-  const [input, setInput] = useState(initial);
-  const [policy, setPolicy] = useState<ReturnType<typeof prepareAgentPolicy> | null>(
-    null,
-  );
-  const [error, setError] = useState('');
-  const [exported, setExported] = useState(false);
+
   function review(event: React.FormEvent) {
     event.preventDefault();
     setError('');
@@ -118,6 +130,7 @@ export function AgentPolicyBuilder({
       setError(cause instanceof Error ? cause.message : 'Review your policy fields.');
     }
   }
+
   function download() {
     if (!policy) return;
     const url = URL.createObjectURL(
@@ -130,41 +143,69 @@ export function AgentPolicyBuilder({
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setExported(true);
   }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-secondary p-5">
         <FiShield className="mt-1 shrink-0 text-primary" size={20} aria-hidden="true" />
         <div>
-          <h2 className="font-sans text-base font-semibold tracking-normal">
+          <h2 className="text-base font-bold">
             {contractsConfigured
-              ? 'Setup available · Review before authorization'
-              : 'Setup available · Activation pending deployment'}
+              ? 'Bounded Session Keys Ready for Authorization'
+              : 'Session Key Builder · Executor Awaiting Deployment'}
           </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-            A draft grants no authority. Creating the policy and approving collateral
-            require separate wallet actions after deployment checks. The assistant cannot
-            sign for you; a hosted worker is not running for this policy.
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Constrain KUDEX AGENT delegates with strict time expirations, cumulative
+            spending caps, and whitelisted contract functions.
           </p>
         </div>
       </div>
+
       <div className="grid items-start gap-7 xl:grid-cols-[1.4fr_1fr]">
         <section className="panel">
           {!policy ? (
             <form onSubmit={review} className="space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold">Define your policy</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Amounts are collateral token quantities, not gas. Every field is
-                  required.
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold">Configure Session Policy</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Set time bounds and cumulative spending limits.
+                  </p>
+                </div>
                 <button
                   type="button"
-                  className="quiet-link mt-4"
+                  className="quiet-link text-sm"
                   onClick={fillKnownDetails}
                 >
-                  Use connected account and configured vault
+                  Autofill connected wallet & pool
                 </button>
               </div>
+
+              <div className="space-y-2">
+                <span className="flex items-center gap-2 text-sm font-semibold">
+                  <FiClock className="text-primary" aria-hidden="true" />
+                  <span>Quick Expiration Presets</span>
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {EXPIRY_PRESETS.map((preset) => (
+                    <button
+                      key={preset.hours}
+                      type="button"
+                      onClick={() =>
+                        setInput((curr) => ({ ...curr, hours: preset.hours }))
+                      }
+                      className={`min-h-10 rounded-xl border px-3.5 py-1.5 text-sm font-semibold tabular-nums transition ${
+                        input.hours === preset.hours
+                          ? 'border-primary bg-primary/15 text-primary'
+                          : 'border-border bg-secondary text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid gap-5 sm:grid-cols-2">
                 {fields.map((field) => (
                   <div
@@ -175,7 +216,7 @@ export function AgentPolicyBuilder({
                       {field.label}
                     </label>
                     <input
-                      className="mt-2 min-h-12 w-full rounded-xl border border-input px-3 py-2 text-base"
+                      className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-base tabular-nums"
                       id={`agent-${field.key}`}
                       required
                       value={input[field.key]}
@@ -199,13 +240,14 @@ export function AgentPolicyBuilder({
                     />
                     <p
                       id={`hint-${field.key}`}
-                      className="mt-2 text-xs leading-5 text-muted-foreground"
+                      className="mt-1.5 text-sm leading-relaxed text-muted-foreground"
                     >
                       {field.hint}
                     </p>
                   </div>
                 ))}
               </div>
+
               {error && (
                 <p
                   role="alert"
@@ -214,27 +256,31 @@ export function AgentPolicyBuilder({
                   {error}
                 </p>
               )}
+
               <button type="submit" className="action-link">
-                Review policy <FiArrowRight aria-hidden="true" />
+                Review policy
               </button>
             </form>
           ) : (
             <div className="space-y-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm text-primary">Draft · Not authorized</p>
-                  <h2 className="mt-2 text-2xl font-semibold">
-                    Review before you activate.
+                  <p className="text-sm font-semibold text-primary">
+                    Draft · Not authorized
+                  </p>
+                  <h2 className="mt-1 text-2xl font-bold">
+                    Verify Session Bounds Before Signing
                   </h2>
                 </div>
-                <button className="quiet-link" onClick={() => setPolicy(null)}>
+                <button className="quiet-link text-sm" onClick={() => setPolicy(null)}>
                   <FiEdit2 aria-hidden="true" />
                   Edit
                 </button>
               </div>
+
               <dl className="divide-y divide-border">
                 {[
-                  ['Permitted action', 'Vault deposit only'],
+                  ['Whitelisted function', 'Vault deposit only (execute)'],
                   ['Owner', policy.owner],
                   ['Delegate', policy.delegate],
                   ['Vault', policy.vault],
@@ -244,20 +290,18 @@ export function AgentPolicyBuilder({
                   ['Per UTC day', input.daily],
                   ['Lifetime budget', input.total],
                   ['Expires', new Date(policy.expiresAt * 1000).toUTCString()],
-                  ['Shares sent to', 'Policy owner only'],
+                  ['Recipient lock', 'Policy owner only'],
                 ].map(([label, value]) => (
                   <div className="py-3" key={label}>
-                    <dt className="text-xs text-muted-foreground">{label}</dt>
-                    <dd className="mt-1 break-all text-sm font-medium">{value}</dd>
+                    <dt className="text-sm text-muted-foreground">{label}</dt>
+                    <dd className="mt-1 break-all text-sm font-semibold tabular-nums">
+                      {value}
+                    </dd>
                   </div>
                 ))}
               </dl>
-              <p className="text-sm text-muted-foreground">
-                Draft details are not proof of deployment. Authorization checks the
-                configured registry, asset, precision, owner signer, and governance delay
-                before simulation.
-              </p>
-              <button className="action-link" onClick={download}>
+
+              <button className="quiet-link text-sm" onClick={download}>
                 {exported ? (
                   <FiCheck aria-hidden="true" />
                 ) : (
@@ -265,53 +309,45 @@ export function AgentPolicyBuilder({
                 )}
                 Download policy draft
               </button>
-              <p role="status" className="text-sm text-primary">
-                {exported
-                  ? 'Draft downloaded. Exporting creates no on-chain authority.'
-                  : ''}
-              </p>
+
+              {exported && (
+                <p role="status" className="text-sm font-medium text-primary">
+                  Policy JSON exported. Authorize in wallet to activate on-chain.
+                </p>
+              )}
+
               <AgentPolicyActions policy={policy} onCreated={onCreated} />
             </div>
           )}
         </section>
+
         <aside className="space-y-5">
-          <section className="panel">
-            <h2 className="text-lg font-semibold">What the executor can do</h2>
-            <ul className="mt-4 space-y-4 text-sm text-muted-foreground">
-              <li>Deposit into the vault you selected, while it remains approved.</li>
-              <li>Spend within the per-action, daily, and total caps.</li>
-              <li>Send all newly received shares to you.</li>
+          <section className="panel space-y-4">
+            <h2 className="text-lg font-bold">Contract Function Whitelist</h2>
+            <ul className="space-y-2.5 text-sm">
+              <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5">
+                <span className="font-mono">deposit(uint256,address)</span>
+                <span className="font-semibold text-primary">Permitted</span>
+              </li>
+              <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5 text-muted-foreground">
+                <span className="font-mono">withdraw / redeem</span>
+                <span>Blocked</span>
+              </li>
+              <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5 text-muted-foreground">
+                <span className="font-mono">transfer / arbitrary call</span>
+                <span>Blocked</span>
+              </li>
             </ul>
-            <div className="mt-6 border-t border-border pt-5">
-              <h3 className="font-sans text-sm font-semibold tracking-normal">
-                Outside its authority
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Withdrawals, arbitrary contract calls, switching vaults, changing caps, or
-                operating after expiry or revocation.
-              </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Newly minted pool shares are routed exclusively to the owner address and
+              can never be redirected by a session delegate.
+            </p>
+            <div className="border-t border-border pt-3">
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                <FiArrowRight aria-hidden="true" />
+                <span>Instant owner revocation supported at any block</span>
+              </span>
             </div>
-          </section>
-          <section className="panel">
-            <h2 className="text-lg font-semibold">From draft to running</h2>
-            <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm text-muted-foreground">
-              <li>Verify the executor, registry, collateral, and approved vault.</li>
-              <li>
-                Authorize the policy and a bounded token allowance from the owner account.
-              </li>
-              <li>
-                Fund the delegate and run the deposit worker with a protected signer.
-              </li>
-              <li>
-                Monitor receipts. Revoke the policy and remaining allowance when finished.
-              </li>
-            </ol>
-            <Link
-              className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary"
-              href="/app/how-it-works"
-            >
-              Read the setup guide <FiArrowRight aria-hidden="true" />
-            </Link>
           </section>
         </aside>
       </div>

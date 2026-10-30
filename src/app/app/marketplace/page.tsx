@@ -1,4 +1,5 @@
 import { RfqWorkspace } from '@/components/dashboard/RfqWorkspace';
-export default function Page() {
+
+export default function MarketplaceWorkspacePage() {
   return <RfqWorkspace />;
 }

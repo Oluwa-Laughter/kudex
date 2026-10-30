@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
@@ -16,17 +17,19 @@ import { getReadableErrorMessage } from '@/lib/utils';
 import { checkAgentInfrastructure } from '@/lib/agent/infrastructure';
 
 export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` }) {
-  const [input, setInput] = useState(''),
-    [loaded, setLoaded] = useState<`0x${string}`>(),
-    [amount, setAmount] = useState(''),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(''),
-    [status, setStatus] = useState(''),
-    [hash, setHash] = useState<`0x${string}`>();
+  const [input, setInput] = useState('');
+  const [loaded, setLoaded] = useState<`0x${string}`>();
+  const [amount, setAmount] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
+  const [hash, setHash] = useState<`0x${string}`>();
   const id = loaded ?? createdId;
+
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
+
   const policy = useQuery({
     queryKey: ['agent-policy', AGENT_EXECUTOR, id],
     enabled: Boolean(client && id) && AGENT_EXECUTOR !== zeroAddress,
@@ -97,6 +100,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
       };
     },
   });
+
   const data = policy.data;
   const owner = Boolean(
     address && data && address.toLowerCase() === data.owner.toLowerCase(),
@@ -105,6 +109,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
     address && data && address.toLowerCase() === data.delegate.toLowerCase(),
   );
   const active = Boolean(data && !data.revoked && data.expiresAt > data.timestamp);
+
   async function transact(action: 'approve' | 'revoke' | 'execute' | 'clearAllowance') {
     setBusy(true);
     setError('');
@@ -112,7 +117,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
     try {
       if (!client || !address || !id || chainId !== 420420777)
         throw new Error(
-          'Connect the relevant EVM signing account on Portaldot V3 testnet.',
+          'Connect the relevant transaction account on the settlement network.',
         );
       const fresh = await policy.refetch();
       if (fresh.error || !fresh.data)
@@ -140,7 +145,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           await checkAgentInfrastructure(client, p.vault, p.asset, p.decimals);
         for (const value of p.allowance > 0n && target > 0n ? [0n, target] : [target]) {
           setStatus(
-            `Review ${value === 0n ? 'allowance removal' : 'the remaining policy budget allowance'} in your wallet.`,
+            `Review ${value === 0n ? 'allowance removal' : 'remaining policy budget allowance'} in your wallet.`,
           );
           const simulation = await client.simulateContract({
             address: p.asset,
@@ -176,9 +181,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           args: [id],
           account: address,
         });
-        setStatus(
-          'Review policy revocation in your wallet. Token allowance is a separate control.',
-        );
+        setStatus('Review emergency policy revocation in your wallet.');
         const receipt = await wait(
           await writeContractAsync({
             ...simulation.request,
@@ -193,7 +196,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
             (log) => log.address.toLowerCase() === AGENT_EXECUTOR.toLowerCase(),
           ),
         });
-        if (!events.some((event) => event.args.policyId === id))
+        if (!events.some((ev) => ev.args.policyId === id))
           throw new Error('Matching revocation event missing. Requires reconciliation.');
       } else {
         if (address.toLowerCase() !== p.delegate.toLowerCase())
@@ -231,7 +234,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           account: address,
         });
         setStatus(
-          'Review this single delegated deposit in your wallet. Shares go to the owner.',
+          'Review this delegated deposit in your wallet. Shares route directly to the owner.',
         );
         const receipt = await wait(
           await writeContractAsync({
@@ -249,10 +252,10 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         });
         if (
           !events.some(
-            (event) =>
-              event.args.policyId === id &&
-              event.args.assets === assets &&
-              event.args.shares > 0n,
+            (ev) =>
+              ev.args.policyId === id &&
+              ev.args.assets === assets &&
+              ev.args.shares > 0n,
           )
         )
           throw new Error(
@@ -271,16 +274,17 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
       setBusy(false);
     }
   }
+
   return (
     <section className="panel space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Your on-chain policy</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-          Load a confirmed policy ID to inspect limits, approve collateral, revoke access,
-          or submit one deposit as the delegate. A hosted worker is not running for this
-          policy.
+        <h2 className="text-2xl font-bold">Active Session Key & Emergency Revocation</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Load a session policy ID to inspect remaining spend caps, approve collateral,
+          execute bounded deposits, or trigger immediate one-click revocation.
         </p>
       </div>
+
       <form
         className="flex flex-wrap items-end gap-3"
         onSubmit={(event) => {
@@ -299,44 +303,48 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder={createdId ?? '0x…'}
-            className="mt-2 min-h-12 w-full rounded-xl border border-input px-3 py-2 font-mono text-sm"
+            className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 font-mono text-sm"
           />
         </label>
         <button className="quiet-link" disabled={busy || AGENT_EXECUTOR === zeroAddress}>
           Load policy
         </button>
       </form>
+
       {AGENT_EXECUTOR === zeroAddress && (
-        <p className="rounded-xl bg-secondary p-4 text-sm">
-          The executor is not configured yet. Policy controls become usable after verified
-          deployment.
+        <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
+          Session policy executor awaiting deployment configuration.
         </p>
       )}
+
       {policy.isFetching && (
         <p role="status" className="text-sm text-muted-foreground">
-          Reading the current policy…
+          Reading on-chain policy state…
         </p>
       )}
+
       {policy.error && (
         <p role="alert" className="text-sm text-destructive">
           {getReadableErrorMessage(policy.error)}
         </p>
       )}
+
       {data && (
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm font-medium text-primary">
-              {data.revoked ? 'Revoked' : active ? 'Within its expiry window' : 'Expired'}{' '}
-              · Block {data.block.toString()}
+            <p className="text-sm font-semibold text-primary tabular-nums">
+              {data.revoked ? 'Revoked' : active ? 'Active Session' : 'Expired'} · Block #
+              {data.block.toString()}
             </p>
             <button
-              className="quiet-link"
+              className="quiet-link text-sm"
               disabled={busy || policy.isFetching}
               onClick={() => void policy.refetch()}
             >
               Refresh state
             </button>
           </div>
+
           <dl className="grid gap-4 sm:grid-cols-2">
             {[
               ['Owner', data.owner],
@@ -357,18 +365,20 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
               ['Expires at', new Date(Number(data.expiresAt) * 1000).toUTCString()],
               ['Vault', data.vault],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-xl bg-background p-4">
-                <dt className="text-xs text-muted-foreground">{label}</dt>
-                <dd className="mt-2 break-all text-sm">{value}</dd>
+              <div key={label} className="rounded-xl bg-secondary p-4">
+                <dt className="text-sm text-muted-foreground">{label}</dt>
+                <dd className="mt-1 break-all text-sm font-semibold tabular-nums">
+                  {value}
+                </dd>
               </div>
             ))}
           </dl>
+
           <div className="grid gap-6 border-t border-border pt-6 lg:grid-cols-2">
             <div>
-              <h3 className="text-lg font-semibold">Owner controls</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Approve the remaining lifetime budget, or stop access. The token allowance
-                is shared across your policies for this collateral.
+              <h3 className="text-lg font-bold">Owner & Emergency Revocation</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Revoke active delegate keys immediately or update approved collateral.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
@@ -379,7 +389,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
                   Approve remaining budget
                 </button>
                 <button
-                  className="quiet-link disabled:opacity-40"
+                  className="quiet-link text-destructive hover:text-destructive disabled:opacity-40"
                   disabled={busy || !owner || data.revoked || chainId !== 420420777}
                   onClick={() => void transact('revoke')}
                 >
@@ -396,21 +406,22 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
                 </button>
               </div>
             </div>
+
             <form
               onSubmit={(event) => {
                 event.preventDefault();
                 void transact('execute');
               }}
             >
-              <h3 className="text-lg font-semibold">One delegated deposit</h3>
-              <label className="mt-3 block text-sm">
+              <h3 className="text-lg font-bold">Execute Delegated Deposit</h3>
+              <label className="mt-3 block text-sm font-medium">
                 Collateral amount
                 <input
                   value={amount}
                   onChange={(event) => setAmount(event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  className="mt-2 min-h-12 w-full rounded-xl border border-input px-3 py-2"
+                  className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 tabular-nums"
                   disabled={busy}
                   required
                 />
@@ -421,26 +432,28 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
               >
                 Review deposit in delegate wallet
               </button>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Connect the exact delegate account. Each successful attempt consumes
-                budget. Share output has no minimum-share guard in this first executor.
+              <p className="mt-2 text-sm text-muted-foreground">
+                Requires signing from the authorized delegate account.
               </p>
             </form>
           </div>
         </>
       )}
+
       {error && (
         <p role="alert" className="break-words text-sm text-destructive">
           {error}
         </p>
       )}
       {status && (
-        <p role="status" className="text-sm text-primary">
+        <p role="status" className="text-sm font-medium text-primary">
           {status}
         </p>
       )}
       {hash && (
-        <p className="break-all text-xs text-muted-foreground">Transaction: {hash}</p>
+        <p className="break-all font-mono text-sm text-muted-foreground">
+          Transaction: {hash}
+        </p>
       )}
     </section>
   );

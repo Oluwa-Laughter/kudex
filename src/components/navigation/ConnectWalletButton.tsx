@@ -13,12 +13,12 @@ import {
   FiRefreshCw,
 } from 'react-icons/fi';
 import { RiWallet3Line } from 'react-icons/ri';
+import Link from 'next/link';
 import { useNativeWallet } from './NativeWalletProvider';
 import { useNativeAccount, useEvmMapping } from '@/lib/hooks/useNativeAccount';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
-import Link from 'next/link';
 
 export function ConnectWalletButton() {
   const { address, chainId } = useAccount();
@@ -33,7 +33,6 @@ export function ConnectWalletButton() {
   const native = useNativeWallet();
   const { data: nativeAccountData } = useNativeAccount();
   const { data: evmMappingData } = useEvmMapping(address);
-
   const { data: balanceData } = useBalance({ address, chainId: portaldotTestnet.id });
 
   const [copied, setCopied] = useState('');
@@ -72,14 +71,14 @@ export function ConnectWalletButton() {
         aria-label={
           address ? 'EVM account' : native.selected ? 'Native account' : 'Connect wallets'
         }
-        className="action-link gap-2"
+        className="action-link gap-2 px-4 py-2.5 text-sm"
       >
-        <RiWallet3Line className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-        <span className="font-mono text-xs font-semibold">
+        <RiWallet3Line className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="font-mono text-sm font-semibold tabular-nums">
           {address ? (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-2">
               <span>{truncateAddress(address)}</span>
-              <span className="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-[#00E599] text-[11px] font-bold">
+              <span className="hidden rounded-md bg-black/20 px-2 py-0.5 text-sm font-bold sm:inline">
                 {evmBalanceFormatted}
               </span>
             </span>
@@ -92,134 +91,133 @@ export function ConnectWalletButton() {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="wallet-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
-        <Dialog.Content className="wallet-dialog fixed left-1/2 top-1/2 z-[60] max-h-[92dvh] w-[calc(100vw-32px)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] p-6 shadow-2xl sm:p-7">
-          <div className="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-[#21293D]">
+        <Dialog.Overlay className="wallet-overlay fixed inset-0 z-50 bg-black/65 backdrop-blur-sm" />
+        <Dialog.Content className="wallet-dialog fixed left-1/2 top-1/2 z-[60] max-h-[92dvh] w-[calc(100vw-24px)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-2xl sm:p-7">
+          <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
             <div>
-              <Dialog.Title className="font-heading text-xl font-bold text-slate-900 dark:text-white">
-                Wallet Management
+              <Dialog.Title className="text-xl font-bold text-foreground">
+                Account & Wallet Settings
               </Dialog.Title>
-              <Dialog.Description className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
-                Portaldot 3.0 Dual Architecture: Revive EVM & Native Substrate
+              <Dialog.Description className="mt-1 text-sm text-muted-foreground">
+                Connect your transaction signer or link a native identity account.
               </Dialog.Description>
             </div>
             <Dialog.Close
               aria-label="Close wallet panel"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161C2B] transition"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-secondary hover:text-foreground"
             >
-              <FiX className="w-5 h-5" />
+              <FiX className="h-5 w-5" />
             </Dialog.Close>
           </div>
 
-          {/* Section 1: Primary EVM Transaction Wallet */}
+          {error && (
+            <p
+              role="alert"
+              className="mt-4 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              {error}
+            </p>
+          )}
+
           <section className="mt-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-neutral-300">
-                Primary Transaction Wallet (EVM)
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                Transaction Wallet
               </h3>
               {address && chainId === portaldotTestnet.id && (
-                <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Portaldot V3 Revive
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  Settlement Network Active
                 </span>
               )}
             </div>
 
             {address ? (
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] uppercase font-mono text-slate-500 dark:text-neutral-400 block font-semibold">
-                      Connected Address
-                    </span>
-                    <p className="font-mono text-sm font-bold text-slate-900 dark:text-white break-all mt-0.5">
-                      {address}
-                    </p>
-                  </div>
+              <div className="space-y-4 rounded-2xl border border-border bg-secondary p-4">
+                <div>
+                  <span className="block text-sm font-medium text-muted-foreground">
+                    Connected Address
+                  </span>
+                  <p className="mt-1 break-all font-mono text-sm font-semibold text-foreground">
+                    {address}
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 dark:border-[#21293D]/60">
+                <div className="grid grid-cols-1 gap-3 border-t border-border pt-3 sm:grid-cols-2">
                   <div>
-                    <span className="text-[11px] uppercase font-mono text-slate-500 dark:text-neutral-400 block">
+                    <span className="block text-sm text-muted-foreground">
                       Gas Balance
                     </span>
-                    <span className="text-base font-extrabold font-mono text-emerald-600 dark:text-[#00E599]">
+                    <span className="mt-0.5 block font-mono text-base font-bold text-primary tabular-nums">
                       {evmBalanceFormatted}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[11px] uppercase font-mono text-slate-500 dark:text-neutral-400 block">
-                      Network Chain ID
+                    <span className="block text-sm text-muted-foreground">
+                      Network Status
                     </span>
-                    <span className="text-base font-mono font-bold text-slate-900 dark:text-white">
-                      {chainId ?? 'Unavailable'}
+                    <span className="mt-0.5 block text-base font-semibold text-foreground">
+                      {chainId === portaldotTestnet.id ? 'Connected' : 'Switch Required'}
                     </span>
                   </div>
                 </div>
 
                 {evmMappingData?.nativeFundingAddress && (
-                  <div className="pt-2.5 border-t border-slate-200 dark:border-[#21293D]/60 space-y-1 bg-emerald-500/5 -mx-4 px-4 py-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 dark:text-neutral-300 font-semibold">
-                      <span>Substrate Funding Address:</span>
+                  <div className="space-y-1.5 rounded-xl border border-border bg-card p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-medium text-muted-foreground">
+                      <span>Native Funding Address</span>
                       <button
                         type="button"
                         onClick={() => void copy(evmMappingData.nativeFundingAddress!)}
-                        className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
+                        className="inline-flex items-center gap-1.5 font-mono text-sm font-semibold text-primary hover:underline"
                       >
                         {copied === evmMappingData.nativeFundingAddress ? (
-                          <FiCheck />
+                          <FiCheck aria-hidden="true" />
                         ) : (
-                          <FiCopy />
+                          <FiCopy aria-hidden="true" />
                         )}
                         <span>
                           {copied === evmMappingData.nativeFundingAddress
                             ? 'Copied'
-                            : 'Copy SS58'}
+                            : 'Copy Address'}
                         </span>
                       </button>
                     </div>
-                    <p className="font-mono text-xs font-bold text-slate-900 dark:text-white break-all">
+                    <p className="break-all font-mono text-sm font-semibold text-foreground">
                       {evmMappingData.nativeFundingAddress}
-                    </p>
-                    <p className="text-[10px] text-slate-500 dark:text-neutral-400 leading-normal pt-0.5">
-                      Transfer testnet tPOT from your Portaldot extension to this address
-                      only after verifying the runtime mapping and transfer details.
-                      Native and EVM accounts have separate signing authority.
                     </p>
                   </div>
                 )}
 
                 {chainId !== portaldotTestnet.id && (
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      disabled={switching}
-                      onClick={() => switchChain({ chainId: portaldotTestnet.id })}
-                      className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2"
-                    >
-                      {switching ? (
-                        <>
-                          <FiRefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Switching Network...</span>
-                        </>
-                      ) : (
-                        <>
-                          <FiAlertTriangle className="w-4 h-4" />
-                          <span>Switch to Portaldot V3 Testnet</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-2 pt-2">
                   <button
                     type="button"
-                    className="quiet-link px-3 py-1.5 text-xs font-semibold"
+                    disabled={switching}
+                    onClick={() => switchChain({ chainId: portaldotTestnet.id })}
+                    className="cobalt-action w-full text-sm"
+                  >
+                    {switching ? (
+                      <>
+                        <FiRefreshCw className="h-4 w-4 animate-spin" />
+                        <span>Switching Network…</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiAlertTriangle className="h-4 w-4" />
+                        <span>Switch to Settlement Network</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    className="quiet-link px-3 py-2 text-sm"
                     onClick={() => void copy(address)}
                   >
                     {copied === address ? (
-                      <FiCheck className="text-emerald-500" aria-hidden="true" />
+                      <FiCheck className="text-primary" aria-hidden="true" />
                     ) : (
                       <FiCopy aria-hidden="true" />
                     )}
@@ -227,30 +225,30 @@ export function ConnectWalletButton() {
                   </button>
                   <button
                     type="button"
-                    className="quiet-link px-3 py-1.5 text-xs font-semibold text-rose-500 hover:text-rose-600"
+                    className="quiet-link px-3 py-2 text-sm text-destructive hover:text-destructive"
                     onClick={() => disconnect()}
                   >
-                    Disconnect EVM
+                    Disconnect Wallet
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                <p className="text-xs text-slate-500 dark:text-neutral-400">
-                  Connect your EVM wallet (MetaMask, Rabby, or WalletConnect) to sign
-                  supported testnet transactions after deployment verification.
+              <div className="space-y-3">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Select a wallet provider to sign RFQ orders, vault deposits, bridge
+                  intents, and session policies.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {connectors.map((connector) => (
                     <button
                       key={connector.uid}
                       type="button"
                       disabled={isConnecting}
-                      className="p-3 rounded-xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] hover:border-emerald-500 hover:bg-emerald-500/10 text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between transition disabled:opacity-50"
+                      className="flex min-h-12 items-center justify-between rounded-xl border border-border bg-secondary px-4 py-3 text-sm font-semibold text-foreground transition hover:border-primary hover:bg-primary/10 disabled:opacity-50"
                       onClick={() => connect({ connector })}
                     >
                       <span>{connector.name}</span>
-                      <FiArrowUpRight className="w-4 h-4 text-emerald-500" />
+                      <FiArrowUpRight className="h-4 w-4 text-primary" />
                     </button>
                   ))}
                 </div>
@@ -258,25 +256,24 @@ export function ConnectWalletButton() {
             )}
           </section>
 
-          {/* Section 2: Native Substrate Extension */}
-          <section className="mt-6 pt-5 border-t border-slate-200 dark:border-[#21293D] space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-neutral-300">
-                Native Substrate Identity (SS58)
+          <section className="mt-6 space-y-3 border-t border-border pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                Native Identity Extension
               </h3>
               {native.selected && (
-                <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-[#00E599] border border-emerald-500/20">
-                  <FiShield className="w-3 h-3" />
-                  Substrate Linked
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                  <FiShield className="h-3.5 w-3.5" />
+                  Identity Linked
                 </span>
               )}
             </div>
 
             {native.selected ? (
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] space-y-3">
+              <div className="space-y-3 rounded-2xl border border-border bg-secondary p-4">
                 {native.accounts.length > 1 && (
                   <CustomSelect
-                    label="Active Substrate Account"
+                    label="Active Native Account"
                     value={native.selected.address}
                     onChange={native.select}
                     options={native.accounts.map((account) => ({
@@ -287,50 +284,48 @@ export function ConnectWalletButton() {
                   />
                 )}
                 <div>
-                  <span className="text-[11px] uppercase font-mono text-slate-500 dark:text-neutral-400 block font-semibold">
-                    Native Address (starts with 5)
+                  <span className="block text-sm font-medium text-muted-foreground">
+                    Native Account Address
                   </span>
-                  <p className="font-mono text-sm font-bold text-slate-900 dark:text-white break-all mt-0.5">
+                  <p className="mt-1 break-all font-mono text-sm font-semibold text-foreground">
                     {native.selected.address}
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-[#21293D]/60 flex items-center justify-between text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3 text-sm">
                   <div>
-                    <span className="text-slate-500 dark:text-neutral-400">
-                      Native Balance:
-                    </span>
-                    <strong className="font-mono text-emerald-600 dark:text-[#00E599] ml-1.5 font-bold">
+                    <span className="text-muted-foreground">Native Balance:</span>
+                    <strong className="ml-2 font-mono font-bold text-primary tabular-nums">
                       {nativeBalanceFormatted}
                     </strong>
                   </div>
-                  <span className="text-slate-500 dark:text-neutral-400 font-mono text-[11px]">
+                  <span className="font-mono text-sm text-muted-foreground">
                     Source: {native.selected.source}
                   </span>
                 </div>
 
                 {nativeAccountData?.contractAddress && (
-                  <div className="pt-2 border-t border-slate-200 dark:border-[#21293D]/60 space-y-1">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-neutral-400 font-semibold">
-                      <span>Runtime-derived contract address:</span>
+                  <div className="space-y-1 border-t border-border pt-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+                      <span>Mapped Contract Address</span>
                       <button
                         type="button"
                         onClick={() => void copy(nativeAccountData.contractAddress)}
-                        className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 font-mono text-[11px]"
+                        className="inline-flex items-center gap-1 font-mono text-sm font-semibold text-primary hover:underline"
                       >
                         {copied === nativeAccountData.contractAddress ? (
-                          <FiCheck />
+                          <FiCheck aria-hidden="true" />
                         ) : (
-                          <FiCopy />
+                          <FiCopy aria-hidden="true" />
                         )}
                         <span>
                           {copied === nativeAccountData.contractAddress
                             ? 'Copied'
-                            : 'Copy 0x'}
+                            : 'Copy Address'}
                         </span>
                       </button>
                     </div>
-                    <p className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 break-all">
+                    <p className="break-all font-mono text-sm font-semibold text-foreground">
                       {nativeAccountData.contractAddress}
                     </p>
                   </div>
@@ -339,11 +334,11 @@ export function ConnectWalletButton() {
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
                     type="button"
-                    className="quiet-link px-3 py-1.5 text-xs font-semibold"
+                    className="quiet-link px-3 py-2 text-sm"
                     onClick={() => void copy(native.selected!.address)}
                   >
                     {copied === native.selected.address ? (
-                      <FiCheck className="text-emerald-500" aria-hidden="true" />
+                      <FiCheck className="text-primary" aria-hidden="true" />
                     ) : (
                       <FiCopy aria-hidden="true" />
                     )}
@@ -351,7 +346,7 @@ export function ConnectWalletButton() {
                   </button>
                   <button
                     type="button"
-                    className="quiet-link px-3 py-1.5 text-xs font-semibold text-rose-500 hover:text-rose-600"
+                    className="quiet-link px-3 py-2 text-sm text-destructive hover:text-destructive"
                     onClick={native.disconnect}
                   >
                     Disconnect Native
@@ -359,52 +354,48 @@ export function ConnectWalletButton() {
                 </div>
               </div>
             ) : (
-              <div className="p-4 rounded-2xl border border-slate-200 dark:border-[#21293D] bg-slate-50 dark:bg-[#161C2B] space-y-3">
-                <p className="text-xs text-slate-500 dark:text-neutral-400 leading-relaxed">
-                  Optional: Connect your Portaldot / Substrate extension to inspect your
-                  native SS58 account and runtime-derived address. This does not enable
-                  transaction signing.
+              <div className="space-y-3 rounded-2xl border border-border bg-secondary p-4">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Link your native browser extension to view native balances and your
+                  mapped settlement address.
                 </p>
                 <button
                   type="button"
-                  className="w-full py-2.5 rounded-xl border border-slate-200 dark:border-[#21293D] bg-white dark:bg-[#0E121B] hover:border-emerald-500 hover:bg-emerald-500/10 text-xs font-bold text-slate-900 dark:text-white transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition hover:border-primary hover:bg-primary/10 disabled:opacity-50"
                   disabled={native.pending}
                   onClick={() => void native.connect()}
                 >
                   {native.pending ? (
                     <>
-                      <FiRefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Requesting Extension Access...</span>
+                      <FiRefreshCw className="h-4 w-4 animate-spin" />
+                      <span>Requesting Extension Access…</span>
                     </>
                   ) : (
-                    <span>Connect Portaldot Native Extension</span>
+                    <span>Connect Native Extension</span>
                   )}
                 </button>
               </div>
             )}
 
             {native.error && (
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 space-y-1">
-                <div className="font-bold flex items-center gap-1.5">
-                  <FiAlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+              <div className="space-y-1 rounded-xl border border-border bg-secondary p-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 font-semibold text-foreground">
+                  <FiAlertTriangle className="h-4 w-4 shrink-0 text-primary" />
                   <span>Extension Access Notice</span>
                 </div>
-                <p className="text-[11px] leading-relaxed text-slate-600 dark:text-neutral-300">
-                  {native.error}
-                </p>
+                <p className="text-sm leading-relaxed">{native.error}</p>
               </div>
             )}
           </section>
 
-          {/* Dialog Footer Notice */}
-          <div className="mt-6 pt-4 border-t border-slate-200 dark:border-[#21293D] flex items-center justify-between text-xs text-slate-500 dark:text-neutral-400">
-            <span>Portaldot 3.0 Revive Protocol</span>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
+            <span>Confidential Settlement Layer</span>
             <Link
-              href="/how-it-works"
-              className="inline-flex items-center gap-1 text-emerald-600 dark:text-[#00E599] font-bold hover:underline"
+              href="/docs"
+              className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
             >
-              <span>Architecture Guide</span>
-              <FiArrowUpRight className="w-3.5 h-3.5" />
+              <span>Developer Docs</span>
+              <FiArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
         </Dialog.Content>

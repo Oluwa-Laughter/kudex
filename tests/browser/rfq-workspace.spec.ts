@@ -6,7 +6,7 @@ test('malformed RFQ exports cannot enable settlement and expiry selection stays 
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto('/app/marketplace');
   await expect(
-    page.getByRole('heading', { name: 'Negotiate. Review. Settle.' }),
+    page.getByRole('heading', { name: 'Autonomous Orderbook & Tranche Trading' }),
   ).toBeVisible();
   await page.getByRole('tab', { name: 'Review an offer', exact: true }).click();
   await page
