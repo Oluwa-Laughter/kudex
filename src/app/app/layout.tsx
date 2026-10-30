@@ -30,7 +30,6 @@ export const APP_NAV_ITEMS = [
   { name: 'Risk & DaaS', href: '/app/protection', icon: FiShield },
   { name: 'Compliance', href: '/app/compliance', icon: FiFileText },
   { name: 'Activity', href: '/app/activity', icon: FiGrid },
-  { name: 'Developer infrastructure', href: '/app/infrastructure', icon: FiBookOpen },
 ];
 
 export default function AppWorkspaceLayout({ children }: { children: React.ReactNode }) {
