@@ -86,6 +86,9 @@ export default function AppWorkspaceLayout({ children }: { children: React.React
         <footer className="mx-4 mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border py-5 text-sm text-muted-foreground sm:mx-8">
           <span>Kudex · Private, Automated Finance for Modern Businesses</span>
           <div className="flex flex-wrap items-center gap-4">
+            <Link className="hover:text-foreground" href="/verify">
+              Verify &amp; Audit
+            </Link>
             <Link className="hover:text-foreground" href="/pricing">
               Pricing
             </Link>

@@ -17,7 +17,10 @@ export const rpcClient = createPublicClient({
 const GENESIS = '0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd';
 const vaultAbi = parseAbi([
   'function asset() view returns(address)',
+  'function decimals() view returns(uint8)',
   'function totalAssets() view returns(uint256)',
+  'function convertToAssets(uint256) view returns(uint256)',
+  'function totalYieldDistributed() view returns(uint256)',
   'function isDefaulted() view returns(bool)',
   'function riskScore() view returns(uint256)',
 ]);
@@ -206,7 +209,7 @@ export function vaultSnapshot() {
     });
     if (asset.toLowerCase() !== usdc.toLowerCase())
       throw new Error('Vault asset mismatch.');
-    const [assets, decimals, symbol, frozen, risk] = await Promise.all([
+    const [assets, decimals, symbol, shareDecimals, frozen, risk] = await Promise.all([
       rpcClient.readContract({
         address: vault,
         abi: vaultAbi,
@@ -228,6 +231,12 @@ export function vaultSnapshot() {
       rpcClient.readContract({
         address: vault,
         abi: vaultAbi,
+        functionName: 'decimals',
+        blockNumber: block,
+      }),
+      rpcClient.readContract({
+        address: vault,
+        abi: vaultAbi,
         functionName: 'isDefaulted',
         blockNumber: block,
       }),
@@ -238,12 +247,48 @@ export function vaultSnapshot() {
         blockNumber: block,
       }),
     ]);
+
+    const oneShare = 10n ** BigInt(shareDecimals);
+    const [assetsPerShare, yieldDistributedUnits, reserveUnits] = await Promise.all([
+      rpcClient
+        .readContract({
+          address: vault,
+          abi: vaultAbi,
+          functionName: 'convertToAssets',
+          args: [oneShare],
+          blockNumber: block,
+        })
+        .catch(() => 10n ** BigInt(decimals)),
+      rpcClient
+        .readContract({
+          address: vault,
+          abi: vaultAbi,
+          functionName: 'totalYieldDistributed',
+          blockNumber: block,
+        })
+        .catch(() => 0n),
+      CONTRACT_ADDRESSES.daasAdapter !== zeroAddress
+        ? rpcClient
+            .readContract({
+              address: asset,
+              abi: erc20Abi,
+              functionName: 'balanceOf',
+              args: [CONTRACT_ADDRESSES.daasAdapter],
+              blockNumber: block,
+            })
+            .catch(() => 0n)
+        : Promise.resolve(0n),
+    ]);
+
     return {
       status: 'observed' as const,
       vault,
       asset,
       symbol,
       totalAssets: formatUnits(assets, decimals),
+      exchangeRatePerShare: Number(formatUnits(assetsPerShare, decimals)).toFixed(4),
+      totalYieldDistributed: formatUnits(yieldDistributedUnits, decimals),
+      protectionReserveBalance: formatUnits(reserveUnits, decimals),
       decimals,
       depositFrozen: frozen,
       riskScoreBps: risk.toString(),

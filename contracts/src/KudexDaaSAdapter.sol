@@ -9,8 +9,8 @@ import {KudexVault} from "./KudexVault.sol";
 
 /**
  * @title KudexDaaSAdapter
- * @notice Portaldot Default-as-a-Service (DaaS) Automated Debt Restructuring & Sentinel Hook
- * @dev Coordinates algorithmic liquidation cascades and autonomous restructuring when RWA vault risk exceeds bounds.
+ * @notice Portaldot Default-as-a-Service (DaaS) Automated Debt Restructuring, Sentinel Hook & Protection Reserve
+ * @dev Coordinates algorithmic liquidation cascades, reserve accumulation, and autonomous restructuring when RWA vault risk exceeds bounds.
  */
 contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -28,6 +28,8 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
 
     mapping(address => VaultProfile) public vaultProfiles;
     mapping(address => bool) public authorizedSentinels;
+    mapping(address => uint256) public reserveBalances;
+    mapping(address => uint256) public totalReserveFunded;
     address[] public registeredVaults;
 
     event VaultRegistered(address indexed vault, uint256 initialCollateralRatio);
@@ -36,11 +38,13 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
     event DebtRestructured(address indexed vault, uint256 recoveredAssets, uint256 timestamp);
     event DefaultEnforced(address indexed vault, uint256 assetsAtFreeze, uint256 timestamp);
     event LiquidationCascadeTriggered(address indexed vault, uint256 totalAssetsAffected, uint256 timestamp);
+    event ProtectionReserveFunded(address indexed source, address indexed token, uint256 amount, uint256 newBalance);
 
     error VaultAlreadyRegistered();
     error VaultNotRegistered();
     error UnauthorizedSentinel();
     error InvalidParameters();
+    error InexactReserveTransfer();
 
     modifier onlySentinelOrOwner() {
         if (msg.sender != owner() && !authorizedSentinels[msg.sender]) {
@@ -84,6 +88,25 @@ contract KudexDaaSAdapter is Ownable, ReentrancyGuard {
 
         registeredVaults.push(vault);
         emit VaultRegistered(vault, collateralRatioBps);
+    }
+
+    /// @notice Receives protocol fee allocations (20% of settlement fees) into the Payment Protection Reserve.
+    function fundReserve(address token, uint256 amount) external nonReentrant {
+        if (token == address(0) || amount == 0) revert InvalidParameters();
+
+        IERC20 asset = IERC20(token);
+        uint256 beforeBal = asset.balanceOf(address(this));
+        asset.safeTransferFrom(msg.sender, address(this), amount);
+        uint256 afterBal = asset.balanceOf(address(this));
+        if (afterBal != beforeBal + amount) revert InexactReserveTransfer();
+
+        reserveBalances[token] += amount;
+        totalReserveFunded[token] += amount;
+        emit ProtectionReserveFunded(msg.sender, token, amount, reserveBalances[token]);
+    }
+
+    function getReserveBalance(address token) external view returns (uint256) {
+        return IERC20(token).balanceOf(address(this));
     }
 
     function calculateHealthFactor(address vault) public view returns (uint256 healthFactorBps) {

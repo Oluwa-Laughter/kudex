@@ -30,6 +30,7 @@
     "probe:cryptography": "forge build --root contracts testnet/CryptoProbe.sol --quiet && node --env-file-if-exists=.env.local scripts/probe-cryptography-runtime.mjs",
     "test:rfq-ui": "forge build --root contracts --quiet && node --experimental-strip-types tests/local-rfq-ui.mjs",
     "test:dependency": "node --test tests/dependency-compat.test.mjs",
+    "test:upgrades": "forge build --root contracts && node --experimental-strip-types --test tests/production-upgrades.test.mjs",
     "test:restoration-runtime": "forge build --root contracts testnet/RestorationSmoke.sol --quiet && node --env-file-if-exists=.env.local scripts/smoke-restoration.mjs"
   },
   "dependencies": {

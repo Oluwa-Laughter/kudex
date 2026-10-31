@@ -15,6 +15,7 @@ export const publicVaultAbi = parseAbi([
   'event Deposit(address indexed sender,address indexed owner,uint256 assets,uint256 shares)',
   'event Withdraw(address indexed sender,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)',
 ]);
+
 export const kudexVaultAbi = [
   ...publicVaultAbi,
   {
@@ -30,6 +31,27 @@ export const kudexVaultAbi = [
   {
     type: 'function',
     name: 'totalAssets',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalSupply',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalYieldDistributed',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'exchangeRatePerShare',
     inputs: [],
     outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
@@ -75,6 +97,37 @@ export const kudexVaultAbi = [
   },
   {
     type: 'function',
+    name: 'shieldDeposit',
+    inputs: [
+      { name: 'assets', type: 'uint256', internalType: 'uint256' },
+      { name: 'commitment', type: 'bytes32', internalType: 'bytes32' },
+      { name: 'receiver', type: 'address', internalType: 'address' },
+      { name: 'encryptedMemo', type: 'bytes', internalType: 'bytes' },
+    ],
+    outputs: [{ name: 'shares', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'batchShieldDeposit',
+    inputs: [
+      {
+        name: 'items',
+        type: 'tuple[]',
+        internalType: 'struct KudexVault.BatchShieldItem[]',
+        components: [
+          { name: 'assets', type: 'uint256', internalType: 'uint256' },
+          { name: 'commitment', type: 'bytes32', internalType: 'bytes32' },
+          { name: 'receiver', type: 'address', internalType: 'address' },
+          { name: 'encryptedMemo', type: 'bytes', internalType: 'bytes' },
+        ],
+      },
+    ],
+    outputs: [{ name: 'totalShares', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'confidentialTransfer',
     inputs: [
       { name: 'nullifier', type: 'bytes32', internalType: 'bytes32' },
@@ -89,8 +142,67 @@ export const kudexVaultAbi = [
   },
   {
     type: 'function',
+    name: 'confidentialTransfer',
+    inputs: [
+      { name: 'nullifier', type: 'bytes32', internalType: 'bytes32' },
+      { name: 'newCommitment', type: 'bytes32', internalType: 'bytes32' },
+      { name: 'a', type: 'uint256[2]', internalType: 'uint256[2]' },
+      { name: 'b', type: 'uint256[2][2]', internalType: 'uint256[2][2]' },
+      { name: 'c', type: 'uint256[2]', internalType: 'uint256[2]' },
+      { name: 'publicInputs', type: 'uint256[2]', internalType: 'uint256[2]' },
+      { name: 'encryptedMemo', type: 'bytes', internalType: 'bytes' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'batchConfidentialTransfer',
+    inputs: [
+      {
+        name: 'items',
+        type: 'tuple[]',
+        internalType: 'struct KudexVault.BatchConfidentialItem[]',
+        components: [
+          { name: 'nullifier', type: 'bytes32', internalType: 'bytes32' },
+          { name: 'newCommitment', type: 'bytes32', internalType: 'bytes32' },
+          { name: 'a', type: 'uint256[2]', internalType: 'uint256[2]' },
+          { name: 'b', type: 'uint256[2][2]', internalType: 'uint256[2][2]' },
+          { name: 'c', type: 'uint256[2]', internalType: 'uint256[2]' },
+          { name: 'publicInputs', type: 'uint256[2]', internalType: 'uint256[2]' },
+          { name: 'noteOwner', type: 'address', internalType: 'address' },
+          { name: 'encryptedMemo', type: 'bytes', internalType: 'bytes' },
+        ],
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'distributeYield',
+    inputs: [{ name: 'yieldAssets', type: 'uint256', internalType: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'setRiskScore',
     inputs: [{ name: '_newScore', type: 'uint256', internalType: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setDefaultController',
+    inputs: [{ name: 'controller', type: 'address', internalType: 'address' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setConfidentialNoteCircuitEnabled',
+    inputs: [{ name: 'enabled', type: 'bool', internalType: 'bool' }],
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -122,6 +234,39 @@ export const kudexVaultAbi = [
   },
   {
     type: 'event',
+    name: 'EncryptedNoteSynced',
+    inputs: [
+      { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'commitment', type: 'bytes32', indexed: true, internalType: 'bytes32' },
+      { name: 'encryptedMemo', type: 'bytes', indexed: false, internalType: 'bytes' },
+      { name: 'timestamp', type: 'uint256', indexed: false, internalType: 'uint256' },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'BatchNotesShielded',
+    inputs: [
+      { name: 'sender', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'count', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'totalAssets', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'timestamp', type: 'uint256', indexed: false, internalType: 'uint256' },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'YieldDistributed',
+    inputs: [
+      { name: 'source', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'yieldAssets', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'newTotalAssets', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'timestamp', type: 'uint256', indexed: false, internalType: 'uint256' },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'DefaultTriggered',
     inputs: [
       {
@@ -143,6 +288,59 @@ export const kudexRFQMarketAbi = [
   { type: 'error', name: 'OrderExpired', inputs: [] },
   { type: 'error', name: 'OrderAlreadyProcessed', inputs: [] },
   { type: 'error', name: 'OrderAlreadyCancelled', inputs: [] },
+  { type: 'error', name: 'InvalidFeeConfiguration', inputs: [] },
+  {
+    type: 'function',
+    name: 'protocolFeeBps',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'yieldVault',
+    inputs: [],
+    outputs: [{ name: '', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'protectionReserve',
+    inputs: [],
+    outputs: [{ name: '', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalVaultYieldRouted',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalProtectionReserveRouted',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'setFeeRouting',
+    inputs: [
+      { name: '_yieldVault', type: 'address', internalType: 'address' },
+      { name: '_protectionReserve', type: 'address', internalType: 'address' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setProtocolFeeBps',
+    inputs: [{ name: '_protocolFeeBps', type: 'uint256', internalType: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
   {
     type: 'function',
     name: 'hashOrder',
@@ -241,6 +439,23 @@ export const kudexRFQMarketAbi = [
     ],
     anonymous: false,
   },
+  {
+    type: 'event',
+    name: 'ProtocolFeeRouted',
+    inputs: [
+      { name: 'orderHash', type: 'bytes32', indexed: true, internalType: 'bytes32' },
+      { name: 'feeToken', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'totalFee', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'vaultShare', type: 'uint256', indexed: false, internalType: 'uint256' },
+      {
+        name: 'protectionReserveShare',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
 ] as const;
 
 export const kudexDaaSAdapterAbi = [
@@ -271,6 +486,37 @@ export const kudexDaaSAdapterAbi = [
     inputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     outputs: [{ name: '', type: 'address', internalType: 'address' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'reserveBalances',
+    inputs: [{ name: 'token', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'totalReserveFunded',
+    inputs: [{ name: 'token', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getReserveBalance',
+    inputs: [{ name: 'token', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'fundReserve',
+    inputs: [
+      { name: 'token', type: 'address', internalType: 'address' },
+      { name: 'amount', type: 'uint256', internalType: 'uint256' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
 ] as const;
 

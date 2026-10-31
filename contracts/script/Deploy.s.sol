@@ -33,6 +33,7 @@ contract DeployKudex is Script {
         KudexRFQMarket router = new KudexRFQMarket();
         KudexDaaSAdapter adapter = new KudexDaaSAdapter(address(vault));
         vault.setDefaultController(address(adapter));
+        router.setFeeRouting(address(vault), address(adapter));
         console2.log("Collateral:", asset);
         console2.log("Disabled privacy verifier:", address(verifier));
         console2.log("Public vault:", address(vault));

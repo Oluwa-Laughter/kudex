@@ -2,9 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
+import { useAccount, usePublicClient, useSignMessage, useWriteContract } from 'wagmi';
 import { erc20Abi, formatUnits, type Address, type Hash, type Hex } from 'viem';
 import { FiLock, FiArrowDownLeft, FiTrendingUp } from 'react-icons/fi';
+import {
+  buildNoteSyncDomainMessage,
+  createPrivateNoteMetadata,
+  deriveNoteEncryptionKey,
+  encryptNoteMetadata,
+  usePrivateNotesStore,
+} from '@/lib/crypto/noteSync';
 import {
   CONTRACT_ADDRESSES,
   isVaultConfigured,
@@ -31,14 +38,6 @@ import {
 
 const { vault, usdc: asset } = CONTRACT_ADDRESSES;
 
-async function sha256Commitment(seed: string): Promise<Hex> {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(seed));
-  return ('0x' +
-    Array.from(new Uint8Array(digest))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')) as Hex;
-}
-
 export function PublicVault({
   selectedVaultTitle = 'Short-Term Treasury Vault',
 }: {
@@ -46,7 +45,9 @@ export function PublicVault({
 }) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
+  const { signMessageAsync } = useSignMessage();
   const { writeContractAsync } = useWriteContract();
+  const privateNotes = usePrivateNotesStore();
   const [amount, setAmount] = useState('');
   const [operation, setOperation] = useState<'deposit' | 'redeem'>('deposit');
   const [stealthDeposit, setStealthDeposit] = useState(false);
@@ -279,15 +280,27 @@ export function PublicVault({
           throw new Error('Your withdrawable vault shares changed. Review again.');
 
         if (r.operation === 'deposit' && stealthDeposit) {
+          setStatus('Sign key derivation message to back up your Stealth Mode note…');
+          const keySig = await signMessageAsync({
+            message: buildNoteSyncDomainMessage(address),
+          });
+          const aesKey = await deriveNoteEncryptionKey(keySig);
+          const note = await createPrivateNoteMetadata({
+            owner: address,
+            recipient: address,
+            value: formatUnits(r.input, fresh.decimals),
+            decimals: fresh.decimals,
+            assetSymbol: fresh.symbol,
+            memo: `${selectedVaultTitle} Stealth Deposit`,
+          });
+          const encryptedMemo = await encryptNoteMetadata(aesKey, note);
+
           setStatus('Confirm your Stealth Mode vault deposit in your wallet.');
-          const commitment = await sha256Commitment(
-            `kudex-vault-stealth:${address}:${r.input.toString()}:${Date.now()}`,
-          );
           const simulation = await client.simulateContract({
             address: vault,
             abi: kudexVaultAbi,
             functionName: 'shieldDeposit',
-            args: [r.input, commitment, address],
+            args: [r.input, note.commitment as Hex, address, encryptedMemo],
             account: address,
           });
           hash = await writeContractAsync({
@@ -296,12 +309,13 @@ export function PublicVault({
             chainId: portaldotTestnet.id,
           });
           await client.waitForTransactionReceipt({ hash });
+          privateNotes.recordLocalNote(note, hash);
           setReview(undefined);
           setAmount('');
           setEvidence({
             hash,
             owner: address,
-            text: 'Deposit confirmed in Stealth Mode. Your vault balance is hidden from the public ledger.',
+            text: 'Deposit confirmed in Stealth Mode with encrypted cross-device backup.',
           });
           await state.refetch();
           setStatus('Vault balance updated in Stealth Mode.');

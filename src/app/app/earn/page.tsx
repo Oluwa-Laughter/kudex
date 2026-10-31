@@ -3,10 +3,16 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useReadContract } from 'wagmi';
-import { formatUnits, zeroAddress } from 'viem';
-import { FiShield, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
+import { erc20Abi, formatUnits, zeroAddress } from 'viem';
+import {
+  FiShield,
+  FiTrendingUp,
+  FiCheckCircle,
+  FiDollarSign,
+  FiActivity,
+} from 'react-icons/fi';
 import { CONTRACT_ADDRESSES, isVaultConfigured } from '@/lib/contracts/addresses';
-import { kudexDaaSAdapterAbi } from '@/lib/contracts/abis';
+import { kudexDaaSAdapterAbi, kudexVaultAbi } from '@/lib/contracts/abis';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { PublicVault } from '@/components/dashboard/PublicVault';
 import { RiskPanel } from '@/components/dashboard/RiskPanel';
@@ -28,6 +34,19 @@ const BUSINESS_VAULTS = [
   },
 ] as const;
 
+function formatTokenFixed(
+  units: bigint,
+  decimals: number,
+  fractionDigits: number,
+): string {
+  const scale = 10n ** BigInt(decimals);
+  const outScale = 10n ** BigInt(fractionDigits);
+  const scaled = (units * outScale + scale / 2n) / scale;
+  const whole = scaled / outScale;
+  const frac = (scaled % outScale).toString().padStart(fractionDigits, '0');
+  return `${whole.toLocaleString('en-US')}.${frac}`;
+}
+
 export default function EarnPage() {
   const [selectedVaultId, setSelectedVaultId] =
     useState<(typeof BUSINESS_VAULTS)[number]['id']>('treasury');
@@ -35,6 +54,10 @@ export default function EarnPage() {
   const vaultSnap = useQuery<{
     totalAssets: string;
     symbol: string;
+    decimals?: number;
+    exchangeRatePerShare?: string;
+    totalYieldDistributed?: string;
+    protectionReserveBalance?: string;
     depositFrozen: boolean;
     riskScoreBps: string;
   }>({
@@ -46,6 +69,53 @@ export default function EarnPage() {
       const r = await fetch('/api/protocol/vault');
       if (!r.ok) throw new Error('Vault snapshot unavailable');
       return r.json();
+    },
+  });
+
+  const assetDecimalsRead = useReadContract({
+    address: CONTRACT_ADDRESSES.usdc,
+    abi: erc20Abi,
+    functionName: 'decimals',
+    chainId: portaldotTestnet.id,
+    query: {
+      enabled: CONTRACT_ADDRESSES.usdc !== zeroAddress,
+      staleTime: 60_000,
+    },
+  });
+
+  const exchangeRateRead = useReadContract({
+    address: CONTRACT_ADDRESSES.vault,
+    abi: kudexVaultAbi,
+    functionName: 'exchangeRatePerShare',
+    chainId: portaldotTestnet.id,
+    query: {
+      enabled: isVaultConfigured,
+      staleTime: 12_000,
+    },
+  });
+
+  const totalYieldRead = useReadContract({
+    address: CONTRACT_ADDRESSES.vault,
+    abi: kudexVaultAbi,
+    functionName: 'totalYieldDistributed',
+    chainId: portaldotTestnet.id,
+    query: {
+      enabled: isVaultConfigured,
+      staleTime: 12_000,
+    },
+  });
+
+  const reserveBalanceRead = useReadContract({
+    address: CONTRACT_ADDRESSES.daasAdapter,
+    abi: kudexDaaSAdapterAbi,
+    functionName: 'getReserveBalance',
+    args: [CONTRACT_ADDRESSES.usdc],
+    chainId: portaldotTestnet.id,
+    query: {
+      enabled:
+        CONTRACT_ADDRESSES.daasAdapter !== zeroAddress &&
+        CONTRACT_ADDRESSES.usdc !== zeroAddress,
+      staleTime: 12_000,
     },
   });
 
@@ -62,6 +132,39 @@ export default function EarnPage() {
       staleTime: 15_000,
     },
   });
+
+  const tokenDecimals =
+    typeof assetDecimalsRead.data === 'number'
+      ? assetDecimalsRead.data
+      : (vaultSnap.data?.decimals ?? 6);
+  const tokenSymbol = vaultSnap.data?.symbol ?? 'USDC';
+
+  const exchangeRateDisplay =
+    typeof exchangeRateRead.data === 'bigint'
+      ? `1 Vault Share = ${formatTokenFixed(exchangeRateRead.data, tokenDecimals, 4)} USD`
+      : vaultSnap.data?.exchangeRatePerShare
+        ? `1 Vault Share = ${vaultSnap.data.exchangeRatePerShare} USD`
+        : '1 Vault Share = 1.0000 USD';
+
+  const revenueDistributedDisplay =
+    typeof totalYieldRead.data === 'bigint'
+      ? `$${formatTokenFixed(totalYieldRead.data, tokenDecimals, 2)} ${tokenSymbol}`
+      : vaultSnap.data?.totalYieldDistributed
+        ? `$${Number(vaultSnap.data.totalYieldDistributed).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} ${tokenSymbol}`
+        : `$0.00 ${tokenSymbol}`;
+
+  const protectionReserveDisplay =
+    typeof reserveBalanceRead.data === 'bigint'
+      ? `$${formatTokenFixed(reserveBalanceRead.data, tokenDecimals, 2)} ${tokenSymbol}`
+      : vaultSnap.data?.protectionReserveBalance
+        ? `$${Number(vaultSnap.data.protectionReserveBalance).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })} ${tokenSymbol}`
+        : `$0.00 ${tokenSymbol}`;
 
   const poolSizeLabel = vaultSnap.data
     ? `${vaultSnap.data.totalAssets} ${vaultSnap.data.symbol}`
@@ -91,10 +194,61 @@ export default function EarnPage() {
         </span>
         <h1 className="page-title">Fixed-Yield Business Vaults</h1>
         <p className="page-description">
-          Earn steady, predictable returns backed by real-world business invoices and
-          short-term treasuries.
+          Earn steady, predictable returns backed by real-world business invoices,
+          short-term treasuries, and live protocol settlement fees.
         </p>
       </header>
+
+      {/* Live On-Chain Yield Distribution & Solvency Reserve Strip */}
+      <section
+        aria-label="Live on-chain yield and reserve metrics"
+        className="grid gap-4 md:grid-cols-3"
+      >
+        <div className="panel min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Exchange Rate
+            </span>
+            <FiTrendingUp className="text-primary" aria-hidden="true" />
+          </div>
+          <p className="text-xl font-bold tracking-tight text-foreground tabular-nums sm:text-2xl">
+            {exchangeRateDisplay}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Appreciates automatically as settlement revenue enters the vault
+          </p>
+        </div>
+
+        <div className="panel min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Real-Time Revenue Distributed to Depositors
+            </span>
+            <FiDollarSign className="text-primary" aria-hidden="true" />
+          </div>
+          <p className="text-xl font-bold tracking-tight text-primary tabular-nums sm:text-2xl">
+            {revenueDistributedDisplay}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            80% of the 0.10% settlement fee routed directly to vault depositors
+          </p>
+        </div>
+
+        <div className="panel min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Payment Protection Reserve Balance
+            </span>
+            <FiActivity className="text-accent" aria-hidden="true" />
+          </div>
+          <p className="text-xl font-bold tracking-tight text-foreground tabular-nums sm:text-2xl">
+            {protectionReserveDisplay}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            20% of settlement fees held in the dedicated solvency reserve
+          </p>
+        </div>
+      </section>
 
       {/* Vault Investment Cards */}
       <section
@@ -108,7 +262,7 @@ export default function EarnPage() {
               key={vaultItem.id}
               type="button"
               onClick={() => setSelectedVaultId(vaultItem.id)}
-              className={`panel flex flex-col justify-between space-y-5 text-left transition ${
+              className={`panel min-w-0 flex flex-col justify-between space-y-5 text-left transition ${
                 active
                   ? 'border-primary ring-1 ring-primary'
                   : 'hover:border-primary/50 hover:bg-secondary/60'
@@ -116,11 +270,11 @@ export default function EarnPage() {
             >
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
                       <FiTrendingUp size={20} aria-hidden="true" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-xl font-bold text-foreground">
                         {vaultItem.name}
                       </h2>

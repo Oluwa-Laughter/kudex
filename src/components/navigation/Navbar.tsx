@@ -11,6 +11,7 @@ export const MARKETING_NAV_LINKS = [
   { label: 'How It Works', href: '/#how-it-works' },
   { label: 'Business Pay', href: '/solutions/enterprise-payroll' },
   { label: 'Protected Yield', href: '/solutions/credit-tranches' },
+  { label: 'Verify & Audit', href: '/verify' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Docs', href: '/docs' },
 ] as const;
