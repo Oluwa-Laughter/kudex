@@ -70,7 +70,7 @@ export function RfqOfferBuilder({
     try {
       if (!client || !address || !ready)
         throw new Error(
-          'Connect an EVM signing wallet on the configured network after router deployment.',
+          'Connect your signing wallet on the active network after settlement contract deployment.',
         );
       if (
         !isAddress(tokenIn) ||
@@ -156,7 +156,7 @@ export function RfqOfferBuilder({
         hash !== rfqHash({ chainId: portaldotTestnet.id, router, order: review.order })
       )
         throw new Error(
-          'The router or nonce no longer matches this offer. Review a new offer.',
+          'The settlement contract or order ID no longer matches this offer. Review a new offer.',
         );
       if (
         offered.decimals !== review.offered.decimals ||
@@ -195,11 +195,10 @@ export function RfqOfferBuilder({
   return (
     <section className="panel space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Create a signed offer</h2>
-        <p className="mt-3 leading-7 text-muted-foreground">
-          Choose your own exchange terms. The signature authorizes a complete fill of
-          those terms before expiry; it does not lock tokens or place an order in a public
-          book.
+        <h2 className="text-xl font-bold">Create a signed offer</h2>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
+          Lock in exact exchange terms for a counterparty. Your signature authorizes a
+          complete, zero-slippage swap before expiry without locking your tokens upfront.
         </p>
       </div>
       <fieldset disabled={busy} className="grid min-w-0 gap-5 md:grid-cols-2">
@@ -232,7 +231,7 @@ export function RfqOfferBuilder({
           },
         ].map((field) => (
           <div key={field.id}>
-            <label htmlFor={field.id} className="mb-2 block font-medium">
+            <label htmlFor={field.id} className="mb-2 block text-sm font-medium">
               {field.label}
             </label>
             <input
@@ -247,12 +246,12 @@ export function RfqOfferBuilder({
               inputMode={field.address ? 'text' : 'decimal'}
               maxLength={field.address ? 42 : 300}
               placeholder={field.address ? 'Token contract address' : '0.00'}
-              className="field-input tabular-nums"
+              className="field-input font-semibold tabular-nums"
             />
           </div>
         ))}
         <div>
-          <p id="rfq-expiry-label" className="mb-2 font-medium">
+          <p id="rfq-expiry-label" className="mb-2 text-sm font-medium">
             Offer expires after
           </p>
           <CustomSelect
@@ -268,9 +267,9 @@ export function RfqOfferBuilder({
         </div>
       </fieldset>
       {!ready && (
-        <p className="rounded-xl bg-secondary p-4 text-sm leading-6">
-          Offer signing requires a configured router and an EVM wallet on the current
-          testnet. Your native extension account does not supply an EVM signing key.
+        <p className="rounded-xl bg-secondary p-4 text-sm leading-relaxed text-muted-foreground">
+          Signing a swap offer requires an active settlement contract and a connected
+          transaction wallet on this network.
         </p>
       )}
       <button
@@ -281,7 +280,7 @@ export function RfqOfferBuilder({
         {busy ? 'Working…' : 'Review offer terms'}
       </button>
       {error && (
-        <p role="alert" className="text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {error}
         </p>
       )}
@@ -290,42 +289,41 @@ export function RfqOfferBuilder({
           aria-label="Maker offer review"
           className="space-y-5 rounded-xl border border-border bg-background p-5"
         >
-          <h3 className="text-xl font-semibold">Review before signing</h3>
+          <h3 className="text-xl font-bold">Review before signing</h3>
           <dl className="grid gap-5 sm:grid-cols-2">
             <div>
               <dt className="text-sm text-muted-foreground">You offer</dt>
-              <dd className="mt-1 break-words text-xl tabular-nums">
+              <dd className="mt-1 break-words text-xl font-bold tabular-nums">
                 {formatUnits(review.order.amountIn, review.offered.decimals)}{' '}
                 {review.offered.symbol}
               </dd>
             </div>
             <div>
               <dt className="text-sm text-muted-foreground">You request</dt>
-              <dd className="mt-1 break-words text-xl tabular-nums">
+              <dd className="mt-1 break-words text-xl font-bold tabular-nums">
                 {formatUnits(review.order.amountOut, review.requested.decimals)}{' '}
                 {review.requested.symbol}
               </dd>
             </div>
             <div>
               <dt className="text-sm text-muted-foreground">Maker</dt>
-              <dd className="mt-1 break-all text-sm">{review.order.maker}</dd>
+              <dd className="mt-1 break-all font-mono text-sm">{review.order.maker}</dd>
             </div>
             <div>
               <dt className="text-sm text-muted-foreground">Expires</dt>
-              <dd className="mt-1 text-sm tabular-nums">
+              <dd className="mt-1 text-sm font-semibold tabular-nums">
                 {new Date(Number(review.order.deadline) * 1000).toLocaleString()}
               </dd>
             </div>
           </dl>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Anyone holding the exported signature can fill this offer in full. Token
-            allowances are separate and shared with other offers using this router.
-            Cancelling the nonce on-chain invalidates every offer with that nonce.
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Anyone holding the exported signature can fill this offer in full before it
+            expires. Token spending approvals are separate and can be revoked anytime.
           </p>
           {review.offered.balance < review.order.amountIn && (
-            <p className="text-sm text-destructive">
-              Your observed offered-token balance is insufficient. Signing does not fund
-              the offer.
+            <p className="text-sm font-medium text-destructive">
+              Your current token balance is lower than the offered amount. Signing does
+              not fund the offer automatically.
             </p>
           )}
           <button

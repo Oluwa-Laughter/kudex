@@ -69,7 +69,7 @@ export function ConnectWalletButton() {
     <Dialog.Root>
       <Dialog.Trigger
         aria-label={
-          address ? 'EVM account' : native.selected ? 'Native account' : 'Connect wallets'
+          address ? 'Connected wallet' : native.selected ? 'Native account' : 'Connect wallets'
         }
         className="action-link gap-2 px-4 py-2.5 text-sm"
       >
@@ -99,7 +99,8 @@ export function ConnectWalletButton() {
                 Account & Wallet Settings
               </Dialog.Title>
               <Dialog.Description className="mt-1 text-sm text-muted-foreground">
-                Connect your transaction signer or link a native identity account.
+                Connect your wallet to send private payments, earn yield, or set
+                Auto-Pilot spending limits.
               </Dialog.Description>
             </div>
             <Dialog.Close
@@ -235,8 +236,8 @@ export function ConnectWalletButton() {
             ) : (
               <div className="space-y-3">
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Select a wallet provider to sign RFQ orders, vault deposits, bridge
-                  intents, and session policies.
+                  Select a wallet provider to pay invoices privately, deposit into
+                  business vaults, swap assets, or configure Auto-Pilot rules.
                 </p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {connectors.map((connector) => (
@@ -389,12 +390,12 @@ export function ConnectWalletButton() {
           </section>
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
-            <span>Confidential Settlement Layer</span>
+            <span>Private Balances (Stealth Mode)</span>
             <Link
               href="/docs"
               className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
             >
-              <span>Developer Docs</span>
+              <span>Docs</span>
               <FiArrowUpRight className="h-4 w-4" />
             </Link>
           </div>

@@ -4,44 +4,46 @@
 
 @layer base {
   :root {
-    --background: #f4f6fa;
-    --background-rgb: 244 246 250;
-    --foreground: #0e121b;
-    --foreground-rgb: 14 18 27;
+    --background: #ffffff;
+    --background-rgb: 255 255 255;
+    --foreground: #0f172a;
+    --foreground-rgb: 15 23 42;
     --card: #ffffff;
     --card-rgb: 255 255 255;
-    --card-foreground: #0e121b;
-    --card-foreground-rgb: 14 18 27;
+    --card-foreground: #0f172a;
+    --card-foreground-rgb: 15 23 42;
     --popover: #ffffff;
     --popover-rgb: 255 255 255;
-    --popover-foreground: #0e121b;
-    --popover-foreground-rgb: 14 18 27;
-    --primary: #006d4a;
-    --primary-rgb: 0 109 74;
+    --popover-foreground: #0f172a;
+    --popover-foreground-rgb: 15 23 42;
+    --primary: #065f46;
+    --primary-rgb: 6 95 70;
+    --emerald-brand: #059669;
     --primary-foreground: #ffffff;
     --primary-foreground-rgb: 255 255 255;
-    --secondary: #e8eef7;
-    --secondary-rgb: 232 238 247;
-    --secondary-foreground: #161c2b;
-    --secondary-foreground-rgb: 22 28 43;
-    --muted: #edf1f7;
-    --muted-rgb: 237 241 247;
-    --muted-foreground: #46536b;
-    --muted-foreground-rgb: 70 83 107;
-    --accent: #1d55e8;
-    --accent-rgb: 29 85 232;
+    --secondary: #f8fafc;
+    --secondary-rgb: 248 250 252;
+    --secondary-foreground: #0f172a;
+    --secondary-foreground-rgb: 15 23 42;
+    --muted: #f8fafc;
+    --muted-rgb: 248 250 252;
+    --muted-foreground: #475569;
+    --muted-foreground-rgb: 71 85 105;
+    --accent: #2563eb;
+    --accent-rgb: 37 99 235;
     --accent-foreground: #ffffff;
     --accent-foreground-rgb: 255 255 255;
-    --destructive: #b03936;
-    --destructive-rgb: 176 57 54;
+    --cobalt-btn: #2563eb;
+    --destructive: #b91c1c;
+    --destructive-rgb: 185 28 28;
     --destructive-foreground: #ffffff;
     --destructive-foreground-rgb: 255 255 255;
-    --border: #d4dce8;
-    --border-rgb: 212 220 232;
-    --input: #a9b8ce;
-    --input-rgb: 169 184 206;
-    --ring: #006d4a;
-    --ring-rgb: 0 109 74;
+    --border: #e2e8f0;
+    --border-rgb: 226 232 240;
+    --input: #cbd5e1;
+    --input-rgb: 203 213 225;
+    --ring: #2563eb;
+    --ring-rgb: 37 99 235;
     --radius: 0.875rem;
   }
 
@@ -60,6 +62,7 @@
     --popover-foreground-rgb: 237 241 249;
     --primary: #00e599;
     --primary-rgb: 0 229 153;
+    --emerald-brand: #00e599;
     --primary-foreground: #06080d;
     --primary-foreground-rgb: 6 8 13;
     --secondary: #161c2b;
@@ -74,6 +77,7 @@
     --accent-rgb: 110 160 255;
     --accent-foreground: #06080d;
     --accent-foreground-rgb: 6 8 13;
+    --cobalt-btn: #2e68ff;
     --destructive: #ffb0a9;
     --destructive-rgb: 255 176 169;
     --destructive-foreground: #361411;
@@ -133,6 +137,9 @@
     color: var(--foreground);
     background: var(--background);
   }
+  fieldset {
+    min-width: 0;
+  }
   ::selection {
     background: rgb(var(--primary-rgb) / 0.25);
     color: var(--foreground);
@@ -156,7 +163,8 @@
     @apply inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[state=active]:bg-secondary data-[state=active]:text-primary;
   }
   .action-link {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white;
+    background-color: var(--cobalt-btn);
     transition:
       opacity 160ms ease,
       transform 160ms ease;
@@ -169,13 +177,28 @@
     transition-duration: 0ms;
   }
   .cobalt-action {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-cobalt px-5 py-2.5 text-sm font-semibold text-white;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white;
+    background-color: var(--cobalt-btn);
     transition:
       opacity 160ms ease,
       transform 160ms ease;
   }
   .cobalt-action:hover {
     opacity: 0.92;
+  }
+  .emerald-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold;
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-color: rgba(5, 150, 105, 0.35);
+  }
+  .dark .emerald-badge {
+    background-color: rgb(var(--primary-rgb) / 0.14);
+    color: var(--primary);
+    border-color: rgb(var(--primary-rgb) / 0.35);
+  }
+  .danger-action {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-40;
   }
   .quiet-link {
     @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground;

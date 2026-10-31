@@ -1,25 +1,23 @@
 import Link from 'next/link';
-import { FiArrowRight, FiSend, FiFileText, FiShield, FiKey } from 'react-icons/fi';
+import { FiArrowRight, FiFileText, FiKey, FiSend, FiShield } from 'react-icons/fi';
 
 export default function EnterprisePayrollSolutionPage() {
   return (
     <div className="space-y-14">
       <header className="space-y-5">
-        <p className="eyebrow">A2B Private Global Settlement</p>
-        <h1 className="page-title">
-          Confidential Corporate Payroll & Vendor Invoicing
-        </h1>
+        <p className="eyebrow">Business Pay &amp; Global Invoicing</p>
+        <h1 className="page-title">Pay Suppliers &amp; Teams Without Exposing Balances</h1>
         <p className="page-description">
-          Pay international teams and supply-chain vendors without broadcasting salary
-          tables, treasury reserves, or commercial terms on a public ledger.
+          Send supplier payments or payroll across borders without competitors seeing who
+          you pay or how much you spend.
         </p>
         <div className="flex flex-wrap gap-3 pt-2">
-          <Link href="/app/settlement" className="action-link text-sm">
-            <span>Open Settlement Workspace</span>
+          <Link href="/app/pay" className="action-link text-sm">
+            <span>Open Send &amp; Invoice</span>
             <FiArrowRight aria-hidden="true" />
           </Link>
-          <Link href="/app/compliance" className="quiet-link text-sm">
-            <span>Issue Auditor Viewing Key</span>
+          <Link href="/app/overview" className="quiet-link text-sm">
+            <span>Open App</span>
           </Link>
         </div>
       </header>
@@ -28,23 +26,23 @@ export default function EnterprisePayrollSolutionPage() {
         {[
           {
             icon: FiSend,
-            title: 'One-Time Recipient Commitments',
-            body: 'Each disbursement creates a fresh blinded recipient commitment, preventing competitors from linking vendor payouts back to your primary treasury wallet.',
+            title: 'Private Balances (Stealth Mode)',
+            body: 'Your wallet balance and payment amounts are hidden from the public. Only you and the person you pay can see the numbers.',
           },
           {
             icon: FiFileText,
-            title: 'Encrypted Invoice References',
-            body: 'Bind purchase orders and due dates via SHA-256 payment references settled in a single click with deterministic receipt verification.',
+            title: '1-Click Supplier Invoices',
+            body: 'Create clean business invoices with vendor names, amounts, and due dates, or settle incoming vendor bills in one click.',
           },
           {
             icon: FiKey,
-            title: 'Scoped Auditor Viewing Keys',
-            body: 'Grant external CPAs and tax authorities read-only verification keys without surrendering custody or revealing unrelated account balances.',
+            title: '1-Click Auditor Pass',
+            body: 'Share a read-only pass with your accountant or tax auditor so they can verify your payments without having access to spend your money.',
           },
           {
             icon: FiShield,
-            title: 'Shield / Unshield Treasury Control',
-            body: 'Move seamlessly between transparent operating accounts and confidential settlement pools whenever corporate liquidity requires.',
+            title: 'Full Control of Company Cash',
+            body: 'Move funds smoothly between your standard operating wallet and your Private Balance whenever your business needs.',
           },
         ].map((card) => (
           <article key={card.title} className="panel space-y-3">

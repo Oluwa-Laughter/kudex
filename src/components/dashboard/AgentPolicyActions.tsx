@@ -50,18 +50,18 @@ export function AgentPolicyActions({
   async function authorize() {
     setBusy(true);
     setError('');
-    setStatus('Checking policy and deployment…');
+    setStatus('Checking rule parameters and vault readiness…');
     try {
       if (!client || !address || chainId !== portaldotTestnet.id)
         throw new Error(
-          'Connect the owner transaction wallet on the settlement network.',
+          'Connect the owner transaction wallet on the active network.',
         );
       if (address.toLowerCase() !== policy.owner.toLowerCase())
         throw new Error('The connected wallet does not match the policy owner.');
       await checkAgentInfrastructure(client, policy.vault, policy.asset, policy.decimals);
       const block = await client.getBlock();
       if (BigInt(policy.expiresAt) <= block.timestamp)
-        throw new Error('This policy draft has expired. Create a new draft.');
+        throw new Error('This rule draft has expired. Create a new draft.');
       const simulation = await client.simulateContract({
         address: AGENT_EXECUTOR,
         abi: executorAbi,
@@ -77,17 +77,17 @@ export function AgentPolicyActions({
         account: address,
       });
       setStatus(
-        'Review policy creation in your wallet. Token allowance is approved separately.',
+        'Review Auto-Pilot rule creation in your wallet. Token allowance is approved separately.',
       );
       const tx = await writeContractAsync({
         ...simulation.request,
         chainId: portaldotTestnet.id,
       });
       setHash(tx);
-      setStatus('Policy transaction submitted. Waiting for confirmation…');
+      setStatus('Transaction submitted. Waiting for confirmation…');
       const receipt = await client.waitForTransactionReceipt({ hash: tx });
       if (receipt.status !== 'success')
-        throw new Error('Policy creation reverted. No activation recorded.');
+        throw new Error('Rule creation reverted. No activation recorded.');
       const events = parseEventLogs({
         abi: executorAbi,
         eventName: 'PolicyCreated',
@@ -104,11 +104,11 @@ export function AgentPolicyActions({
       );
       if (!event)
         throw new Error(
-          'The receipt did not contain the expected policy event. Inspect the transaction before retrying.',
+          'The receipt did not contain the expected activation event. Inspect the transaction before retrying.',
         );
       setCreated(event.args.policyId);
       setStatus(
-        'Policy created on-chain. Open Policy Registry Controls to manage allowance or revoke.',
+        'Auto-Pilot rule created on-chain. Open Active Rules & Revocation to approve budget or turn off.',
       );
       onCreated?.(event.args.policyId);
     } catch (cause) {
@@ -121,15 +121,15 @@ export function AgentPolicyActions({
 
   return (
     <section className="mt-6 space-y-4 border-t border-border pt-6">
-      <h3 className="text-lg font-bold">On-Chain Policy Authorization</h3>
+      <h3 className="text-lg font-bold">On-Chain Rule Authorization</h3>
       {AGENT_EXECUTOR === zeroAddress || POLICY_REGISTRY === zeroAddress ? (
         <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-          Session executor contracts awaiting configuration. Export your reviewed policy
-          JSON above or connect once deployed.
+          On-chain Auto-Pilot executor contracts are awaiting deployment configuration.
+          Export your reviewed JSON draft above or authorize once deployed.
         </p>
       ) : checks.isFetching ? (
         <p role="status" className="text-sm text-muted-foreground">
-          Verifying registry approval and asset precision…
+          Verifying vault approval and token precision…
         </p>
       ) : checks.error ? (
         <p role="alert" className="text-sm text-destructive">
@@ -138,7 +138,7 @@ export function AgentPolicyActions({
       ) : (
         checks.data && (
           <p className="text-sm font-medium text-primary">
-            Registry, pool asset, and decimal checks verified.
+            Vault approval, asset contract, and precision verified.
           </p>
         )
       )}
@@ -166,12 +166,12 @@ export function AgentPolicyActions({
 
       {!address && (
         <p className="text-sm text-muted-foreground">
-          Connect the owner transaction wallet to authorize this session policy.
+          Connect the owner transaction wallet to authorize this Auto-Pilot rule.
         </p>
       )}
       {address && address.toLowerCase() !== policy.owner.toLowerCase() && (
         <p className="text-sm text-muted-foreground">
-          Switch to the policy owner wallet ({policy.owner}) to sign.
+          Switch to the owner wallet ({policy.owner}) to sign.
         </p>
       )}
       {error && (
@@ -186,7 +186,7 @@ export function AgentPolicyActions({
       )}
       {created && (
         <p className="break-all rounded-xl bg-secondary p-3 font-mono text-sm">
-          Policy ID: {created}
+          Rule ID: {created}
         </p>
       )}
       {hash && (

@@ -26,9 +26,9 @@ const headingFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Kudex | Autonomous Confidential Settlement & Institutional Credit',
+  title: 'Kudex | Private, Automated Finance for Modern Businesses',
   description:
-    'Confidential settlement, institutional RFQ liquidity, structured yield vaults, and bounded KUDEX AGENT execution.',
+    'Kudex is a financial operating system where AI agents pay invoices, trade assets, and earn protected yield automatically without exposing your balances to the public.',
   icons: {
     icon: '/logo.svg',
   },

@@ -49,7 +49,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         blockNumber: block.number,
       });
       if (p[0] === zeroAddress)
-        throw new Error('No policy exists with this ID on the configured executor.');
+        throw new Error('No Auto-Pilot rule exists with this ID on the active contract.');
       const [decimals, symbol, allowance, balance] = await Promise.all([
         client.readContract({
           address: p[3],
@@ -113,15 +113,15 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
   async function transact(action: 'approve' | 'revoke' | 'execute' | 'clearAllowance') {
     setBusy(true);
     setError('');
-    setStatus('Refreshing policy state…');
+    setStatus('Refreshing Auto-Pilot rule state…');
     try {
       if (!client || !address || !id || chainId !== 420420777)
         throw new Error(
-          'Connect the relevant transaction account on the settlement network.',
+          'Connect the matching transaction wallet on the active network.',
         );
       const fresh = await policy.refetch();
       if (fresh.error || !fresh.data)
-        throw fresh.error || new Error('Policy refresh failed.');
+        throw fresh.error || new Error('Rule refresh failed.');
       const p = fresh.data;
       const wait = async (tx: `0x${string}`) => {
         setHash(tx);
@@ -134,18 +134,18 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
       };
       if (action === 'approve' || action === 'clearAllowance') {
         if (address.toLowerCase() !== p.owner.toLowerCase())
-          throw new Error('Only the owner can change this collateral allowance.');
+          throw new Error('Only the owner can change this spending allowance.');
         const target = action === 'clearAllowance' ? 0n : p.total - p.spent;
         if (
           action === 'approve' &&
           (p.revoked || p.expiresAt <= p.timestamp || target === 0n)
         )
-          throw new Error('This policy cannot receive a new spending allowance.');
+          throw new Error('This rule cannot receive a new spending allowance.');
         if (action === 'approve')
           await checkAgentInfrastructure(client, p.vault, p.asset, p.decimals);
         for (const value of p.allowance > 0n && target > 0n ? [0n, target] : [target]) {
           setStatus(
-            `Review ${value === 0n ? 'allowance removal' : 'remaining policy budget allowance'} in your wallet.`,
+            `Review ${value === 0n ? 'allowance removal' : 'remaining budget allowance'} in your wallet.`,
           );
           const simulation = await client.simulateContract({
             address: p.asset,
@@ -173,7 +173,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         }
       } else if (action === 'revoke') {
         if (address.toLowerCase() !== p.owner.toLowerCase())
-          throw new Error('Only the policy owner can revoke it.');
+          throw new Error('Only the owner can turn off this rule.');
         const simulation = await client.simulateContract({
           address: AGENT_EXECUTOR,
           abi: executorAbi,
@@ -181,7 +181,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           args: [id],
           account: address,
         });
-        setStatus('Review emergency policy revocation in your wallet.');
+        setStatus('Review immediate Auto-Pilot shutoff in your wallet.');
         const receipt = await wait(
           await writeContractAsync({
             ...simulation.request,
@@ -201,13 +201,13 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
       } else {
         if (address.toLowerCase() !== p.delegate.toLowerCase())
           throw new Error(
-            'Use the exact delegate signing account to execute this policy.',
+            'Use the exact authorized delegate wallet to execute this deposit.',
           );
         if (
           !/^\d+(\.\d+)?$/.test(amount) ||
           (amount.split('.')[1]?.length ?? 0) > p.decimals
         )
-          throw new Error('Enter a positive amount within the collateral precision.');
+          throw new Error('Enter a positive amount within the asset precision.');
         const assets = parseUnits(amount, p.decimals);
         const block = await client.getBlock();
         const remainingDaily =
@@ -223,7 +223,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           assets > p.balance
         )
           throw new Error(
-            'The amount exceeds a policy cap, allowance, balance, or this policy is inactive.',
+            'The amount exceeds your spending budget, daily limit, or wallet balance.',
           );
         await checkAgentInfrastructure(client, p.vault, p.asset, p.decimals);
         const simulation = await client.simulateContract({
@@ -234,7 +234,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           account: address,
         });
         setStatus(
-          'Review this delegated deposit in your wallet. Shares route directly to the owner.',
+          'Review this automated vault deposit in your wallet. Shares belong directly to the owner.',
         );
         const receipt = await wait(
           await writeContractAsync({
@@ -263,7 +263,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           );
       }
       setStatus(
-        `${action === 'approve' ? 'Allowance update' : action === 'clearAllowance' ? 'Allowance removal' : action === 'revoke' ? 'Policy revocation' : 'Delegated deposit'} confirmed on-chain.`,
+        `${action === 'approve' ? 'Allowance update' : action === 'clearAllowance' ? 'Allowance removal' : action === 'revoke' ? 'Auto-Pilot shutoff' : 'Automated vault deposit'} confirmed on-chain.`,
       );
       setAmount('');
       await policy.refetch();
@@ -278,10 +278,10 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
   return (
     <section className="panel space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Active Session Key & Emergency Revocation</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Load a session policy ID to inspect remaining spend caps, approve collateral,
-          execute bounded deposits, or trigger immediate one-click revocation.
+        <h2 className="text-2xl font-bold">Active Auto-Pilot Rules &amp; Revocation</h2>
+        <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Load an on-chain Rule ID to check remaining spending budget, approve exact
+          allowance, run a delegated deposit, or revoke access in one click.
         </p>
       </div>
 
@@ -291,7 +291,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
           event.preventDefault();
           setError('');
           if (!isHex(input, { strict: true }) || input.length !== 66) {
-            setError('Enter a 32-byte policy ID beginning with 0x.');
+            setError('Enter a 32-byte Rule ID beginning with 0x.');
             return;
           }
           setLoaded(input as `0x${string}`);
@@ -313,13 +313,13 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
 
       {AGENT_EXECUTOR === zeroAddress && (
         <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-          Session policy executor awaiting deployment configuration.
+          On-chain Auto-Pilot executor contract is awaiting deployment configuration.
         </p>
       )}
 
       {policy.isFetching && (
         <p role="status" className="text-sm text-muted-foreground">
-          Reading on-chain policy state…
+          Reading on-chain Auto-Pilot state…
         </p>
       )}
 
@@ -333,7 +333,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm font-semibold text-primary tabular-nums">
-              {data.revoked ? 'Revoked' : active ? 'Active Session' : 'Expired'} · Block #
+              {data.revoked ? 'Turned Off' : active ? 'Active Rule' : 'Expired'} · Block #
               {data.block.toString()}
             </p>
             <button
@@ -350,35 +350,34 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
               ['Owner', data.owner],
               ['Delegate', data.delegate],
               [
-                'Lifetime spent',
+                'Budget used',
                 `${formatUnits(data.spent, data.decimals)} / ${formatUnits(data.total, data.decimals)} ${data.symbol}`,
               ],
               [
-                'Collateral allowance',
+                'Approved allowance',
                 `${formatUnits(data.allowance, data.decimals)} ${data.symbol}`,
               ],
               [
                 'Per-deposit cap',
                 `${formatUnits(data.perAction, data.decimals)} ${data.symbol}`,
               ],
-              ['UTC-day cap', `${formatUnits(data.daily, data.decimals)} ${data.symbol}`],
+              ['Daily cap', `${formatUnits(data.daily, data.decimals)} ${data.symbol}`],
               ['Expires at', new Date(Number(data.expiresAt) * 1000).toUTCString()],
               ['Vault', data.vault],
             ].map(([label, value]) => (
               <div key={label} className="rounded-xl bg-secondary p-4">
                 <dt className="text-sm text-muted-foreground">{label}</dt>
-                <dd className="mt-1 break-all text-sm font-semibold tabular-nums">
-                  {value}
-                </dd>
+                <dd className="mt-1 break-all text-sm font-bold tabular-nums">{value}</dd>
               </div>
             ))}
           </dl>
 
           <div className="grid gap-6 border-t border-border pt-6 lg:grid-cols-2">
             <div>
-              <h3 className="text-lg font-bold">Owner & Emergency Revocation</h3>
+              <h3 className="text-lg font-bold">Owner Controls &amp; Immediate Shutoff</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Revoke active delegate keys immediately or update approved collateral.
+                Revoke active agent permissions immediately or update approved spending
+                allowance.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button
@@ -389,7 +388,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
                   Approve remaining budget
                 </button>
                 <button
-                  className="quiet-link text-destructive hover:text-destructive disabled:opacity-40"
+                  className="danger-action disabled:opacity-40"
                   disabled={busy || !owner || data.revoked || chainId !== 420420777}
                   onClick={() => void transact('revoke')}
                 >
@@ -413,15 +412,15 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
                 void transact('execute');
               }}
             >
-              <h3 className="text-lg font-bold">Execute Delegated Deposit</h3>
+              <h3 className="text-lg font-bold">Execute Delegated Vault Deposit</h3>
               <label className="mt-3 block text-sm font-medium">
-                Collateral amount
+                Deposit amount
                 <input
                   value={amount}
                   onChange={(event) => setAmount(event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 tabular-nums"
+                  className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 font-semibold tabular-nums"
                   disabled={busy}
                   required
                 />
@@ -433,7 +432,7 @@ export function AgentPolicyManager({ createdId }: { createdId?: `0x${string}` })
                 Review deposit in delegate wallet
               </button>
               <p className="mt-2 text-sm text-muted-foreground">
-                Requires signing from the authorized delegate account.
+                Requires signing from the authorized Kudex Agent delegate account.
               </p>
             </form>
           </div>

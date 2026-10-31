@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('malformed RFQ exports cannot enable settlement and expiry selection stays within the workspace', async ({
+test('malformed swap offer exports cannot enable settlement and expiry selection stays within the workspace', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 900 });
-  await page.goto('/app/marketplace');
+  await page.goto('/app/trade');
   await expect(
-    page.getByRole('heading', { name: 'Autonomous Orderbook & Tranche Trading' }),
+    page.getByRole('heading', { name: 'Trade & Bridge', exact: true }),
   ).toBeVisible();
   await page.getByRole('tab', { name: 'Review an offer', exact: true }).click();
   await page

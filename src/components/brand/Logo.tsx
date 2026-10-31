@@ -48,7 +48,7 @@ export function Logo({ size = 'md', showSubtitle = false }: LogoProps) {
         </span>
         {showSubtitle && (
           <span className={`mt-0.5 text-primary ${dimensions.sub}`}>
-            Confidential Settlement
+            Private Business Finance
           </span>
         )}
       </div>

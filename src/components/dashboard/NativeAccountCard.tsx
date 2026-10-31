@@ -14,18 +14,18 @@ export function NativeAccountCard() {
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
         <div>
           <h2 className="text-base font-bold text-foreground">
-            Native Identity & Balance Mapping
+            Linked Native Extension Account
           </h2>
           <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Link your native extension from the wallet menu to inspect native reserves and
-            your mapped settlement contract address.
+            Connect your native browser extension from the wallet menu to view your native
+            balance and linked settlement address.
           </p>
         </div>
         <Link
           className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline"
           href="/docs"
         >
-          <span>Documentation</span>
+          <span>Read Docs</span>
           <FiArrowUpRight aria-hidden="true" />
         </Link>
       </section>
@@ -46,7 +46,10 @@ export function NativeAccountCard() {
           disabled={account.isFetching}
           onClick={() => void account.refetch()}
         >
-          <FiRefreshCw className={account.isFetching ? 'animate-spin' : ''} aria-hidden="true" />
+          <FiRefreshCw
+            className={account.isFetching ? 'animate-spin' : ''}
+            aria-hidden="true"
+          />
           <span>{account.isFetching ? 'Checking…' : 'Refresh'}</span>
         </button>
       </div>
@@ -82,7 +85,7 @@ export function NativeAccountCard() {
       ) : (
         <p className="mt-4 text-sm text-muted-foreground">
           {account.isFetching
-            ? 'Reading finalized native account state…'
+            ? 'Reading finalized native account balance…'
             : 'No native balance observation available yet.'}
         </p>
       )}

@@ -1,66 +1,107 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import {
   FiArrowRight,
-  FiSend,
-  FiLayers,
+  FiCheckCircle,
   FiCpu,
-  FiShield,
-  FiGlobe,
-  FiRepeat,
   FiFileText,
+  FiLayers,
+  FiLock,
+  FiRepeat,
+  FiSend,
+  FiShield,
 } from 'react-icons/fi';
 import { isVaultConfigured } from '@/lib/contracts/addresses';
 import { useProtocolEvents } from '@/lib/hooks/useProtocolEvents';
 
-const PROTOCOL_MODES = {
-  A2A: {
-    badge: 'Agent-to-Agent Execution',
-    title: 'Bounded Multi-Solver RFQ Settlement',
-    description:
-      'KUDEX AGENT delegates negotiate firm full-fill quotes directly with institutional liquidity solvers inside strict per-trade, daily, and pair-specific mandates.',
-    steps: [
-      'Owner signs an on-chain RFQ mandate locking token pair, maker, and payment cap.',
-      'KUDEX AGENT verifies solver quote signatures and exchange ratios in real time.',
-      'Atomic router settles 100% of the order or reverts with zero partial exposure.',
-    ],
-    ctaLabel: 'Explore Agent Fleet',
-    ctaHref: '/app/agents',
+const THREE_THINGS = [
+  {
+    icon: FiSend,
+    title: 'Pay & Get Paid Privately',
+    body: 'Send supplier payments or payroll across borders without competitors seeing who you pay or how much you spend.',
+    href: '/app/pay',
+    cta: 'Open Send & Invoice',
   },
-  A2B: {
-    badge: 'Agent-to-Business Operations',
-    title: 'Confidential Global Payroll & Corporate Invoicing',
-    description:
-      'Disburse multi-jurisdiction vendor invoices and treasury transfers using one-time recipient commitments while preserving read-only viewing keys for auditors.',
-    steps: [
-      'Generate cryptographic vendor invoices with SHA-256 encrypted payment references.',
-      'Shield corporate liquidity on arrival or dispatch one-time recipient claim notes.',
-      'Export selective disclosure certificates for tax and regulatory verification.',
-    ],
-    ctaLabel: 'Open Private Settlement',
-    ctaHref: '/app/settlement',
+  {
+    icon: FiLayers,
+    title: 'Earn Protected Yield',
+    body: 'Put idle cash to work in fixed-yield business vaults backed by automatic default protection.',
+    href: '/app/earn',
+    cta: 'Explore Business Vaults',
   },
-  A2H: {
-    badge: 'Agent-to-Human Control',
-    title: 'Telemetry-Guided Treasury & Yield Allocation',
-    description:
-      'Treasury operators inspect live pool solvency, bridge routes, and counterparty quotes through KUDEX AGENT while keeping final signing keys in hardware or browser wallets.',
-    steps: [
-      'Query live pool collateral, risk gauges, and gas estimates in plain language.',
-      'Review slippage-bounded vault deposits or cross-chain solver bridge intents.',
-      'Revoke any active delegate session key in one click at any block.',
-    ],
-    ctaLabel: 'Launch Portfolio Overview',
-    ctaHref: '/app/overview',
+  {
+    icon: FiCpu,
+    title: 'Put Money on Auto-Pilot',
+    body: 'Tell your Kudex Agent what you need in plain English, set a strict spending limit, and never click a wallet popup again.',
+    href: '/app/agent',
+    cta: 'Set Auto-Pilot Rules',
   },
-} as const;
+] as const;
 
-export default function EnterpriseLandingPage() {
-  const [mode, setMode] = useState<keyof typeof PROTOCOL_MODES>('A2A');
+const HOW_IT_WORKS_STEPS = [
+  {
+    step: '01',
+    title: 'Connect & Hide Your Balance in One Click',
+    summary:
+      'Deposit digital dollars or move funds from Ethereum, Arbitrum, Base, or Optimism directly into Private Balances (Stealth Mode) so competitors never see your company cash position.',
+    badge: 'Private Balances (Stealth Mode)',
+    href: '/app/pay',
+  },
+  {
+    step: '02',
+    title: 'Earn Steady Returns with Built-In Payment Protection',
+    summary:
+      'Allocate idle operating cash into Fixed-Yield Business Vaults backed by short-term treasuries and verified invoices. If an invoice pays late, automatic pool protection freezes inflows and covers your principal from the safety reserve.',
+    badge: 'Built-In Payment Protection',
+    href: '/app/earn',
+  },
+  {
+    step: '03',
+    title: 'Automate Routine Finance & Share a 1-Click Auditor Pass',
+    summary:
+      'Give your Kudex Agent a clear spending budget and time limit, and generate a read-only 1-Click Auditor Pass whenever your accountant needs to verify payments.',
+    badge: 'Auto-Pilot Rules & Auditor Pass',
+    href: '/app/agent',
+  },
+] as const;
+
+const PLAIN_ENGLISH_GUARANTEES = [
+  {
+    icon: FiLock,
+    title: 'Private Balances (Stealth Mode)',
+    body: 'Your wallet balance and payment amounts are hidden from the public. Only you and the person you pay can see the numbers.',
+  },
+  {
+    icon: FiCpu,
+    title: 'Auto-Pilot Rules (Spending Limits)',
+    body: "Give your Kudex Agent a budget and a time limit. It handles trades and payments in the background without asking you to click 'Approve' on every step.",
+  },
+  {
+    icon: FiLayers,
+    title: 'Fixed-Yield Business Vaults',
+    body: 'Earn steady, predictable returns backed by real-world business invoices and short-term treasuries.',
+  },
+  {
+    icon: FiShield,
+    title: 'Built-In Payment Protection',
+    body: 'If a borrower fails to pay an invoice on time, Kudex automatically freezes the pool and recovers your funds from the safety reserve.',
+  },
+  {
+    icon: FiRepeat,
+    title: 'Best-Price Auto-Routing',
+    body: 'Swap assets or move money across networks in one click. Background bots compete to give you the lowest fee and fastest settlement.',
+  },
+  {
+    icon: FiFileText,
+    title: '1-Click Auditor Pass',
+    body: 'Share a read-only pass with your accountant or tax auditor so they can verify your payments without having access to spend your money.',
+  },
+] as const;
+
+export default function LandingPage() {
   const events = useProtocolEvents();
 
   const vault = useQuery<{ totalAssets: string; symbol: string }>({
@@ -70,7 +111,7 @@ export default function EnterpriseLandingPage() {
     retry: 0,
     queryFn: async () => {
       const r = await fetch('/api/protocol/vault');
-      if (!r.ok) throw new Error('Pool telemetry unavailable');
+      if (!r.ok) throw new Error('Vault status unavailable');
       return r.json();
     },
   });
@@ -81,201 +122,104 @@ export default function EnterpriseLandingPage() {
     retry: 0,
     queryFn: async () => {
       const r = await fetch('/api/protocol/network');
-      if (!r.ok) throw new Error('Network unavailable');
+      if (!r.ok) throw new Error('Network status unavailable');
       return r.json();
     },
   });
 
-  const tvlDisplay = vault.data
+  const totalPoolSize = vault.data
     ? `${vault.data.totalAssets} ${vault.data.symbol}`
-    : '0.00 USDC';
+    : '$0.00 USDC';
 
-  const volumeDisplay = events.data
-    ? `${formatUnits(events.data.totalVolumeBigInt, events.data.decimals)} units`
-    : '0.00 units';
-
-  const activeWorkflow = PROTOCOL_MODES[mode];
+  const recentVolume = events.data
+    ? `${formatUnits(events.data.totalVolumeBigInt, events.data.decimals)} settled`
+    : '0.00 settled';
 
   return (
     <div className="space-y-20">
       {/* Hero Section */}
       <section className="grid items-center gap-10 pt-4 lg:grid-cols-[1.25fr_0.85fr]">
         <div className="space-y-6">
-          <p className="eyebrow">Institutional Settlement Network</p>
+          <span className="emerald-badge">
+            <FiShield aria-hidden="true" />
+            <span>Private Business Operating System</span>
+          </span>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            The Autonomous Confidential Settlement Layer.
+            Private, Automated Finance for Modern Businesses.
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Move cross-chain capital, settle negotiated institutional RFQs, run private
-            corporate invoicing, and delegate bounded treasury execution to KUDEX AGENT
-            with built-in solvency protection.
+            Kudex is a financial operating system where AI agents pay invoices, trade
+            assets, and earn protected yield for you automatically—without exposing your
+            balances to the public.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href="/app/overview" className="action-link text-base">
-              <span>Launch App</span>
+              <span>Open App</span>
               <FiArrowRight aria-hidden="true" />
             </Link>
-            <Link href="/docs" className="quiet-link text-base">
-              <span>Explore Docs</span>
-            </Link>
+            <a href="#how-it-works" className="quiet-link text-base">
+              <span>See How It Works</span>
+            </a>
           </div>
         </div>
 
-        {/* Hero Telemetry Card */}
+        {/* Live Reassurance Card */}
         <div className="panel space-y-5 border-primary/30">
           <div className="flex items-center justify-between border-b border-border pb-4">
-            <span className="text-sm font-semibold text-primary">
-              Live Settlement Telemetry
+            <span className="text-sm font-bold text-primary">
+              Live Financial Safeguards
             </span>
-            <span className="font-mono text-sm text-muted-foreground tabular-nums">
-              {network.data ? `Block #${network.data.block}` : 'Live RPC'}
+            <span className="font-mono text-sm font-semibold text-muted-foreground tabular-nums">
+              {network.data ? `Block #${network.data.block}` : 'Live Network'}
             </span>
           </div>
-          <div className="space-y-4">
+
+          <div className="space-y-3.5">
             <div className="rounded-xl bg-secondary p-4">
               <span className="text-sm text-muted-foreground">
-                Cross-Chain Solver Target
+                Private Balances (Stealth Mode)
               </span>
-              <p className="mt-1 font-mono text-2xl font-bold text-accent tabular-nums">
-                &lt; 45s · 0.05% Fee
+              <p className="mt-1 text-xl font-bold text-primary">
+                Hidden Amounts &amp; Balances
               </p>
             </div>
             <div className="rounded-xl bg-secondary p-4">
               <span className="text-sm text-muted-foreground">
-                Automated Solvency Circuit Breaker
+                Built-In Payment Protection
               </span>
-              <p className="mt-1 font-mono text-2xl font-bold text-primary tabular-nums">
-                85.00% Risk Threshold
+              <p className="mt-1 text-xl font-bold tabular-nums">
+                100% Safety Reserve Active
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Live Stats Ribbon */}
-      <section
-        aria-label="Live protocol statistics"
-        className="grid gap-4 rounded-2xl border border-border bg-card p-6 sm:grid-cols-3 sm:p-8"
-      >
-        <div>
-          <span className="text-sm text-muted-foreground">On-Chain Pool TVL</span>
-          <p className="mt-1 font-mono text-2xl font-bold text-primary tabular-nums sm:text-3xl">
-            {tvlDisplay}
-          </p>
-        </div>
-        <div>
-          <span className="text-sm text-muted-foreground">
-            Recent Settlement Window Volume
-          </span>
-          <p className="mt-1 font-mono text-2xl font-bold tabular-nums sm:text-3xl">
-            {volumeDisplay}
-          </p>
-        </div>
-        <div>
-          <span className="text-sm text-muted-foreground">
-            Autonomous Agent Profiles
-          </span>
-          <p className="mt-1 font-mono text-2xl font-bold text-accent tabular-nums sm:text-3xl">
-            3 Bounded Modules
-          </p>
-        </div>
-      </section>
-
-      {/* Interactive A2A / A2B / A2H Protocol Explorer */}
-      <section className="space-y-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="eyebrow">Execution Topology</p>
-            <h2 className="text-2xl font-bold sm:text-4xl">
-              Interactive Protocol Explorer
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {(['A2A', 'A2B', 'A2H'] as const).map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setMode(key)}
-                className={`min-h-11 rounded-xl border px-5 py-2.5 text-sm font-bold transition ${
-                  mode === key
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border bg-card text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {key} Workflow
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="panel grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-          <div className="space-y-4">
-            <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-sm font-semibold text-primary">
-              {activeWorkflow.badge}
-            </span>
-            <h3 className="text-2xl font-bold">{activeWorkflow.title}</h3>
-            <p className="text-base leading-relaxed text-muted-foreground">
-              {activeWorkflow.description}
-            </p>
-            <div className="pt-2">
-              <Link href={activeWorkflow.ctaHref} className="action-link text-sm">
-                <span>{activeWorkflow.ctaLabel}</span>
-                <FiArrowRight aria-hidden="true" />
-              </Link>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-secondary p-3.5">
+                <span className="text-sm text-muted-foreground">Active Vault Pool</span>
+                <p className="mt-1 text-lg font-bold tabular-nums">{totalPoolSize}</p>
+              </div>
+              <div className="rounded-xl bg-secondary p-3.5">
+                <span className="text-sm text-muted-foreground">Recent Activity</span>
+                <p className="mt-1 text-lg font-bold text-accent tabular-nums">
+                  {recentVolume}
+                </p>
+              </div>
             </div>
           </div>
-
-          <ol className="space-y-3">
-            {activeWorkflow.steps.map((step, index) => (
-              <li
-                key={step}
-                className="flex gap-3.5 rounded-xl border border-border bg-secondary p-4 text-sm leading-relaxed"
-              >
-                <span className="font-mono font-bold text-primary tabular-nums">
-                  0{index + 1}
-                </span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 
-      {/* Solutions Showcase */}
-      <section className="space-y-6">
-        <div>
-          <p className="eyebrow">Enterprise Solutions</p>
-          <h2 className="text-2xl font-bold sm:text-4xl">
-            Purpose-Built Financial Infrastructure
+      {/* The "3 Things You Can Do" Section */}
+      <section aria-labelledby="three-things-heading" className="space-y-8">
+        <div className="max-w-2xl space-y-2">
+          <p className="eyebrow">Built for Business Owners, CFOs &amp; Investors</p>
+          <h2 id="three-things-heading" className="text-2xl font-bold sm:text-4xl">
+            3 Things You Can Do in Seconds
           </h2>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {[
-            {
-              icon: FiSend,
-              title: 'Enterprise Payroll & Invoicing',
-              body: 'Settle global contractor payroll and corporate vendor invoices with one-time shielded commitments and selective auditor viewing keys.',
-              href: '/solutions/enterprise-payroll',
-              cta: 'Explore Payroll Solution',
-            },
-            {
-              icon: FiLayers,
-              title: 'Institutional Credit Tranches',
-              body: 'Allocate capital across Senior, Mezzanine, and Junior pools backed by automated 85% risk circuit breakers and DaaS reserve waterfalls.',
-              href: '/solutions/credit-tranches',
-              cta: 'Explore Credit Tranches',
-            },
-            {
-              icon: FiCpu,
-              title: 'Autonomous Agent Solvers',
-              body: 'Authorize KUDEX AGENT session keys with strict time expirations, cumulative token spend caps, and whitelisted contract functions.',
-              href: '/solutions/autonomous-agents',
-              cta: 'Explore KUDEX AGENT',
-            },
-          ].map((card) => (
+          {THREE_THINGS.map((card) => (
             <article
-              key={card.href}
+              key={card.title}
               className="panel flex flex-col justify-between space-y-6"
             >
               <div className="space-y-3">
@@ -299,36 +243,80 @@ export default function EnterpriseLandingPage() {
         </div>
       </section>
 
-      {/* Capabilities Strip */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          {
-            icon: FiRepeat,
-            title: 'Zero-Slippage RFQ',
-            desc: 'Signed bilateral quotes settled atomically in full.',
-          },
-          {
-            icon: FiGlobe,
-            title: 'Cross-Chain Solvers',
-            desc: 'Direct & Shield-on-Arrival routing from major L1/L2s.',
-          },
-          {
-            icon: FiFileText,
-            title: 'Auditor Viewing Keys',
-            desc: 'Read-only tax and compliance proofs without balance leaks.',
-          },
-          {
-            icon: FiShield,
-            title: 'DaaS Risk Guardrails',
-            desc: 'Real-time pool risk gauges and automated deposit freezes.',
-          },
-        ].map((item) => (
-          <div key={item.title} className="rounded-2xl border border-border bg-card p-5">
-            <item.icon className="text-primary" size={20} aria-hidden="true" />
-            <h3 className="mt-3 text-base font-bold">{item.title}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{item.desc}</p>
+      {/* 3-Step Visual Guide */}
+      <section
+        id="how-it-works"
+        aria-labelledby="how-it-works-heading"
+        className="scroll-mt-24 space-y-8"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-2xl space-y-2">
+            <p className="eyebrow">How It Works</p>
+            <h2 id="how-it-works-heading" className="text-2xl font-bold sm:text-4xl">
+              From Deposit to Automated Execution in 3 Steps
+            </h2>
           </div>
-        ))}
+          <Link href="/app/overview" className="action-link text-sm">
+            <span>Open App</span>
+            <FiArrowRight aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          {HOW_IT_WORKS_STEPS.map((item) => (
+            <article
+              key={item.step}
+              className="panel flex flex-col justify-between space-y-5"
+            >
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-mono text-base font-bold text-accent tabular-nums">
+                    STEP {item.step}
+                  </span>
+                  <span className="emerald-badge">
+                    <FiCheckCircle aria-hidden="true" />
+                    <span>{item.badge}</span>
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold">{item.title}</h3>
+                <p className="text-base leading-relaxed text-muted-foreground">
+                  {item.summary}
+                </p>
+              </div>
+              <Link
+                href={item.href}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
+              >
+                <span>Try Step {item.step}</span>
+                <FiArrowRight aria-hidden="true" />
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Plain-English Feature Dictionary Grid */}
+      <section aria-labelledby="guarantees-heading" className="space-y-8">
+        <div className="max-w-2xl space-y-2">
+          <p className="eyebrow">Everything Under One Roof</p>
+          <h2 id="guarantees-heading" className="text-2xl font-bold sm:text-4xl">
+            Enterprise-Grade Protection Without the Complexity
+          </h2>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {PLAIN_ENGLISH_GUARANTEES.map((item) => (
+            <div key={item.title} className="panel space-y-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary">
+                <item.icon size={20} aria-hidden="true" />
+              </div>
+              <h3 className="text-xl font-bold">{item.title}</h3>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

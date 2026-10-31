@@ -1,94 +1,94 @@
 import Link from 'next/link';
 import {
   FiArrowRight,
-  FiRepeat,
-  FiGlobe,
-  FiSend,
   FiCpu,
   FiFileText,
+  FiLayers,
+  FiLock,
+  FiRepeat,
   FiShield,
 } from 'react-icons/fi';
 
-const MODULES = [
+const GUIDES = [
   {
-    icon: FiRepeat,
-    title: '1. Negotiated RFQ Settlement Router',
+    icon: FiLock,
+    title: '1. Private Balances (Stealth Mode)',
     summary:
-      'Bilateral typed-data invitations and maker-signed full-fill offers with strict nonce replay protection and exact allowance verification.',
-    spec: 'Contracts: KudexRFQMarket · KudexRfqExecutor | Fee Tier: 0.10% private trades',
-    href: '/app/marketplace',
-    cta: 'Open Marketplace',
-  },
-  {
-    icon: FiGlobe,
-    title: '2. Cross-Chain Solver Gateway',
-    summary:
-      'Intent-based liquidity routing from Ethereum, Arbitrum, Base, and Optimism with Direct Deposit or immediate Shield-on-Arrival commitment minting.',
-    spec: 'Completion Target: < 45 seconds | Routing Fee: 0.05%',
-    href: '/app/bridge',
-    cta: 'Open Bridge',
-  },
-  {
-    icon: FiSend,
-    title: '3. Confidential Notes & Corporate Invoicing',
-    summary:
-      'One-time blinded recipient commitments and corporate vendor invoices bound to SHA-256 encrypted payment references.',
-    spec: 'Operations: shieldDeposit(assets, commitment) · redeemWithMinimum',
-    href: '/app/settlement',
-    cta: 'Open Settlement',
+      'Your wallet balance and payment amounts are hidden from the public. Only you and the person you pay can see the numbers.',
+    highlight: 'Used in: Send & Invoice · Earn · Trade & Bridge',
+    href: '/app/pay',
+    cta: 'Open Send & Invoice',
   },
   {
     icon: FiCpu,
-    title: '4. KUDEX AGENT & Bounded Session Policies',
+    title: '2. Auto-Pilot Rules (Spending Limits)',
     summary:
-      'Delegate execution keys constrained on-chain by time expiration (2h, 24h, 7d), per-action/UTC-day/lifetime caps, and function whitelisting.',
-    spec: 'Contracts: KudexAgentExecutor · KudexPolicyRegistry | Instant Owner Revocation',
-    href: '/app/agents',
-    cta: 'Open KUDEX AGENT',
+      "Give your Kudex Agent a budget and a time limit. It handles trades and payments in the background without asking you to click 'Approve' on every step.",
+    highlight: 'Controls: Spending Budget · Time Limit · 1-Click Shutoff',
+    href: '/app/agent',
+    cta: 'Open Kudex Agent',
   },
   {
-    icon: FiFileText,
-    title: '5. Selective Disclosure & Viewing Keys',
+    icon: FiLayers,
+    title: '3. Fixed-Yield Business Vaults',
     summary:
-      'Deterministic read-only viewing keys and downloadable settlement compliance certificates proving legitimacy without revealing private balances.',
-    spec: 'Scopes: Accounting · Tax Reporting · Auditor Verification',
-    href: '/app/compliance',
-    cta: 'Open Compliance',
+      'Earn steady, predictable returns backed by real-world business invoices and short-term treasuries.',
+    highlight: 'Options: Short-Term Treasury Vault · Verified Business Invoice Pool',
+    href: '/app/earn',
+    cta: 'Open Earn',
   },
   {
     icon: FiShield,
-    title: '6. Default-as-a-Service (DaaS) Solvency Engine',
+    title: '4. Built-In Payment Protection',
     summary:
-      'Continuous credit risk telemetry (0–100%) with automated deposit circuit breakers at the 85% threshold and structured tranche waterfalls.',
-    spec: 'Contracts: KudexVault · KudexDaaSAdapter | Threshold: 8,500 bps (85%)',
-    href: '/app/protection',
-    cta: 'Open Protection',
+      'If a borrower fails to pay an invoice on time, Kudex automatically freezes the pool and recovers your funds from the safety reserve.',
+    highlight: 'Protection: Automatic Pool Freeze & Safety Reserve Recovery',
+    href: '/app/earn',
+    cta: 'Inspect Vault Protection',
+  },
+  {
+    icon: FiRepeat,
+    title: '5. Best-Price Auto-Routing',
+    summary:
+      'Swap assets or move money across networks in one click. Background bots compete to give you the lowest fee and fastest settlement.',
+    highlight: 'Modes: Instant Swap · Move Across Networks (< 45s)',
+    href: '/app/trade',
+    cta: 'Open Trade & Bridge',
+  },
+  {
+    icon: FiFileText,
+    title: '6. 1-Click Auditor Pass',
+    summary:
+      'Share a read-only pass with your accountant or tax auditor so they can verify your payments without having access to spend your money.',
+    highlight: 'Access: Read-Only Verification · Instant Revoke Access',
+    href: '/app/pay',
+    cta: 'Generate Auditor Pass',
   },
 ];
 
-export default function EnterpriseDocsPage() {
+export default function DocsPage() {
   return (
     <div className="space-y-12">
       <header className="space-y-4">
-        <p className="eyebrow">Enterprise Developer & Operator Reference</p>
-        <h1 className="page-title">Kudex Protocol Documentation</h1>
+        <p className="eyebrow">Plain-English Product Guide</p>
+        <h1 className="page-title">Kudex Documentation</h1>
         <p className="page-description">
-          Architecture specifications, contract execution boundaries, and operational
-          guides for treasuries, liquidity solvers, and compliance auditors.
+          Everything your business owner, CFO, or accountant needs to know about private
+          payments, protected business vaults, and Auto-Pilot spending rules.
         </p>
         <div className="flex flex-wrap gap-3 pt-2">
           <Link href="/app/overview" className="action-link text-sm">
-            <span>Launch Application</span>
+            <span>Open App</span>
             <FiArrowRight aria-hidden="true" />
           </Link>
           <Link href="/pricing" className="quiet-link text-sm">
-            <span>View Fee Schedule</span>
+            <span>View Pricing</span>
           </Link>
         </div>
       </header>
 
       <section className="grid gap-6 md:grid-cols-2">
-        {MODULES.map((mod) => (
+        {GUIDES.map((mod) => (
           <article
             key={mod.title}
             className="panel flex flex-col justify-between space-y-5"
@@ -101,8 +101,8 @@ export default function EnterpriseDocsPage() {
               <p className="text-base leading-relaxed text-muted-foreground">
                 {mod.summary}
               </p>
-              <p className="rounded-xl bg-secondary px-3.5 py-2.5 font-mono text-sm text-foreground tabular-nums">
-                {mod.spec}
+              <p className="rounded-xl bg-secondary px-3.5 py-2.5 text-sm font-semibold text-foreground">
+                {mod.highlight}
               </p>
             </div>
             <Link

@@ -58,24 +58,24 @@ export function RfqRequestBuilder({
       if (!client) throw Error('Network client unavailable.');
       if (router === zeroAddress)
         throw Error(
-          'Router deployment must be configured before signing or verifying an invitation.',
+          'Swap settlement contract must be configured before signing or verifying a quote request.',
         );
       const now = (await client.getBlock()).timestamp;
       let value = raw;
       if (sign) {
         if (!address || chainId !== portaldotTestnet.id)
-          throw Error('Connect the requester wallet on the settlement network.');
+          throw Error('Connect your wallet on the active settlement network.');
         if (
           ![fields.solver, fields.buyToken, fields.payToken].every(
             (x) => isAddress(x) && x.toLowerCase() !== zeroAddress,
           )
         )
-          throw Error('Enter nonzero token and solver addresses.');
+          throw Error('Enter valid non-zero token and counterparty addresses.');
         if (
           !/^[1-9]\d{0,77}$/.test(fields.minimumBuy) ||
           !/^[1-9]\d{0,77}$/.test(fields.maximumPay)
         )
-          throw Error('Enter positive integer token base units.');
+          throw Error('Enter positive whole-number token units.');
         const words = crypto.getRandomValues(new Uint8Array(32));
         const nonce = BigInt(
           '0x' + Array.from(words, (x) => x.toString(16).padStart(2, '0')).join(''),
@@ -96,7 +96,7 @@ export function RfqRequestBuilder({
           request.buyToken.toLowerCase() === request.payToken.toLowerCase() ||
           request.solver.toLowerCase() === address.toLowerCase()
         )
-          throw Error('Invalid request terms.');
+          throw Error('Invalid swap request terms.');
         const signature = await signTypedDataAsync({
           account: address,
           domain: requestDomain(chainId, router),
@@ -122,12 +122,12 @@ export function RfqRequestBuilder({
         const offer = parseSignedOffer(quote, portaldotTestnet.id, router);
         setMessage(
           quoteMatchesRequest(result, offer, address, now)
-            ? 'Quote fits the signed invitation. Review its signature, funding and on-chain status separately.'
+            ? 'Quote fits the signed invitation. Review its signature, funding, and on-chain status separately.'
             : 'Quote does not fit the signed invitation or requester account.',
         );
       } else {
         setMessage(
-          'Invitation signature verified. Share with your counterparty solver to receive a firm quote.',
+          'Invitation signature verified. Share with your counterparty to receive a firm swap offer.',
         );
       }
     } catch (e) {
@@ -150,25 +150,25 @@ export function RfqRequestBuilder({
   return (
     <section className="panel space-y-6">
       <div>
-        <h2 className="text-xl font-bold">Request Liquidity from a Solver</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Sign an off-chain RFQ invitation specifying target solver, asset pair, and exact
-          base-unit bounds. Valid for 1 hour.
+        <h2 className="text-xl font-bold">Request a Custom Swap Quote</h2>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
+          Sign a guaranteed-price quote request specifying your counterparty, token pair,
+          and exact minimum and maximum bounds. Valid for 1 hour.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries({
-          solver: 'Counterparty solver address',
+          solver: 'Counterparty address',
           buyToken: 'Requested asset address',
           payToken: 'Payment asset address',
-          minimumBuy: 'Minimum receipt (base units)',
-          maximumPay: 'Maximum payment (base units)',
+          minimumBuy: 'Minimum receipt (token units)',
+          maximumPay: 'Maximum payment (token units)',
         }).map(([key, label]) => (
           <label key={key} className="space-y-2 text-sm font-medium">
             <span>{label}</span>
             <input
-              className="field-input tabular-nums"
+              className="field-input font-semibold tabular-nums"
               value={fields[key as keyof typeof fields]}
               placeholder={key.includes('minimum') || key.includes('maximum') ? '1000000' : '0x…'}
               onChange={(e) => {
@@ -201,7 +201,7 @@ export function RfqRequestBuilder({
           maxLength={8000}
           value={raw}
           disabled={busy}
-          placeholder="Signed RFQ request payload appears here or paste an invitation to verify"
+          placeholder="Signed quote request JSON appears here, or paste a request to verify"
           onChange={(e) => {
             setRaw(e.target.value);
             setVerified(undefined);

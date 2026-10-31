@@ -51,11 +51,14 @@ const config: Config = {
         surface: {
           DEFAULT: '#0E121B',
           elevated: '#161C2B',
+          light: '#F8FAFC',
         },
         'surface-elevated': '#161C2B',
         'border-subtle': '#21293D',
         'accent-emerald': '#00E599',
+        'accent-emerald-light': '#059669',
         'accent-cobalt': '#2E68FF',
+        'accent-cobalt-light': '#2563EB',
       },
       borderRadius: {
         lg: 'var(--radius)',

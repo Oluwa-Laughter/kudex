@@ -107,28 +107,28 @@ try {
       json: { error: 'Local EVM test: native mapping unavailable' },
     }),
   );
-  await page.goto('http://localhost:3018/app/vaults');
+  await page.goto('http://localhost:3018/app/earn');
   await page.getByRole('button', { name: 'Connect wallets', exact: true }).click();
   await page.getByRole('button', { name: 'Injected', exact: true }).click();
   await page.keyboard.press('Escape');
   await expect(
-    page.getByRole('heading', { name: 'On-chain position', exact: true }),
+    page.getByRole('heading', { name: 'Your Vault Balance', exact: true }),
   ).toBeVisible({ timeout: 30000 });
-  await page.getByLabel('Collateral amount', { exact: true }).fill('12.345678');
+  await page.getByLabel('Deposit Amount', { exact: true }).fill('12.345678');
   await page
-    .getByRole('button', { name: 'Review vault transaction', exact: true })
+    .getByRole('button', { name: 'Review Vault Transaction', exact: true })
     .click();
   await page
-    .getByRole('button', { name: 'Approve exact deposit amount', exact: true })
+    .getByRole('button', { name: 'Approve Exact Deposit Amount', exact: true })
     .click();
-  await expect(page.getByText(/Allowance update (confirmed|finalized)\./)).toBeVisible({
+  await expect(page.getByText(/Spending approval (confirmed|finalized)\./)).toBeVisible({
     timeout: 30000,
   });
   await page
-    .getByRole('button', { name: 'Review vault transaction', exact: true })
+    .getByRole('button', { name: 'Review Vault Transaction', exact: true })
     .click();
   await page
-    .getByRole('button', { name: 'Confirm deposit in wallet', exact: true })
+    .getByRole('button', { name: 'Confirm Deposit in Wallet', exact: true })
     .click();
   await expect(page.getByText(/Deposit (confirmed|finalized)\./)).toBeVisible({
     timeout: 30000,
@@ -136,15 +136,15 @@ try {
   const deposited = await readVault(client, vault, asset, owner);
   assert.equal(deposited.shares, 12345678n);
   assert.equal(deposited.allowance, 0n);
-  await page.getByLabel('Operation', { exact: true }).selectOption('redeem');
-  await page.getByLabel('Shares to redeem', { exact: true }).fill('12.345678');
+  await page.getByRole('button', { name: 'Withdraw to Wallet', exact: true }).click();
+  await page.getByLabel('Vault Shares to Withdraw', { exact: true }).fill('12.345678');
   await page
-    .getByRole('button', { name: 'Review vault transaction', exact: true })
+    .getByRole('button', { name: 'Review Vault Transaction', exact: true })
     .click();
   await page
-    .getByRole('button', { name: 'Confirm redeem in wallet', exact: true })
+    .getByRole('button', { name: 'Confirm Withdrawal in Wallet', exact: true })
     .click();
-  await expect(page.getByText(/Redemption (confirmed|finalized)\./)).toBeVisible({
+  await expect(page.getByText(/Withdrawal (confirmed|finalized)\./)).toBeVisible({
     timeout: 30000,
   });
   const final = await readVault(client, vault, asset, owner);

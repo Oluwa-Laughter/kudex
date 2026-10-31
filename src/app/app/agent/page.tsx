@@ -1,5 +1,5 @@
 import { AgentWorkspace } from '@/components/dashboard/AgentWorkspace';
 
-export default function AgentsWorkspacePage() {
+export default function KudexAgentPage() {
   return <AgentWorkspace />;
 }

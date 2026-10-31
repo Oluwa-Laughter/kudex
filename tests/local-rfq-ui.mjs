@@ -3,9 +3,8 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { chromium, expect } from '@playwright/test';
-import { keccak256, zeroAddress } from 'viem';
+import { keccak256, erc20Abi } from 'viem';
 import { localChain } from './helpers-local-chain.mjs';
-import { erc20Abi } from 'viem';
 // Next dev updates generated type references; restore exactly what this test found.
 const generatedFiles = ['tsconfig.json', 'next-env.d.ts', 'AGENTS.md'];
 const previous = await Promise.all(
@@ -133,7 +132,7 @@ try {
       }),
     );
   async function connect(p) {
-    await p.goto('http://localhost:3018/app/marketplace');
+    await p.goto('http://localhost:3018/app/trade');
     await p.getByRole('button', { name: 'Connect wallets', exact: true }).click();
     await p.getByRole('button', { name: 'Injected', exact: true }).click();
     await p.keyboard.press('Escape');
@@ -142,11 +141,11 @@ try {
   await connect(page);
   // Real wallet signature for an invitation; no hosted delivery is simulated.
   for (const [label, value] of [
-    ['Counterparty solver address', maker],
+    ['Counterparty address', maker],
     ['Requested asset address', buy],
     ['Payment asset address', pay],
-    ['Minimum receipt (base units)', '2000000'],
-    ['Maximum payment (base units)', '1000000'],
+    ['Minimum receipt (token units)', '2000000'],
+    ['Maximum payment (token units)', '1000000'],
   ])
     await page.getByLabel(label, { exact: true }).fill(value);
   await page
@@ -228,10 +227,10 @@ try {
     }),
     0n,
   );
-  await page.goto('http://localhost:3018/app/agents');
-  await page.getByRole('tab', { name: 'RFQ mandates', exact: true }).click();
+  await page.goto('http://localhost:3018/app/agent');
+  await page.getByRole('tab', { name: 'Swap Auto-Pilot Mandates', exact: true }).click();
   for (const [label, value] of [
-    ['RFQ delegate', accounts[2]],
+    ['Swap delegate', accounts[2]],
     ['Permitted maker', maker],
     ['Buy token', buy],
     ['Pay token', pay],
@@ -243,18 +242,18 @@ try {
   ])
     await page.getByLabel(label, { exact: true }).fill(value);
   await page
-    .getByRole('button', { name: 'Authorize RFQ mandate in wallet', exact: true })
+    .getByRole('button', { name: 'Authorize swap mandate in wallet', exact: true })
     .click();
   await expect(
     page
       .getByRole('status')
-      .filter({ hasText: /RfqPolicyCreated (confirmed|finalized)/ }),
+      .filter({ hasText: /Swap mandate created (confirmed|finalized)/ }),
   ).toBeVisible({ timeout: 30000 });
   const policyId = await page
-    .getByLabel('On-chain RFQ policy ID', { exact: true })
+    .getByLabel('On-chain swap policy ID', { exact: true })
     .inputValue();
   await page
-    .getByRole('button', { name: 'Approve remaining RFQ budget', exact: true })
+    .getByRole('button', { name: 'Approve remaining swap budget', exact: true })
     .click();
   await expect(
     page.getByRole('status').filter({ hasText: /Approval (confirmed|finalized)/ }),
@@ -283,9 +282,11 @@ try {
     route.fulfill({ status: 503, json: { error: 'Local EVM test' } }),
   );
   await connect(delegatePage);
-  await delegatePage.goto('http://localhost:3018/app/agents');
-  await delegatePage.getByRole('tab', { name: 'RFQ mandates', exact: true }).click();
-  await delegatePage.getByLabel('On-chain RFQ policy ID', { exact: true }).fill(policyId);
+  await delegatePage.goto('http://localhost:3018/app/agent');
+  await delegatePage
+    .getByRole('tab', { name: 'Swap Auto-Pilot Mandates', exact: true })
+    .click();
+  await delegatePage.getByLabel('On-chain swap policy ID', { exact: true }).fill(policyId);
   await delegatePage
     .getByLabel('Delegate signed quote JSON', { exact: true })
     .fill(delegatedQuote);
@@ -295,7 +296,7 @@ try {
   await expect(
     delegatePage
       .getByRole('status')
-      .filter({ hasText: /RfqExecuted (confirmed|finalized)/ }),
+      .filter({ hasText: /Delegated swap executed (confirmed|finalized)/ }),
   ).toBeVisible({ timeout: 30000 });
   assert.equal(
     await client.readContract({
@@ -324,11 +325,11 @@ try {
     }),
     0n,
   );
-  await page.getByRole('button', { name: 'Revoke RFQ mandate', exact: true }).click();
+  await page.getByRole('button', { name: 'Revoke swap mandate', exact: true }).click();
   await expect(
     page
       .getByRole('status')
-      .filter({ hasText: /RfqPolicyRevoked (confirmed|finalized)/ }),
+      .filter({ hasText: /Swap mandate revoked (confirmed|finalized)/ }),
   ).toBeVisible({ timeout: 30000 });
   assert.deepEqual(errors, []);
   await mkdir('test-results/local-rfq', { recursive: true });

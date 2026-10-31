@@ -1,4 +1,5 @@
 'use client';
+
 import { useRef, useState } from 'react';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
 import {
@@ -20,12 +21,14 @@ import {
 import { receiptFinality } from '@/lib/contracts/vault-client';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { getReadableErrorMessage } from '@/lib/utils';
+
 const executorValue = process.env.NEXT_PUBLIC_RFQ_EXECUTOR_ADDRESS;
 const executor: Address =
   executorValue && isAddress(executorValue) ? executorValue : zeroAddress;
 const executorHash = process.env.NEXT_PUBLIC_RFQ_EXECUTOR_CODE_HASH;
+
 const fieldNames = {
-  delegate: 'RFQ delegate',
+  delegate: 'Swap delegate',
   maker: 'Permitted maker',
   buyToken: 'Buy token',
   payToken: 'Pay token',
@@ -35,7 +38,9 @@ const fieldNames = {
   dailyCap: 'Daily payment cap',
   totalCap: 'Total payment budget',
 };
+
 type Fields = Record<keyof typeof fieldNames, string>;
+
 export function RfqMandatePanel() {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
@@ -58,10 +63,12 @@ export function RfqMandatePanel() {
   const [error, setError] = useState('');
   const [observation, setObservation] = useState('');
   const lock = useRef(false);
+
   type Submitted = {
     hash: Hex;
     target: Address;
     event: 'RfqPolicyCreated' | 'RfqPolicyRevoked' | 'RfqExecuted' | 'Approval';
+    label: string;
     policyId?: Hex;
     amount?: bigint;
     orderHash?: Hex;
@@ -70,9 +77,11 @@ export function RfqMandatePanel() {
     paid?: bigint;
     received?: bigint;
   };
+
   const pending = useRef<Submitted | undefined>(undefined);
   const [submitted, setSubmitted] = useState<Hex>();
   const ready = !!address && chainId === portaldotTestnet.id && executor !== zeroAddress;
+
   async function reconcile() {
     const e = pending.current;
     if (!client || !e)
@@ -84,7 +93,7 @@ export function RfqMandatePanel() {
       receipt.to?.toLowerCase() !== e.target.toLowerCase() ||
       receipt.from.toLowerCase() !== e.owner.toLowerCase()
     )
-      throw Error('Receipt identity/status mismatch; inspect before retrying.');
+      throw Error('Receipt identity or status mismatch; inspect before retrying.');
     const logs = receipt.logs.filter(
       (l) => l.address.toLowerCase() === e.target.toLowerCase(),
     );
@@ -108,17 +117,17 @@ export function RfqMandatePanel() {
           (!e.orderHash ||
             ('orderHash' in event.args && event.args.orderHash === e.orderHash)),
       );
-      if (!match) throw Error('Matching mandate event missing.');
+      if (!match) throw Error('Matching Auto-Pilot mandate event missing.');
       if (
         match.eventName === 'RfqExecuted' &&
         (match.args.owner.toLowerCase() !== e.beneficiary?.toLowerCase() ||
           match.args.paid !== e.paid ||
           match.args.received !== e.received)
       )
-        throw Error('RFQ execution terms or beneficiary mismatch.');
+        throw Error('Swap execution terms or beneficiary mismatch.');
       if (match.eventName === 'RfqPolicyCreated') {
         if (match.args.owner.toLowerCase() !== e.owner.toLowerCase())
-          throw Error('Policy owner mismatch.');
+          throw Error('Rule owner mismatch.');
         setId(match.args.id);
       }
     }
@@ -127,8 +136,9 @@ export function RfqMandatePanel() {
       throw Error('Noncanonical receipt; requires reconciliation.');
     pending.current = undefined;
     setSubmitted(undefined);
-    setStatus(`${e.event} ${finality}. No hosted strategy was activated.`);
+    setStatus(`${e.label} ${finality}.`);
   }
+
   async function act(
     action: 'create' | 'read' | 'revoke' | 'approve' | 'clear' | 'execute' | 'reconcile',
   ) {
@@ -144,7 +154,7 @@ export function RfqMandatePanel() {
       if (pending.current) throw Error('Reconcile the submitted operation first.');
       if (!client || !address || !ready)
         throw Error(
-          'A reviewed RFQ executor deployment and the correct EVM wallet are required.',
+          'An active swap Auto-Pilot contract and connected transaction wallet are required.',
         );
       await assertRfqProvenance(client, executor, executorHash, {}, []);
       if (
@@ -156,17 +166,18 @@ export function RfqMandatePanel() {
           })
         ).toLowerCase() !== CONTRACT_ADDRESSES.rfqMarket.toLowerCase()
       )
-        throw Error('Executor/router binding mismatch.');
+        throw Error('Executor and settlement contract binding mismatch.');
       const block = await client.getBlock();
       const send = async (
         request: Parameters<typeof writeContractAsync>[0],
         event: Submitted['event'],
+        label: string,
         target: Address,
         extra: Partial<Submitted> = {},
       ) => {
         setStatus('Review the exact operation in your wallet.');
         const hash = await writeContractAsync(request);
-        pending.current = { hash, target, event, owner: address, ...extra };
+        pending.current = { hash, target, event, label, owner: address, ...extra };
         setSubmitted(hash);
         setStatus('Submitted; waiting for matching receipt.');
         await reconcile();
@@ -174,12 +185,12 @@ export function RfqMandatePanel() {
       if (action === 'create') {
         for (const k of ['delegate', 'maker', 'buyToken', 'payToken'] as const)
           if (!isAddress(fields[k]) || fields[k].toLowerCase() === zeroAddress)
-            throw Error('Enter valid nonzero addresses.');
+            throw Error('Enter valid non-zero addresses.');
         const number = (key: keyof Fields, max: bigint) => {
           if (!/^[1-9]\d{0,77}$/.test(fields[key]))
-            throw Error('Caps and ratios use positive integer token base units.');
+            throw Error('Caps and ratios use positive whole-number token units.');
           const value = BigInt(fields[key]);
-          if (value > max) throw Error('Policy amount exceeds supported bounds.');
+          if (value > max) throw Error('Rule amount exceeds supported bounds.');
           return value;
         };
         const terms = {
@@ -211,13 +222,14 @@ export function RfqMandatePanel() {
         await send(
           { ...sim.request, chainId: portaldotTestnet.id },
           'RfqPolicyCreated',
+          'Swap mandate created',
           executor,
           { policyId: sim.result },
         );
         return;
       }
       if (!/^0x[\da-f]{64}$/i.test(id))
-        throw Error('Enter a real on-chain RFQ policy ID.');
+        throw Error('Enter a valid on-chain swap policy ID.');
       const policyId = id as Hex;
       const p = await client.readContract({
         address: executor,
@@ -226,15 +238,15 @@ export function RfqMandatePanel() {
         args: [policyId],
         blockNumber: block.number,
       });
-      if (p.owner === zeroAddress) throw Error('RFQ policy not found.');
+      if (p.owner === zeroAddress) throw Error('Swap policy not found.');
       const daily = p.day === block.timestamp / 86400n ? p.daySpent : 0n;
       setObservation(
-        `Owner ${p.owner}. Delegate ${p.terms.delegate}. Spent ${p.spent} of ${p.terms.totalCap}; today ${daily} of ${p.terms.dailyCap} payment base units. ${p.revoked ? 'Revoked' : block.timestamp >= p.terms.expiresAt ? 'Expired' : 'Active at observed block ' + block.number}.`,
+        `Owner ${p.owner}. Delegate ${p.terms.delegate}. Spent ${p.spent} of ${p.terms.totalCap}; today ${daily} of ${p.terms.dailyCap} token units. ${p.revoked ? 'Turned off' : block.timestamp >= p.terms.expiresAt ? 'Expired' : 'Active at block ' + block.number}.`,
       );
       if (action === 'read') return;
       if (action === 'revoke') {
         if (p.owner.toLowerCase() !== address.toLowerCase())
-          throw Error('Only the policy owner may revoke.');
+          throw Error('Only the owner may revoke this rule.');
         const sim = await client.simulateContract({
           address: executor,
           abi: rfqExecutorAbi,
@@ -245,6 +257,7 @@ export function RfqMandatePanel() {
         await send(
           { ...sim.request, chainId: portaldotTestnet.id },
           'RfqPolicyRevoked',
+          'Swap mandate revoked',
           executor,
           { policyId },
         );
@@ -282,6 +295,7 @@ export function RfqMandatePanel() {
         await send(
           { ...sim.request, chainId: portaldotTestnet.id },
           'Approval',
+          'Approval',
           p.terms.payToken,
           { amount },
         );
@@ -309,6 +323,7 @@ export function RfqMandatePanel() {
       await send(
         { ...sim.request, chainId: portaldotTestnet.id },
         'RfqExecuted',
+        'Delegated swap executed',
         executor,
         {
           policyId,
@@ -325,26 +340,29 @@ export function RfqMandatePanel() {
       setBusy(false);
     }
   }
+
   return (
     <section className="panel space-y-6">
-      <h2 className="text-2xl font-semibold">RFQ trading mandates</h2>
-      <p className="max-w-prose text-muted-foreground">
-        A separate RFQ-only executor fixes the maker, pair, minimum exchange ratio and
-        payment budgets. All amounts are token base units, never USD. New mandates expire
-        in 24 hours. The original deposit-only executor cannot trade.
-      </p>
+      <div>
+        <h2 className="text-2xl font-bold">Best-Price Swap Auto-Pilot Mandates</h2>
+        <p className="mt-2 max-w-prose text-base leading-relaxed text-muted-foreground">
+          Authorize a Kudex Agent delegate to execute Best-Price Auto-Routing swaps for a
+          specific token pair, minimum exchange rate, and strict spending budget. Expires
+          automatically in 24 hours.
+        </p>
+      </div>
       {executor === zeroAddress && (
-        <p role="status">
-          RFQ executor deployment unavailable. No trading mandate is active through this
-          interface.
+        <p role="status" className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
+          Swap Auto-Pilot contract deployment is awaiting configuration. No delegated swap
+          rule is active through this panel.
         </p>
       )}
       <fieldset disabled={busy || !ready} className="grid gap-4 md:grid-cols-2">
         {Object.entries(fieldNames).map(([key, label]) => (
-          <label key={key} className="text-sm">
+          <label key={key} className="text-sm font-medium">
             {label}
             <input
-              className="field-input mt-2"
+              className="field-input mt-2 font-semibold tabular-nums"
               value={fields[key as keyof Fields]}
               onChange={(e) => setFields({ ...fields, [key]: e.target.value })}
             />
@@ -353,15 +371,15 @@ export function RfqMandatePanel() {
       </fieldset>
       <button
         disabled={busy || !ready || !!submitted}
-        className="action-link"
+        className="action-link disabled:opacity-40"
         onClick={() => void act('create')}
       >
-        Authorize RFQ mandate in wallet
+        Authorize swap mandate in wallet
       </button>
-      <label className="block">
-        On-chain RFQ policy ID
+      <label className="block text-sm font-medium">
+        On-chain swap policy ID
         <input
-          className="field-input mt-2"
+          className="field-input mt-2 font-mono text-sm"
           disabled={busy || !!submitted}
           value={id}
           onChange={(e) => setId(e.target.value)}
@@ -370,7 +388,7 @@ export function RfqMandatePanel() {
       <div className="flex flex-wrap gap-3">
         {(['read', 'approve', 'clear', 'revoke'] as const).map((action) => (
           <button
-            className="quiet-link"
+            className="quiet-link disabled:opacity-40"
             key={action}
             disabled={busy || !ready || !!submitted}
             onClick={() => void act(action)}
@@ -378,19 +396,23 @@ export function RfqMandatePanel() {
             {
               {
                 read: 'Read mandate',
-                approve: 'Approve remaining RFQ budget',
-                clear: 'Remove RFQ executor allowance',
-                revoke: 'Revoke RFQ mandate',
+                approve: 'Approve remaining swap budget',
+                clear: 'Remove swap executor allowance',
+                revoke: 'Revoke swap mandate',
               }[action]
             }
           </button>
         ))}
       </div>
-      {observation && <p className="break-all text-sm">{observation}</p>}
-      <label className="block">
+      {observation && (
+        <p className="break-all rounded-xl bg-secondary p-4 text-sm font-medium tabular-nums">
+          {observation}
+        </p>
+      )}
+      <label className="block text-sm font-medium">
         Delegate signed quote JSON
         <textarea
-          className="field-input mt-2 min-h-32"
+          className="field-input mt-2 min-h-32 font-mono text-sm"
           maxLength={12000}
           disabled={busy || !!submitted}
           value={raw}
@@ -398,36 +420,37 @@ export function RfqMandatePanel() {
         />
       </label>
       <button
-        className="action-link"
+        className="action-link disabled:opacity-40"
         disabled={busy || !ready || !!submitted}
         onClick={() => void act('execute')}
       >
         Execute permitted quote as delegate
       </button>
       {submitted && (
-        <div>
-          <p className="break-all">Submitted: {submitted}</p>
+        <div className="space-y-2 rounded-xl border border-border p-4">
+          <p className="break-all font-mono text-sm">Submitted: {submitted}</p>
           <button
             className="quiet-link"
             disabled={busy}
             onClick={() => void act('reconcile')}
           >
-            Reconcile RFQ mandate transaction
+            Reconcile swap mandate transaction
           </button>
         </div>
       )}
-      {status && <p role="status">{status}</p>}
+      {status && (
+        <p role="status" className="text-sm font-medium text-primary">
+          {status}
+        </p>
+      )}
       {error && (
-        <p role="alert" className="text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {error}
         </p>
       )}
-      <p className="text-sm text-muted-foreground">
-        Manual, public testnet execution only. No hosted background signer, recurring
-        strategy or cross-device journal is configured. Submitted references in this panel
-        last only for this mounted session; inspect receipts before retrying after reload.
-        Revocation stops further execution but token allowance must be removed separately.
-        Delegated credentials remain sensitive.
+      <p className="text-sm leading-relaxed text-muted-foreground">
+        Revoking a swap rule immediately prevents further agent trades; token spending
+        allowances can also be cleared above at any time.
       </p>
     </section>
   );

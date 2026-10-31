@@ -13,9 +13,9 @@ export function VolumeChart() {
     <section className="space-y-5 rounded-2xl border border-border bg-card p-5 text-card-foreground sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold">On-Chain Settlement Activity</h2>
+          <h2 className="text-xl font-bold">Balance Growth &amp; Settled Payment Volume</h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Live liquidity deposits and atomic RFQ fills indexed across the latest 500
+            Live business vault deposits and settled swaps recorded across recent
             confirmed blocks.
           </p>
         </div>
@@ -32,33 +32,33 @@ export function VolumeChart() {
 
       {error ? (
         <p role="alert" className="text-sm text-destructive">
-          Telemetry sync paused: {getReadableErrorMessage(error)}
+          Activity sync paused: {getReadableErrorMessage(error)}
         </p>
       ) : null}
 
       {!data ? (
         <p role="status" className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
           {isFetching
-            ? 'Indexing recent settlement blocks…'
-            : 'Connect or configure pool contracts to stream live block-window settlement volume.'}
+            ? 'Loading live payment and vault activity…'
+            : 'Connect your wallet or configure a business vault to stream live balance growth and payment volume.'}
         </p>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-xl bg-secondary p-4">
-              <span className="text-sm text-muted-foreground">Window Volume</span>
+              <span className="text-sm text-muted-foreground">Settled Volume</span>
               <p className="mt-1 break-words text-2xl font-bold text-primary tabular-nums">
                 {formatUnits(data.totalVolumeBigInt, data.decimals)}
               </p>
             </div>
             <div className="rounded-xl bg-secondary p-4">
-              <span className="text-sm text-muted-foreground">Pool Deposits</span>
+              <span className="text-sm text-muted-foreground">Vault Deposits</span>
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {data.totalDepositEvents}
               </p>
             </div>
             <div className="rounded-xl bg-secondary p-4">
-              <span className="text-sm text-muted-foreground">RFQ Settlements</span>
+              <span className="text-sm text-muted-foreground">Completed Swaps</span>
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {data.rfqConfigured ? data.totalSettlements : 0}
               </p>
@@ -66,12 +66,13 @@ export function VolumeChart() {
           </div>
 
           <p className="text-sm text-muted-foreground tabular-nums">
-            Indexed blocks #{data.fromBlock.toString()} – #{data.indexedThrough.toString()}
+            Confirmed blocks #{data.fromBlock.toString()} – #{data.indexedThrough.toString()}
           </p>
 
           {data.totalDepositEvents === 0 ? (
             <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-              Zero deposit events recorded in the current 500-block window.
+              No vault deposits or private payments recorded in this recent block window
+              yet. Use the buttons above to make your first deposit or private transfer.
             </p>
           ) : (
             <div className="h-64 min-w-0">
@@ -87,11 +88,11 @@ export function VolumeChart() {
                       active && payload?.[0] ? (
                         <div className="rounded-xl border border-border bg-popover p-3 text-sm text-popover-foreground shadow-lg">
                           <p className="mb-1 text-sm text-muted-foreground tabular-nums">
-                            Blocks {payload[0].payload.day}
+                            Window {payload[0].payload.day}
                           </p>
-                          <p className="font-semibold text-primary tabular-nums">
+                          <p className="font-bold text-primary tabular-nums">
                             {formatUnits(payload[0].payload.rawVolumeBigInt, data.decimals)}{' '}
-                            units
+                            settled
                           </p>
                         </div>
                       ) : null
@@ -101,7 +102,7 @@ export function VolumeChart() {
                     dataKey="volume"
                     stroke="var(--primary)"
                     fill="var(--primary)"
-                    fillOpacity={0.14}
+                    fillOpacity={0.16}
                     isAnimationActive={false}
                   />
                 </AreaChart>

@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
     const parsed = contextSchema.safeParse({ nativeAddress: address });
     if (!parsed.success || !parsed.data.nativeAddress)
-      throw new RequestRejected('Select a valid native Portaldot address or EVM address.', 400);
+      throw new RequestRejected('Select a valid native account address or 0x wallet address.', 400);
 
     const result = await nativeAccountSnapshot(parsed.data.nativeAddress);
     return Response.json(result, { headers: { 'Cache-Control': 'no-store' } });

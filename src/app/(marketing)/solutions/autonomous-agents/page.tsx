@@ -1,25 +1,23 @@
 import Link from 'next/link';
-import { FiArrowRight, FiCpu, FiSliders, FiShield, FiRepeat } from 'react-icons/fi';
+import { FiArrowRight, FiCpu, FiRepeat, FiShield, FiSliders } from 'react-icons/fi';
 
 export default function AutonomousAgentsSolutionPage() {
   return (
     <div className="space-y-14">
       <header className="space-y-5">
-        <p className="eyebrow">A2A & A2H Execution Infrastructure</p>
-        <h1 className="page-title">
-          KUDEX AGENT & Bounded Session Key Economies
-        </h1>
+        <p className="eyebrow">Auto-Pilot Rules &amp; Plain-English AI</p>
+        <h1 className="page-title">Put Routine Business Finance on Auto-Pilot</h1>
         <p className="page-description">
-          Automate pool deposits and RFQ quote execution without ever handing custody of
-          your treasury keys to an unconstrained external service.
+          Give your Kudex Agent a budget and a time limit. It handles trades and payments
+          in the background without asking you to click &apos;Approve&apos; on every step.
         </p>
         <div className="flex flex-wrap gap-3 pt-2">
-          <Link href="/app/agents" className="action-link text-sm">
-            <span>Open KUDEX AGENT Workspace</span>
+          <Link href="/app/agent" className="action-link text-sm">
+            <span>Open Kudex Agent</span>
             <FiArrowRight aria-hidden="true" />
           </Link>
           <Link href="/docs" className="quiet-link text-sm">
-            <span>Session Policy Spec</span>
+            <span>Read Docs</span>
           </Link>
         </div>
       </header>
@@ -28,23 +26,23 @@ export default function AutonomousAgentsSolutionPage() {
         {[
           {
             icon: FiCpu,
-            title: 'KUDEX AGENT Live Telemetry',
-            body: 'Inspect live pool reserves, finalized account balances, and RFQ terms in plain language while retaining complete owner signing control.',
+            title: 'Plain-English Instructions',
+            body: 'Ask your Kudex Agent to move idle cash into Fixed-Yield Business Vaults, swap assets privately, or check vault protection in seconds.',
           },
           {
             icon: FiSliders,
-            title: 'Time-Bounded Spend Caps',
-            body: 'Enforce 2-hour, 24-hour, or 7-day session expirations alongside strict per-transaction, UTC-daily, and lifetime token budgets.',
+            title: 'Auto-Pilot Rules (Spending Limits)',
+            body: 'Set clear spending budgets ($100, $500, or $2,500 max) and exact time limits (2 Hours, 24 Hours, or 7 Days) that your agent can never exceed.',
           },
           {
             icon: FiRepeat,
-            title: 'Multi-Agent RFQ Mandates',
-            body: 'Lock permitted makers, token pairs, and minimum exchange ratios on-chain so solver delegates can only execute favorable quotes.',
+            title: 'Best-Price Auto-Routing',
+            body: 'Swap assets or move money across networks in one click. Background bots compete to give you the lowest fee and fastest settlement.',
           },
           {
             icon: FiShield,
-            title: 'One-Click Emergency Shutdown',
-            body: 'Revoke any active session policy or RFQ mandate immediately on-chain from your owner wallet with zero delay.',
+            title: '1-Click Instant Shutoff',
+            body: 'Click Turn Off Auto-Pilot Immediately at any moment to pause background actions with zero delay.',
           },
         ].map((card) => (
           <article key={card.title} className="panel space-y-3">

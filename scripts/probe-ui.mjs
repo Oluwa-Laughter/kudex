@@ -9,8 +9,11 @@ const browser = await chromium.launch({
 const report = [];
 const routes = process.env.KUDEX_UI_ROUTES?.split(',') || [
   '/',
-  '/app/agents',
-  '/app/vaults',
+  '/app/overview',
+  '/app/pay',
+  '/app/earn',
+  '/app/trade',
+  '/app/agent',
 ];
 const output = process.env.KUDEX_UI_ARTIFACT_DIR || 'artifacts/ui/verified';
 await mkdir(output, { recursive: true });

@@ -34,7 +34,7 @@ test('wallet dialog restores focus, native account context loads, and mobile men
       },
     }),
   );
-  await page.goto('/app/agents');
+  await page.goto('/app/agent');
   const wallet = page.getByRole('button', { name: 'Connect wallets', exact: true });
   await wallet.click();
   await expect(page.getByRole('dialog')).toBeVisible();
@@ -59,11 +59,11 @@ test('wallet dialog restores focus, native account context loads, and mobile men
   ).toBe(true);
 });
 
-test('policy draft can be reviewed and exported without activating any on-chain authority', async ({
+test('Auto-Pilot policy draft can be reviewed and exported without activating any on-chain authority', async ({
   page,
 }) => {
-  await page.goto('/app/agents');
-  await page.getByRole('tab', { name: 'Session Keys & Policies', exact: true }).click();
+  await page.goto('/app/agent');
+  await page.getByRole('tab', { name: 'Vault Auto-Pilot Rules', exact: true }).click();
   for (const [label, value] of [
     ['Contract-facing owner', '0x1111111111111111111111111111111111111111'],
     ['Agent delegate', '0x2222222222222222222222222222222222222222'],
@@ -86,7 +86,7 @@ test('policy draft can be reviewed and exported without activating any on-chain 
   await expect(page.getByLabel('Per-deposit cap', { exact: true })).toHaveValue('1');
 });
 
-test('KUDEX AGENT conversation consumes progress and text chunks while keeping tool observations distinct', async ({
+test('Kudex Agent conversation streams responses and interactive confirmation cards while keeping tool observations distinct', async ({
   page,
 }) => {
   await page.route('**/api/agent/status', (route) =>
@@ -122,12 +122,13 @@ test('KUDEX AGENT conversation consumes progress and text chunks while keeping t
       body: events.map((event) => JSON.stringify(event)).join('\n') + '\n',
     }),
   );
-  await page.goto('/app/agents');
+  await page.goto('/app/agent');
   await page
     .getByLabel('Ask KUDEX AGENT about the product or a workflow', { exact: true })
-    .fill('What blocks my deposit?');
+    .fill('What blocks my vault deposit?');
   await page.getByRole('button', { name: 'Send message', exact: true }).click();
   await expect(page.getByText('Review your account.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Pre-Flight Safety Check', { exact: true })).toBeVisible();
   await expect(
     page.getByText('Test fixture: native RPC unavailable.', { exact: true }),
   ).toBeVisible();

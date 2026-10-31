@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { zeroAddress } from 'viem';
-import { FiArrowRight, FiDownload, FiShield, FiEdit2, FiCheck, FiClock } from 'react-icons/fi';
+import { FiArrowRight, FiCheck, FiClock, FiDownload, FiEdit2, FiShield } from 'react-icons/fi';
 import { AgentPolicyActions } from './AgentPolicyActions';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
@@ -37,25 +37,25 @@ const fields: {
   {
     key: 'owner',
     label: 'Contract-facing owner',
-    hint: 'Your connected 0x wallet address.',
+    hint: 'Your connected business wallet address.',
     placeholder: '0x…',
   },
   {
     key: 'delegate',
     label: 'Agent delegate',
-    hint: 'Bounded session key address authorized to submit deposits.',
+    hint: 'Authorized Kudex Agent address allowed to submit deposits within your budget.',
     placeholder: '0x…',
   },
   {
     key: 'vault',
     label: 'Vault address',
-    hint: 'Target yield pool registered in the policy registry.',
+    hint: 'Fixed-Yield Business Vault registered for Auto-Pilot deposits.',
     placeholder: '0x…',
   },
   {
     key: 'asset',
     label: 'Collateral token',
-    hint: 'Underlying asset contract matching the target pool.',
+    hint: 'Token contract matching the selected business vault.',
     placeholder: '0x…',
   },
   {
@@ -67,25 +67,25 @@ const fields: {
   {
     key: 'hours',
     label: 'Expires in hours',
-    hint: 'Session key duration from 1 to 720 hours.',
+    hint: 'Auto-Pilot duration from 1 to 720 hours.',
     placeholder: '24',
   },
   {
     key: 'perAction',
     label: 'Per-deposit cap',
-    hint: 'Maximum token units allowed per single transaction.',
+    hint: 'Maximum amount allowed in a single automated deposit.',
     placeholder: 'e.g. 1000',
   },
   {
     key: 'daily',
     label: 'Daily cap',
-    hint: 'Maximum cumulative spend per UTC calendar day.',
+    hint: 'Maximum total amount allowed per calendar day.',
     placeholder: 'e.g. 5000',
   },
   {
     key: 'total',
     label: 'Total budget',
-    hint: 'Maximum cumulative spend across the entire session lifetime.',
+    hint: 'Maximum total spending budget across the full Auto-Pilot period.',
     placeholder: 'e.g. 25000',
   },
 ];
@@ -151,25 +151,26 @@ export function AgentPolicyBuilder({
         <div>
           <h2 className="text-base font-bold">
             {contractsConfigured
-              ? 'Bounded Session Keys Ready for Authorization'
-              : 'Session Key Builder · Executor Awaiting Deployment'}
+              ? 'Auto-Pilot Rules (Spending Limits) Ready for On-Chain Authorization'
+              : 'Auto-Pilot Rule Builder · On-Chain Executor Standby'}
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Constrain KUDEX AGENT delegates with strict time expirations, cumulative
-            spending caps, and whitelisted contract functions.
+            Give your Kudex Agent a budget and a time limit. It handles trades and
+            payments in the background without asking you to click &apos;Approve&apos; on
+            every step.
           </p>
         </div>
       </div>
 
       <div className="grid items-start gap-7 xl:grid-cols-[1.4fr_1fr]">
-        <section className="panel">
+        <section className="panel min-w-0">
           {!policy ? (
             <form onSubmit={review} className="space-y-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-xl font-bold">Configure Session Policy</h2>
+                  <h2 className="text-xl font-bold">Configure On-Chain Spending Rule</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Set time bounds and cumulative spending limits.
+                    Set exact time limits and spending caps enforced on-chain.
                   </p>
                 </div>
                 <button
@@ -177,14 +178,14 @@ export function AgentPolicyBuilder({
                   className="quiet-link text-sm"
                   onClick={fillKnownDetails}
                 >
-                  Autofill connected wallet & pool
+                  Autofill connected wallet &amp; vault
                 </button>
               </div>
 
               <div className="space-y-2">
                 <span className="flex items-center gap-2 text-sm font-semibold">
                   <FiClock className="text-primary" aria-hidden="true" />
-                  <span>Quick Expiration Presets</span>
+                  <span>Quick Time Limit Presets</span>
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {EXPIRY_PRESETS.map((preset) => (
@@ -216,7 +217,7 @@ export function AgentPolicyBuilder({
                       {field.label}
                     </label>
                     <input
-                      className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-base tabular-nums"
+                      className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-base font-semibold tabular-nums"
                       id={`agent-${field.key}`}
                       required
                       value={input[field.key]}
@@ -251,7 +252,7 @@ export function AgentPolicyBuilder({
               {error && (
                 <p
                   role="alert"
-                  className="rounded-xl border border-destructive p-4 text-sm text-destructive"
+                  className="rounded-xl border border-destructive p-4 text-sm font-medium text-destructive"
                 >
                   {error}
                 </p>
@@ -269,7 +270,7 @@ export function AgentPolicyBuilder({
                     Draft · Not authorized
                   </p>
                   <h2 className="mt-1 text-2xl font-bold">
-                    Verify Session Bounds Before Signing
+                    Verify Spending Limits Before Signing
                   </h2>
                 </div>
                 <button className="quiet-link text-sm" onClick={() => setPolicy(null)}>
@@ -280,17 +281,17 @@ export function AgentPolicyBuilder({
 
               <dl className="divide-y divide-border">
                 {[
-                  ['Whitelisted function', 'Vault deposit only (execute)'],
+                  ['Allowed action', 'Business Vault deposit only'],
                   ['Owner', policy.owner],
                   ['Delegate', policy.delegate],
                   ['Vault', policy.vault],
-                  ['Collateral', policy.asset],
+                  ['Asset', policy.asset],
                   ['Precision', `${policy.decimals} decimals`],
                   ['Per deposit', input.perAction],
-                  ['Per UTC day', input.daily],
-                  ['Lifetime budget', input.total],
+                  ['Daily limit', input.daily],
+                  ['Total budget', input.total],
                   ['Expires', new Date(policy.expiresAt * 1000).toUTCString()],
-                  ['Recipient lock', 'Policy owner only'],
+                  ['Recipient lock', 'Owner wallet only'],
                 ].map(([label, value]) => (
                   <div className="py-3" key={label}>
                     <dt className="text-sm text-muted-foreground">{label}</dt>
@@ -312,7 +313,7 @@ export function AgentPolicyBuilder({
 
               {exported && (
                 <p role="status" className="text-sm font-medium text-primary">
-                  Policy JSON exported. Authorize in wallet to activate on-chain.
+                  Auto-Pilot rule JSON exported. Authorize in wallet to activate on-chain.
                 </p>
               )}
 
@@ -321,31 +322,31 @@ export function AgentPolicyBuilder({
           )}
         </section>
 
-        <aside className="space-y-5">
+        <aside className="min-w-0 space-y-5">
           <section className="panel space-y-4">
-            <h2 className="text-lg font-bold">Contract Function Whitelist</h2>
+            <h2 className="text-lg font-bold">Safety Guarantees</h2>
             <ul className="space-y-2.5 text-sm">
               <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5">
-                <span className="font-mono">deposit(uint256,address)</span>
-                <span className="font-semibold text-primary">Permitted</span>
+                <span className="font-medium">Vault deposits within budget</span>
+                <span className="font-semibold text-primary">Allowed</span>
               </li>
               <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5 text-muted-foreground">
-                <span className="font-mono">withdraw / redeem</span>
+                <span>Unapproved withdrawals</span>
                 <span>Blocked</span>
               </li>
               <li className="flex items-center justify-between rounded-xl bg-secondary px-3.5 py-2.5 text-muted-foreground">
-                <span className="font-mono">transfer / arbitrary call</span>
+                <span>Transfers to external wallets</span>
                 <span>Blocked</span>
               </li>
             </ul>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Newly minted pool shares are routed exclusively to the owner address and
-              can never be redirected by a session delegate.
+              All vault shares earned by your Kudex Agent belong exclusively to your
+              wallet and can never be redirected elsewhere.
             </p>
             <div className="border-t border-border pt-3">
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
                 <FiArrowRight aria-hidden="true" />
-                <span>Instant owner revocation supported at any block</span>
+                <span>Turn off Auto-Pilot anytime in one click</span>
               </span>
             </div>
           </section>

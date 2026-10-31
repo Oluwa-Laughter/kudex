@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
-import { erc20Abi, formatUnits, type Address, type Hash } from 'viem';
+import { erc20Abi, formatUnits, type Address, type Hash, type Hex } from 'viem';
+import { FiLock, FiArrowDownLeft, FiTrendingUp } from 'react-icons/fi';
 import {
   CONTRACT_ADDRESSES,
   isVaultConfigured,
@@ -30,12 +31,25 @@ import {
 
 const { vault, usdc: asset } = CONTRACT_ADDRESSES;
 
-export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
+async function sha256Commitment(seed: string): Promise<Hex> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(seed));
+  return ('0x' +
+    Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')) as Hex;
+}
+
+export function PublicVault({
+  selectedVaultTitle = 'Short-Term Treasury Vault',
+}: {
+  selectedVaultTitle?: string;
+}) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
   const [amount, setAmount] = useState('');
   const [operation, setOperation] = useState<'deposit' | 'redeem'>('deposit');
+  const [stealthDeposit, setStealthDeposit] = useState(false);
   const [review, setReview] = useState<Review>();
   const [pending, setPending] = useState<Pending>();
   const [evidence, setEvidence] = useState<{
@@ -56,7 +70,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       if (raw) setPending(decodePendingVault(raw, vault, asset));
     } catch {
       setError(
-        'Pending transaction reference could not be restored. Inspect wallet activity before retrying.',
+        'A previous vault transaction could not be restored automatically. Check your wallet activity before trying again.',
       );
     }
     setRestored(true);
@@ -70,7 +84,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       else localStorage.removeItem(pendingKey);
     } catch {
       setError(
-        'Transaction recovery storage is unavailable. Keep this page open and retain the transaction hash.',
+        'Browser recovery storage is unavailable. Keep this tab open until your transaction confirms.',
       );
     }
   }, [pending, pendingKey, restored]);
@@ -110,7 +124,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       setReview(undefined);
       if (!client || !address || !connected || pending)
         throw new Error(
-          'Connect the owner transaction wallet on the settlement network and reconcile pending transactions first.',
+          'Connect your wallet on the active network and wait for any pending transaction first.',
         );
       const fresh = await readVault(client, vault, asset, address);
       const input = exactAmount(
@@ -122,7 +136,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
           ? input > fresh.balance || input > fresh.maxDeposit
           : input > fresh.maxRedeem
       )
-        throw new Error('Amount exceeds available balance or the vault operation limit.');
+        throw new Error('Amount exceeds your available wallet or vault balance.');
       const preview =
         operation === 'deposit'
           ? await client.readContract({
@@ -141,7 +155,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
             });
       const minimum = (preview * 9950n) / 10000n;
       if (minimum <= 0n)
-        throw new Error('Amount is too small for a positive protected output.');
+        throw new Error('Enter a slightly larger amount to receive a protected output.');
       setReview({
         owner: address,
         operation,
@@ -165,7 +179,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       : await client.getTransactionReceipt({ hash: tx.hash });
     if (receipt.status !== 'success') {
       setPending(undefined);
-      throw new Error('Transaction reverted. No financial success reported.');
+      throw new Error('Transaction did not complete. Your funds were not moved.');
     }
     if (tx.review)
       verifyVaultReceipt(
@@ -181,7 +195,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
         receipt.from.toLowerCase() !== tx.owner.toLowerCase() ||
         receipt.to?.toLowerCase() !== asset.toLowerCase()
       )
-        throw new Error('Approval receipt identity mismatch. Requires reconciliation.');
+        throw new Error('Approval receipt did not match your wallet.');
       const allowance = await client.readContract({
         address: asset,
         abi: erc20Abi,
@@ -190,33 +204,31 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
         blockNumber: receipt.blockNumber,
       });
       if (allowance !== tx.approval)
-        throw new Error(
-          'Expected exact allowance not observed. Requires reconciliation.',
-        );
+        throw new Error('Exact spending approval did not match.');
     }
     const finality = await receiptFinality(client, receipt);
     if (finality === 'unknown')
-      throw new Error('Receipt block is no longer canonical. Requires reconciliation.');
+      throw new Error('Receipt block changed. Refresh your balance before continuing.');
     setPending(undefined);
     setReview(undefined);
     setEvidence({
       hash: receipt.transactionHash,
       owner: tx.owner,
-      text: `${tx.review ? (tx.review.operation === 'deposit' ? 'Deposit' : 'Redemption') : 'Allowance update'} ${finality}. Matching receipt and chain state verified.`,
+      text: `${tx.review ? (tx.review.operation === 'deposit' ? 'Deposit' : 'Withdrawal') : 'Spending approval'} ${finality}. Your updated vault balance is verified.`,
     });
     const refreshed = await state.refetch();
     if (refreshed.error)
       setStatus(
-        'Receipt verified; position refresh unavailable. Refresh before another action.',
+        'Transaction confirmed; click Refresh balance before starting another action.',
       );
-    else setStatus('Position refreshed from chain.');
+    else setStatus('Vault balance updated from live network.');
   }
 
   async function transact(approval?: bigint) {
     await guarded(async () => {
       if (!client || !address || !connected || pending)
         throw new Error(
-          'Correct transaction signer and network required; reconcile pending transactions first.',
+          'Connect your wallet on the active network and finish any pending transaction first.',
         );
       if (approval !== 0n)
         await assertVaultProvenance(
@@ -237,11 +249,9 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
             fresh.allowance !== 0n)
         )
           throw new Error(
-            'Review the deposit and remove any existing allowance before approving its exact amount.',
+            'Review your deposit first and clear any previous spending approval before approving a new amount.',
           );
-        setStatus(
-          'Simulating exact allowance. Review the separate token approval in your wallet.',
-        );
+        setStatus('Confirm the exact deposit approval in your wallet.');
         const simulation = await client.simulateContract({
           address: asset,
           abi: erc20Abi,
@@ -257,19 +267,48 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       } else {
         const r = usableReview;
         if (!r || fresh.timestamp > r.deadline)
-          throw new Error('Review expired or account changed. Review again.');
+          throw new Error('Your quote expired. Click Review Vault Transaction again.');
         if (
           r.operation === 'deposit' &&
           (fresh.allowance < r.input ||
             fresh.balance < r.input ||
             fresh.maxDeposit < r.input)
         )
-          throw new Error('Deposit allowance, balance, or limit changed.');
+          throw new Error('Your wallet balance or approval changed. Review again.');
         if (r.operation === 'redeem' && fresh.maxRedeem < r.input)
-          throw new Error('Redeemable shares changed.');
-        setStatus(
-          'Simulating bounded execution. Review the vault transaction in your wallet.',
-        );
+          throw new Error('Your withdrawable vault shares changed. Review again.');
+
+        if (r.operation === 'deposit' && stealthDeposit) {
+          setStatus('Confirm your Stealth Mode vault deposit in your wallet.');
+          const commitment = await sha256Commitment(
+            `kudex-vault-stealth:${address}:${r.input.toString()}:${Date.now()}`,
+          );
+          const simulation = await client.simulateContract({
+            address: vault,
+            abi: kudexVaultAbi,
+            functionName: 'shieldDeposit',
+            args: [r.input, commitment, address],
+            account: address,
+          });
+          hash = await writeContractAsync({
+            ...simulation.request,
+            account: address,
+            chainId: portaldotTestnet.id,
+          });
+          await client.waitForTransactionReceipt({ hash });
+          setReview(undefined);
+          setAmount('');
+          setEvidence({
+            hash,
+            owner: address,
+            text: 'Deposit confirmed in Stealth Mode. Your vault balance is hidden from the public ledger.',
+          });
+          await state.refetch();
+          setStatus('Vault balance updated in Stealth Mode.');
+          return;
+        }
+
+        setStatus('Confirm your vault transaction in your wallet.');
         const simulation = await client.simulateContract({
           address: vault,
           abi: kudexVaultAbi,
@@ -290,7 +329,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
         ...(approval !== undefined ? { approval } : { review: usableReview }),
       };
       setPending(tx);
-      setStatus('Submitted. Awaiting receipt verification. Do not submit again.');
+      setStatus('Transaction submitted. Verifying confirmation…');
       await reconcile(tx, true);
     });
   }
@@ -299,146 +338,64 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
 
   return (
     <div className="space-y-6">
-      {!hideHeader && (
-        <header>
-          <p className="eyebrow">Institutional Liquidity</p>
-          <h1 className="page-title">Yield Pools & Custody</h1>
-          <p className="page-description">
-            Supply collateral to mint pool shares or redeem shares for underlying assets
-            with slippage-protected execution.
-          </p>
-        </header>
-      )}
-
-      {!isVaultConfigured && (
-        <p role="status" className="panel text-sm text-muted-foreground">
-          Pool contract address awaiting configuration. Connect your wallet to prepare
-          treasury operations once active.
-        </p>
-      )}
-
-      {isVaultConfigured && !isVaultProvenanceConfigured && (
-        <p role="status" className="panel text-sm text-muted-foreground">
-          Contract code provenance verification required before submitting deposits.
-        </p>
-      )}
-
-      {!address && (
-        <p className="panel text-sm text-muted-foreground">
-          Connect your transaction wallet to view live pool balances, shares, and
-          withdrawal limits.
-        </p>
-      )}
-
-      {address && !connected && (
-        <p role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-          Switch your wallet to the active settlement network before signing.
-        </p>
-      )}
-
-      {state.error && (
-        <p role="alert" className="text-sm text-destructive">
-          Pool state unavailable: {getReadableErrorMessage(state.error)}{' '}
-          {data ? 'Showing previous verified read.' : ''}
-        </p>
-      )}
-
-      {data && (
-        <section className="panel space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold">On-chain position</h2>
-            <span className="rounded-full bg-secondary px-3 py-1 text-sm font-medium text-primary tabular-nums">
-              Block #{data.block.toString()} · {data.frozen ? 'Deposits Paused' : 'Active'}
-            </span>
+      {/* Simple Deposit / Withdraw Box */}
+      <section className="panel space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold">Deposit or Withdraw Funds</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Selected vault: <strong className="text-foreground">{selectedVaultTitle}</strong>
+            </p>
           </div>
 
-          <p className="break-all font-mono text-sm text-muted-foreground">
-            Pool: {vault} · Asset: {asset}
-          </p>
-
-          <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Wallet collateral</dt>
-              <dd className="mt-1 text-xl font-bold tabular-nums">
-                {formatUnits(data.balance, data.decimals)} {data.symbol}
-              </dd>
-            </div>
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Vault shares</dt>
-              <dd className="mt-1 text-xl font-bold tabular-nums">
-                {formatUnits(data.shares, data.shareDecimals)}
-              </dd>
-            </div>
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Position value</dt>
-              <dd className="mt-1 text-xl font-bold text-primary tabular-nums">
-                {formatUnits(data.assets, data.decimals)} {data.symbol}
-              </dd>
-            </div>
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Total vault assets</dt>
-              <dd className="mt-1 text-xl font-bold tabular-nums">
-                {formatUnits(data.totalAssets, data.decimals)} {data.symbol}
-              </dd>
-            </div>
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Maximum withdrawal</dt>
-              <dd className="mt-1 text-xl font-bold tabular-nums">
-                {formatUnits(data.maxWithdraw, data.decimals)} {data.symbol}
-              </dd>
-            </div>
-            <div className="rounded-xl bg-secondary p-4">
-              <dt className="text-sm text-muted-foreground">Approved allowance</dt>
-              <dd className="mt-1 text-xl font-bold tabular-nums">
-                {formatUnits(data.allowance, data.decimals)} {data.symbol}
-              </dd>
-            </div>
-          </dl>
-
-          <div className="flex flex-wrap gap-3">
+          <div
+            role="group"
+            aria-label="Choose deposit or withdraw"
+            className="inline-flex flex-wrap gap-2 rounded-xl border border-border bg-secondary p-1"
+          >
             <button
-              className="quiet-link text-sm"
-              disabled={disabled || state.isFetching}
-              onClick={() => void state.refetch()}
-            >
-              Refresh position
-            </button>
-            {data.allowance > 0n && (
-              <button
-                className="quiet-link text-sm"
-                disabled={disabled || !connected}
-                onClick={() => void transact(0n)}
-              >
-                Remove vault allowance
-              </button>
-            )}
-          </div>
-        </section>
-      )}
-
-      <section className="panel space-y-5">
-        <h2 className="text-xl font-bold">Execute Pool Operation</h2>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className="block text-sm font-medium">
-            Operation
-            <select
-              aria-label="Operation"
-              className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 text-base"
+              type="button"
               disabled={disabled}
-              value={operation}
-              onChange={(e) => {
-                setOperation(e.target.value as 'deposit' | 'redeem');
+              onClick={() => {
+                setOperation('deposit');
                 setReview(undefined);
               }}
+              className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition ${
+                operation === 'deposit'
+                  ? 'bg-card text-primary shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              <option value="deposit">Deposit assets</option>
-              <option value="redeem">Redeem shares</option>
-            </select>
-          </label>
-          <label className="block text-sm font-medium">
-            {operation === 'deposit' ? 'Collateral amount' : 'Shares to redeem'}
+              <FiLock aria-hidden="true" />
+              <span>Deposit &amp; Hide Balance</span>
+            </button>
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => {
+                setOperation('redeem');
+                setReview(undefined);
+              }}
+              className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition ${
+                operation === 'redeem'
+                  ? 'bg-card text-accent shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <FiArrowDownLeft aria-hidden="true" />
+              <span>Withdraw to Wallet</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor="vault-amount-input" className="mb-2 block text-sm font-medium">
+              {operation === 'deposit' ? 'Deposit Amount' : 'Vault Shares to Withdraw'}
+            </label>
             <input
-              className="mt-2 min-h-12 w-full rounded-xl border border-input bg-background px-3 text-base tabular-nums"
+              id="vault-amount-input"
+              className="field-input font-bold tabular-nums"
               inputMode="decimal"
               placeholder="0.00"
               value={amount}
@@ -448,52 +405,94 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
                 setReview(undefined);
               }}
             />
-          </label>
+          </div>
+
+          <div className="flex flex-col justify-end">
+            {operation === 'deposit' ? (
+              <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-border bg-secondary px-4 py-3 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={stealthDeposit}
+                  onChange={(e) => setStealthDeposit(e.target.checked)}
+                  disabled={disabled}
+                  className="h-4 w-4 rounded accent-primary"
+                />
+                <span>Record deposit in Private Balances (Stealth Mode)</span>
+              </label>
+            ) : (
+              <div className="flex min-h-12 items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-3 text-sm text-muted-foreground">
+                <FiTrendingUp className="text-primary" aria-hidden="true" />
+                <span>0.5% minimum-output protection applied automatically</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <button
-          className="action-link disabled:opacity-40"
-          disabled={
-            disabled ||
-            !isVaultProvenanceConfigured ||
-            !connected ||
-            !amount ||
-            state.isError
-          }
-          onClick={() => void inspect()}
-        >
-          Review vault transaction
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            className="action-link disabled:opacity-40"
+            disabled={
+              disabled ||
+              !isVaultProvenanceConfigured ||
+              !connected ||
+              !amount ||
+              state.isError
+            }
+            onClick={() => void inspect()}
+          >
+            Review Vault Transaction
+          </button>
+
+          {!address && (
+            <span className="text-sm text-muted-foreground">
+              Connect your wallet in the top bar to deposit or withdraw.
+            </span>
+          )}
+          {address && !connected && (
+            <span role="alert" className="text-sm text-destructive">
+              Switch your wallet to the active network before confirming.
+            </span>
+          )}
+          {!isVaultConfigured && (
+            <span role="status" className="text-sm text-muted-foreground">
+              Business vault contract is awaiting configuration on this deployment.
+            </span>
+          )}
+        </div>
 
         {usableReview && data && (
           <div className="space-y-4 rounded-xl border border-border bg-secondary p-5">
-            <p className="text-base font-semibold tabular-nums">
-              Expected output:{' '}
+            <p className="text-base font-bold tabular-nums">
+              Estimated Receive:{' '}
               {formatUnits(
                 usableReview.preview,
                 operation === 'deposit' ? data.shareDecimals : data.decimals,
               )}{' '}
-              {operation === 'deposit' ? 'shares' : data.symbol}
+              {operation === 'deposit' ? 'vault shares' : data.symbol}
             </p>
             <p className="text-sm text-muted-foreground tabular-nums">
-              Protected minimum (0.5% max slippage):{' '}
+              Guaranteed Minimum:{' '}
               {formatUnits(
                 usableReview.minimum,
                 operation === 'deposit' ? data.shareDecimals : data.decimals,
               )}{' '}
-              · Valid until {new Date(Number(usableReview.deadline) * 1000).toLocaleTimeString()}
+              · Quote valid until{' '}
+              {new Date(Number(usableReview.deadline) * 1000).toLocaleTimeString()}
             </p>
             <div className="flex flex-wrap gap-3">
               {operation === 'deposit' && data.allowance < usableReview.input && (
                 <button
+                  type="button"
                   className="quiet-link"
                   disabled={disabled || data.allowance > 0n || !connected}
                   onClick={() => void transact(usableReview.input)}
                 >
-                  Approve exact deposit amount
+                  Approve Exact Deposit Amount
                 </button>
               )}
               <button
+                type="button"
                 className="action-link disabled:opacity-40"
                 disabled={
                   disabled ||
@@ -502,15 +501,90 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
                 }
                 onClick={() => void transact()}
               >
-                Confirm {operation} in wallet
+                {operation === 'deposit'
+                  ? 'Confirm Deposit in Wallet'
+                  : 'Confirm Withdrawal in Wallet'}
               </button>
             </div>
           </div>
         )}
       </section>
 
-      {busy && <p role="status" className="text-sm text-muted-foreground">Waiting for wallet or chain confirmation…</p>}
-      {status && <p role="status" className="text-sm font-medium text-primary">{status}</p>}
+      {/* Live Vault Balance Summary when connected */}
+      {data && (
+        <section className="panel space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">Your Vault Balance</h2>
+            <span className="emerald-badge tabular-nums">
+              {data.frozen ? 'New Deposits Paused' : 'Active & Protected'}
+            </span>
+          </div>
+
+          <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Available in Wallet</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
+                {formatUnits(data.balance, data.decimals)} {data.symbol}
+              </dd>
+            </div>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Your Vault Value</dt>
+              <dd className="mt-1 text-xl font-bold text-primary tabular-nums">
+                {formatUnits(data.assets, data.decimals)} {data.symbol}
+              </dd>
+            </div>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Your Vault Shares</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
+                {formatUnits(data.shares, data.shareDecimals)}
+              </dd>
+            </div>
+            <div className="rounded-xl bg-secondary p-4">
+              <dt className="text-sm text-muted-foreground">Withdrawable Now</dt>
+              <dd className="mt-1 text-xl font-bold tabular-nums">
+                {formatUnits(data.maxWithdraw, data.decimals)} {data.symbol}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              className="quiet-link text-sm"
+              disabled={disabled || state.isFetching}
+              onClick={() => void state.refetch()}
+            >
+              Refresh Balance
+            </button>
+            {data.allowance > 0n && (
+              <button
+                type="button"
+                className="quiet-link text-sm"
+                disabled={disabled || !connected}
+                onClick={() => void transact(0n)}
+              >
+                Clear Unused Approval
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {state.error && (
+        <p role="alert" className="text-sm text-destructive">
+          Vault balance could not be loaded: {getReadableErrorMessage(state.error)}
+        </p>
+      )}
+      {busy && (
+        <p role="status" className="text-sm text-muted-foreground">
+          Waiting for wallet confirmation…
+        </p>
+      )}
+      {status && (
+        <p role="status" className="text-sm font-medium text-primary">
+          {status}
+        </p>
+      )}
       {error && (
         <p role="alert" className="break-words text-sm text-destructive">
           {error}
@@ -519,14 +593,15 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
       {pending && (
         <section className="panel space-y-3">
           <p className="break-all font-mono text-sm">
-            Submitted transaction: {pending.hash}
+            Pending transaction: {pending.hash}
           </p>
           <button
+            type="button"
             className="quiet-link"
             disabled={busy}
             onClick={() => void guarded(() => reconcile(pending, false))}
           >
-            Reconcile receipt
+            Check Transaction Receipt
           </button>
         </section>
       )}
@@ -535,7 +610,7 @@ export function PublicVault({ hideHeader = false }: { hideHeader?: boolean }) {
           {evidence.text}
           <br />
           <span className="font-mono text-muted-foreground">
-            Transaction: {evidence.hash}
+            Receipt: {evidence.hash}
           </span>
         </p>
       )}

@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+const BANNED_JARGON =
+  /Portaldot V3|EVM 8890|Groth16|Nullifiers|ERC-4626|ERC-7579|Session Keys|Credit Tranches|\bDaaS\b|Default-as-a-Service|\bA2A\b|Intent Solvers|Viewing Keys|Selective Disclosure|\bWei\b|Calldata|seal0|Vercel AI SDK/i;
+
 test('legacy browser ledger cannot resurrect balances, filled swaps, privacy notes, or agent profits', async ({
   page,
 }) => {
@@ -28,21 +31,19 @@ test('legacy browser ledger cannot resurrect balances, filled swaps, privacy not
   await page.setViewportSize({ width: 320, height: 850 });
   for (const path of [
     '/app/overview',
-    '/app/marketplace',
-    '/app/vaults',
-    '/app/bridge',
-    '/app/settlement',
-    '/app/compliance',
-    '/app/protection',
-    '/app/agents',
+    '/app/pay',
+    '/app/earn',
+    '/app/trade',
+    '/app/agent',
   ]) {
     await page.goto(path);
     await expect(page.getByText(/987654321|Fabricated agent|0xfake/)).toHaveCount(0);
+    await expect(page.getByText(BANNED_JARGON)).toHaveCount(0);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
     ).toBe(true);
   }
-  await page.goto('/app/marketplace');
+  await page.goto('/app/trade');
   await expect(
     page.getByRole('button', { name: 'Sign request invitation', exact: true }),
   ).toBeDisabled();
@@ -65,7 +66,7 @@ test('failed native balance read displays unavailable rather than faucet allocat
   await page.route('**/api/portaldot/account?*', (route) =>
     route.fulfill({ status: 503, json: { error: 'Fixture: unavailable RPC' } }),
   );
-  await page.goto('/app/agents');
+  await page.goto('/app/agent');
   await page.getByRole('button', { name: 'Connect wallets', exact: true }).click();
   await page
     .getByRole('button', { name: 'Connect Native Extension', exact: true })
@@ -95,9 +96,7 @@ test('public marketing and solutions routes render cleanly without fabricated fi
     await expect(
       page.getByText(/\$24\.85M|\$142\.6M|22\.80% APY|8\.50% APY|Trade settled with 0%/),
     ).toHaveCount(0);
-    await expect(
-      page.getByText(/Portaldot V3|EVM 8890|Groth16|ERC-4626|ERC-7579|seal0|Vercel AI SDK/i),
-    ).toHaveCount(0);
+    await expect(page.getByText(BANNED_JARGON)).toHaveCount(0);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
     ).toBe(true);

@@ -4,13 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 import { isAddress, parseAbiItem, zeroAddress } from 'viem';
 import {
-  FiCpu,
-  FiShield,
-  FiRepeat,
-  FiSend,
+  FiActivity,
   FiCheckCircle,
   FiClock,
-  FiActivity,
+  FiCpu,
+  FiRepeat,
+  FiSend,
+  FiShield,
 } from 'react-icons/fi';
 import { AGENT_EXECUTOR } from '@/lib/agent/contracts';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
@@ -45,7 +45,7 @@ export function AgentFleetManager({
       if (!client) return [];
       const head = await client.getBlockNumber();
       const fromBlock = head > 499n ? head - 499n : 0n;
-      const [deposits, rfqs] = await Promise.all([
+      const [deposits, swaps] = await Promise.all([
         AGENT_EXECUTOR !== zeroAddress
           ? client.getLogs({
               address: AGENT_EXECUTOR,
@@ -68,59 +68,63 @@ export function AgentFleetManager({
         ...deposits.map((log) => ({
           txHash: log.transactionHash,
           block: log.blockNumber?.toString() ?? '0',
-          agent: 'Yield Optimizer Agent',
-          action: 'Bounded Vault Deposit',
-          volume: `${log.args.assets?.toString() ?? '0'} base units`,
+          agent: 'Kudex Vault Auto-Pilot',
+          action: 'Fixed-Yield Vault Deposit',
+          volume: `${log.args.assets?.toString() ?? '0'} units`,
           owner: log.args.owner ?? zeroAddress,
         })),
-        ...rfqs.map((log) => ({
+        ...swaps.map((log) => ({
           txHash: log.transactionHash,
           block: log.blockNumber?.toString() ?? '0',
-          agent: 'RFQ Solver Sentinel',
-          action: 'Mandate Quote Execution',
-          volume: `${log.args.paid?.toString() ?? '0'} -> ${log.args.received?.toString() ?? '0'} base`,
+          agent: 'Kudex Swap Auto-Pilot',
+          action: 'Best-Price Auto-Routing Swap',
+          volume: `${log.args.paid?.toString() ?? '0'} → ${log.args.received?.toString() ?? '0'} units`,
           owner: log.args.owner ?? zeroAddress,
         })),
       ].sort((a, b) => Number(b.block) - Number(a.block));
     },
   });
 
-  const fleet = [
+  const capabilities = [
     {
-      name: 'Yield Optimizer Agent',
-      role: 'Pool Liquidity & Tranche Allocation',
+      name: 'Vault Deposit Auto-Pilot',
+      role: 'Fixed-Yield Business Vaults',
       icon: FiCpu,
-      whitelistedFn: 'KudexAgentExecutor.execute(policyId, assets)',
-      configured: AGENT_EXECUTOR !== zeroAddress && CONTRACT_ADDRESSES.vault !== zeroAddress,
+      summary: 'Automatically moves idle cash into protected business vaults.',
+      configured:
+        AGENT_EXECUTOR !== zeroAddress && CONTRACT_ADDRESSES.vault !== zeroAddress,
       targetTab: 'builder',
-      cta: 'Configure Deposit Policy',
+      cta: 'Set Vault Spending Rule',
     },
     {
-      name: 'RFQ Solver Sentinel',
-      role: 'Bounded Peer-to-Solver Execution',
+      name: 'Best-Price Swap Auto-Pilot',
+      role: 'Best-Price Auto-Routing',
       icon: FiRepeat,
-      whitelistedFn: 'KudexRfqExecutor.execute(id, order, signature)',
+      summary: 'Executes zero-slippage swaps strictly inside your price and budget limits.',
       configured:
         RFQ_EXECUTOR !== zeroAddress && CONTRACT_ADDRESSES.rfqMarket !== zeroAddress,
-      targetTab: 'rfq',
-      cta: 'Configure RFQ Mandate',
+      targetTab: 'swaps',
+      cta: 'Set Swap Spending Rule',
     },
     {
-      name: 'Payroll Dispatcher',
-      role: 'Confidential A2B Note Settlement',
+      name: 'Private Payroll & Invoice Agent',
+      role: 'Private Balances (Stealth Mode)',
       icon: FiSend,
-      whitelistedFn: 'KudexVault.shieldDeposit(assets, commitment)',
+      summary: 'Prepares private vendor and payroll transfers within approved caps.',
       configured: CONTRACT_ADDRESSES.vault !== zeroAddress,
       targetTab: 'controls',
-      cta: 'Manage Session Keys',
+      cta: 'Manage Active Rules',
     },
   ];
 
   return (
     <div className="space-y-7">
       <section className="grid gap-5 lg:grid-cols-3">
-        {fleet.map((agent) => (
-          <article key={agent.name} className="panel flex flex-col justify-between space-y-5">
+        {capabilities.map((agent) => (
+          <article
+            key={agent.name}
+            className="panel flex flex-col justify-between space-y-5"
+          >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary text-primary">
@@ -136,7 +140,7 @@ export function AgentFleetManager({
                   {agent.configured ? (
                     <>
                       <FiCheckCircle aria-hidden="true" />
-                      <span>Contract Ready</span>
+                      <span>Active Contract</span>
                     </>
                   ) : (
                     <>
@@ -149,21 +153,15 @@ export function AgentFleetManager({
 
               <div>
                 <h2 className="text-xl font-bold">{agent.name}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{agent.role}</p>
-              </div>
-
-              <div className="rounded-xl bg-secondary p-3">
-                <span className="block text-sm text-muted-foreground">
-                  Whitelisted Scope
-                </span>
-                <p className="mt-1 break-all font-mono text-sm text-foreground">
-                  {agent.whitelistedFn}
+                <p className="mt-1 text-sm font-medium text-primary">{agent.role}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {agent.summary}
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              {onSelectTab && (
+            {onSelectTab && (
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={() => onSelectTab(agent.targetTab)}
@@ -171,8 +169,8 @@ export function AgentFleetManager({
                 >
                   {agent.cta}
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </article>
         ))}
       </section>
@@ -181,7 +179,7 @@ export function AgentFleetManager({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <FiShield className="text-primary" aria-hidden="true" />
-            <h2 className="text-xl font-bold">Emergency Session Shutdown</h2>
+            <h2 className="text-xl font-bold">Built-In Spending Limit Guarantees</h2>
           </div>
           {onSelectTab && (
             <button
@@ -189,14 +187,14 @@ export function AgentFleetManager({
               onClick={() => onSelectTab('controls')}
               className="quiet-link text-sm text-destructive hover:text-destructive"
             >
-              Open One-Click Revocation Controls
+              Open Revocation Controls
             </button>
           )}
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Every KUDEX AGENT operates strictly inside owner-signed session bounds (2h, 24h,
-          or 7d expiry, per-trade and daily caps). Owners can revoke any active session
-          key in a single transaction without waiting for delegate cooperation.
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Give your Kudex Agent a budget and a time limit. It handles trades and payments
+          in the background without asking you to click &apos;Approve&apos; on every step,
+          and you can turn it off immediately at any moment.
         </p>
       </section>
 
@@ -204,17 +202,17 @@ export function AgentFleetManager({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <FiActivity className="text-accent" aria-hidden="true" />
-            <h2 className="text-xl font-bold">On-Chain Agent Action Log</h2>
+            <h2 className="text-xl font-bold">On-Chain Auto-Pilot Activity Log</h2>
           </div>
-          <span className="text-sm text-muted-foreground tabular-nums">
+          <span className="text-sm font-semibold text-muted-foreground tabular-nums">
             Latest 500 blocks
           </span>
         </div>
 
         {!actionLog.data || actionLog.data.length === 0 ? (
           <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-            No automated delegate executions recorded in the recent 500-block window.
-            Authorized policy deposits and RFQ mandate fills stream here automatically.
+            No automated executions recorded in the recent 500-block window. Approved
+            vault deposits and swaps appear here automatically.
           </p>
         ) : (
           <div className="table-region rounded-xl border border-border">
@@ -223,7 +221,7 @@ export function AgentFleetManager({
                 <tr>
                   <th className="px-4 py-3">Agent</th>
                   <th className="px-4 py-3">Action</th>
-                  <th className="px-4 py-3">Volume</th>
+                  <th className="px-4 py-3">Amount</th>
                   <th className="px-4 py-3">Owner</th>
                   <th className="px-4 py-3">Block</th>
                 </tr>
@@ -233,7 +231,7 @@ export function AgentFleetManager({
                   <tr key={row.txHash}>
                     <td className="px-4 py-3 font-semibold">{row.agent}</td>
                     <td className="px-4 py-3 text-muted-foreground">{row.action}</td>
-                    <td className="px-4 py-3 font-mono text-primary tabular-nums">
+                    <td className="px-4 py-3 font-mono font-bold text-primary tabular-nums">
                       {row.volume}
                     </td>
                     <td className="px-4 py-3 font-mono">{truncateAddress(row.owner)}</td>

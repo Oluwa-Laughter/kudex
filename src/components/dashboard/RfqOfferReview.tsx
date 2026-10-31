@@ -26,7 +26,7 @@ import { getReadableErrorMessage } from '@/lib/utils';
 function offerStatus(data: RfqInspection) {
   if (data.settled) return 'Filled';
   if (data.cancelled) return 'Cancelled';
-  if (data.used) return 'Nonce already used';
+  if (data.used) return 'Order ID already used';
   if (data.expired) return 'Expired';
   if (!data.signatureValid) return 'Invalid signature';
   return 'Open signed offer';
@@ -105,7 +105,7 @@ export function RfqOfferReview({
       if (!pending) throw Error('No submitted reference.');
       const finality = await reconcile(pending);
       setStatus(
-        `RFQ ${pending.action} ${finality}. Review the offer again to refresh chain state.`,
+        `Swap ${pending.action} ${finality}. Review the offer again to refresh chain state.`,
       );
     } catch (e) {
       setError(getReadableErrorMessage(e));
@@ -162,7 +162,7 @@ export function RfqOfferReview({
     try {
       if (!client || !address || !current || !signingReady || !currentAccount)
         throw new Error(
-          'Connect the signing wallet on the configured network and review the offer again.',
+          'Connect your signing wallet on the active network and review the offer again.',
         );
       const fresh = await inspectSignedOffer(client, current.offer, address);
       const isMaker = address.toLowerCase() === fresh.offer.order.maker.toLowerCase();
@@ -219,7 +219,7 @@ export function RfqOfferReview({
           : [amount]) {
           setStatus(
             value === 0n
-              ? 'Review router allowance removal in your wallet.'
+              ? 'Review allowance removal in your wallet.'
               : 'Review the exact token allowance in your wallet. This is separate from filling an offer.',
           );
           const simulation = await client.simulateContract({
@@ -240,13 +240,13 @@ export function RfqOfferReview({
         }
         setStatus(
           action === 'clear'
-            ? 'Router allowance removal confirmed. Offer cancellation is separate.'
+            ? 'Token allowance removal confirmed. Offer cancellation is separate.'
             : 'Token allowance confirmed. The offer has not been filled.',
         );
       } else if (action === 'cancel') {
-        if (!isMaker) throw new Error('Only the maker can cancel this nonce.');
+        if (!isMaker) throw new Error('Only the maker can cancel this offer ID.');
         if (fresh.used || fresh.cancelled || fresh.settled)
-          throw new Error('This nonce is already consumed or cancelled.');
+          throw new Error('This offer ID is already consumed or cancelled.');
         const simulation = await client.simulateContract({
           address: router,
           abi: kudexRFQMarketAbi,
@@ -255,7 +255,7 @@ export function RfqOfferReview({
           account: address,
         });
         setStatus(
-          'Review nonce cancellation in your wallet. It invalidates every offer with this nonce.',
+          'Review offer cancellation in your wallet. It permanently invalidates this offer.',
         );
         await wait(
           await writeContractAsync({
@@ -264,7 +264,7 @@ export function RfqOfferReview({
             chainId: portaldotTestnet.id,
           }),
         );
-        setStatus('Nonce cancellation confirmed. Token allowance is unchanged.');
+        setStatus('Offer cancellation confirmed. Token allowance is unchanged.');
       } else {
         if (isMaker) throw new Error('Switch to the taker wallet to fill this offer.');
         if (!fresh.active)
@@ -276,13 +276,13 @@ export function RfqOfferReview({
           fresh.offered.allowance < fresh.offer.order.amountIn
         )
           throw new Error(
-            'The maker needs enough tokens and router allowance before this offer can be filled.',
+            'The maker needs enough tokens and allowance before this offer can be filled.',
           );
         if (
           fresh.requested.balance < fresh.offer.order.amountOut ||
           fresh.requested.allowance < fresh.offer.order.amountOut
         )
-          throw new Error('Your payment balance or router allowance is insufficient.');
+          throw new Error('Your payment balance or spending allowance is insufficient.');
         const simulation = await client.simulateContract({
           address: router,
           abi: kudexRFQMarketAbi,
@@ -299,7 +299,7 @@ export function RfqOfferReview({
           }),
         );
         setStatus(
-          `Offer settlement ${finality}. A matching router event confirms the exact-transfer exchange. This settlement is public.`,
+          `Offer settlement ${finality}. A matching settlement event confirms the exact-transfer exchange.`,
         );
       }
       try {
@@ -334,13 +334,13 @@ export function RfqOfferReview({
     <div className="space-y-6">
       <section className="panel space-y-5">
         <div>
-          <h2 className="text-xl font-semibold">Review a signed offer</h2>
-          <p className="mt-3 leading-7 text-muted-foreground">
-            Paste a Kudex export to check its network, router, maker signature, expiry,
-            nonce, and token state before settlement.
+          <h2 className="text-xl font-bold">Review a signed offer</h2>
+          <p className="mt-2 text-base leading-relaxed text-muted-foreground">
+            Paste a signed Kudex swap offer to verify its maker signature, expiry,
+            available balance, and settlement state before executing in one click.
           </p>
         </div>
-        <label htmlFor="signed-offer" className="block font-medium">
+        <label htmlFor="signed-offer" className="block text-sm font-medium">
           Signed offer JSON
         </label>
         <textarea
@@ -378,8 +378,8 @@ export function RfqOfferReview({
       {current && (
         <section aria-label="Signed offer terms" className="panel space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 className="text-xl font-semibold">{offerStatus(current)}</h2>
-            <span className="text-sm text-muted-foreground tabular-nums">
+            <h2 className="text-xl font-bold">{offerStatus(current)}</h2>
+            <span className="text-sm font-semibold text-muted-foreground tabular-nums">
               Block {current.block.toString()} ·{' '}
               {new Date(current.observedAt).toLocaleTimeString()}
             </span>
@@ -387,56 +387,58 @@ export function RfqOfferReview({
           <dl className="grid gap-6 md:grid-cols-2">
             {[
               {
-                label: 'Taker receives / maker offers',
+                label: 'You receive / maker offers',
                 amount: current.offer.order.amountIn,
                 token: current.offered,
               },
               {
-                label: 'Taker pays / maker requests',
+                label: 'You pay / maker requests',
                 amount: current.offer.order.amountOut,
                 token: current.requested,
               },
             ].map((side) => (
               <div key={side.label} className="rounded-xl bg-secondary p-5">
                 <dt className="text-sm text-muted-foreground">{side.label}</dt>
-                <dd className="mt-2 break-words text-2xl font-semibold tabular-nums">
+                <dd className="mt-2 break-words text-2xl font-bold tabular-nums">
                   {formatUnits(side.amount, side.token.decimals)} {side.token.symbol}
                 </dd>
-                <dd className="mt-3 break-all text-sm text-muted-foreground">
+                <dd className="mt-3 break-all font-mono text-sm text-muted-foreground">
                   {side.token.address}
                 </dd>
               </div>
             ))}
             <div>
               <dt className="text-sm text-muted-foreground">Maker</dt>
-              <dd className="mt-1 break-all">{current.offer.order.maker}</dd>
-            </div>
-            <div>
-              <dt className="text-sm text-muted-foreground">Expiry</dt>
-              <dd className="mt-1 tabular-nums">
-                {current.offer.order.deadline <= 8_640_000_000_000n
-                  ? new Date(Number(current.offer.order.deadline) * 1000).toLocaleString()
-                  : `Unix timestamp ${current.offer.order.deadline}`}
+              <dd className="mt-1 break-all font-mono text-sm">
+                {current.offer.order.maker}
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Router</dt>
-              <dd className="mt-1 break-all text-sm">{current.offer.router}</dd>
+              <dt className="text-sm text-muted-foreground">Expiry</dt>
+              <dd className="mt-1 font-semibold tabular-nums">
+                {current.offer.order.deadline <= 8_640_000_000_000n
+                  ? new Date(Number(current.offer.order.deadline) * 1000).toLocaleString()
+                  : `Timestamp ${current.offer.order.deadline}`}
+              </dd>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Order hash</dt>
-              <dd className="mt-1 break-all text-sm">{current.hash}</dd>
+              <dt className="text-sm text-muted-foreground">Settlement Contract</dt>
+              <dd className="mt-1 break-all font-mono text-sm">{current.offer.router}</dd>
+            </div>
+            <div>
+              <dt className="text-sm text-muted-foreground">Order Reference</dt>
+              <dd className="mt-1 break-all font-mono text-sm">{current.hash}</dd>
             </div>
           </dl>
           <div className="grid gap-5 border-t border-border pt-6 md:grid-cols-2">
             <div>
               <h3 className="font-semibold">Maker funding</h3>
-              <p className="mt-2 break-words tabular-nums">
+              <p className="mt-2 break-words font-semibold tabular-nums">
                 Balance: {formatUnits(current.offered.balance, current.offered.decimals)}{' '}
                 {current.offered.symbol}
               </p>
-              <p className="mt-1 break-words tabular-nums">
-                Router allowance:{' '}
+              <p className="mt-1 break-words font-semibold tabular-nums">
+                Approved allowance:{' '}
                 {formatUnits(current.offered.allowance, current.offered.decimals)}{' '}
                 {current.offered.symbol}
               </p>
@@ -444,31 +446,30 @@ export function RfqOfferReview({
             {current.taker && (
               <div>
                 <h3 className="font-semibold">Reviewed payment account</h3>
-                <p className="mt-2 break-all text-sm text-muted-foreground">
+                <p className="mt-2 break-all font-mono text-sm text-muted-foreground">
                   {current.taker}
                 </p>
-                <p className="mt-2 break-words tabular-nums">
+                <p className="mt-2 break-words font-semibold tabular-nums">
                   Balance:{' '}
                   {formatUnits(current.requested.balance, current.requested.decimals)}{' '}
                   {current.requested.symbol}
                 </p>
-                <p className="mt-1 break-words tabular-nums">
-                  Router allowance:{' '}
+                <p className="mt-1 break-words font-semibold tabular-nums">
+                  Approved allowance:{' '}
                   {formatUnits(current.requested.allowance, current.requested.decimals)}{' '}
                   {current.requested.symbol}
                 </p>
               </div>
             )}
           </div>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Allowances are shared across offers for this token and router; they do not
-            reserve funds. Approval alone does not trade. Cancelling an offer does not
-            remove allowance.
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Token approvals only authorize the exact swap amount and do not move funds
+            until the swap is filled.
           </p>
           {(!signingReady || !currentAccount) && (
-            <p className="text-sm leading-6 text-muted-foreground">
-              Connect the relevant EVM signing account on this network, then read the
-              offer again to enable wallet actions.
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Connect the matching signing wallet on this network, then read the offer
+              again to enable wallet actions.
             </p>
           )}
           <div className="flex flex-wrap gap-3">
@@ -524,7 +525,7 @@ export function RfqOfferReview({
                 onClick={() => void transact('cancel')}
                 className="quiet-link disabled:opacity-50"
               >
-                Cancel this nonce in wallet
+                Cancel this offer in wallet
               </button>
             )}
             <button
@@ -541,34 +542,34 @@ export function RfqOfferReview({
               onClick={() => void transact('clear')}
               className="quiet-link disabled:opacity-50"
             >
-              Remove router allowance
+              Remove token allowance
             </button>
           </div>
         </section>
       )}
       {pending && (
         <div className="rounded-xl border border-border p-5">
-          <p className="break-all">
+          <p className="break-all text-base leading-relaxed">
             Submitted {pending.action}: {pending.hash}. Settlement requires
             reconciliation.
           </p>
           <button className="quiet-link" disabled={busy} onClick={() => void resume()}>
-            Reconcile submitted RFQ transaction
+            Reconcile submitted swap transaction
           </button>
         </div>
       )}
       <div className="space-y-3">
         {status && (
-          <p role="status" className="leading-7">
+          <p role="status" className="text-base leading-relaxed">
             {status}
           </p>
         )}
         {error && (
-          <p role="alert" className="text-destructive">
+          <p role="alert" className="text-sm font-medium text-destructive">
             {error}
           </p>
         )}
-        {hash && <p className="break-all text-sm">Latest transaction: {hash}</p>}
+        {hash && <p className="break-all font-mono text-sm">Latest transaction: {hash}</p>}
       </div>
     </div>
   );
