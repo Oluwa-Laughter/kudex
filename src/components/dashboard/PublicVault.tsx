@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useSignMessage, useWriteContract } from 'wagmi';
 import { erc20Abi, formatUnits, type Address, type Hash, type Hex } from 'viem';
 import { FiLock, FiArrowDownLeft, FiTrendingUp } from 'react-icons/fi';
+import { LIVE_ACTIVITY_QUERY_KEY } from '@/lib/hooks/useLiveActivity';
 import {
   buildNoteSyncDomainMessage,
   createPrivateNoteMetadata,
@@ -47,6 +48,7 @@ export function PublicVault({
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { signMessageAsync } = useSignMessage();
   const { writeContractAsync } = useWriteContract();
+  const queryClient = useQueryClient();
   const privateNotes = usePrivateNotesStore();
   const [amount, setAmount] = useState('');
   const [operation, setOperation] = useState<'deposit' | 'redeem'>('deposit');
@@ -218,6 +220,7 @@ export function PublicVault({
       text: `${tx.review ? (tx.review.operation === 'deposit' ? 'Deposit' : 'Withdrawal') : 'Spending approval'} ${finality}. Your updated vault balance is verified.`,
     });
     const refreshed = await state.refetch();
+    await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
     if (refreshed.error)
       setStatus(
         'Transaction confirmed; click Refresh balance before starting another action.',
@@ -317,7 +320,10 @@ export function PublicVault({
             owner: address,
             text: 'Deposit confirmed in Stealth Mode with encrypted cross-device backup.',
           });
-          await state.refetch();
+          await Promise.all([
+            state.refetch(),
+            queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] }),
+          ]);
           setStatus('Vault balance updated in Stealth Mode.');
           return;
         }

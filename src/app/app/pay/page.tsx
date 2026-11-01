@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import * as Tabs from '@radix-ui/react-tabs';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   useAccount,
   usePublicClient,
@@ -43,6 +44,7 @@ import {
 import { CONTRACT_ADDRESSES, isVaultConfigured } from '@/lib/contracts/addresses';
 import { kudexVaultAbi } from '@/lib/contracts/abis';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
+import { LIVE_ACTIVITY_QUERY_KEY } from '@/lib/hooks/useLiveActivity';
 import {
   buildNoteSyncDomainMessage,
   createPrivateNoteMetadata,
@@ -63,6 +65,12 @@ import {
   encodeAuditorPass,
   type AuditorDisclosedEntry,
 } from '@/lib/audit/auditorPass';
+import {
+  BusinessLookupBar,
+  BusinessDirectoryPanel,
+  type OnChainBusinessRecord,
+} from '@/components/pay/BusinessDirectoryPanel';
+import { OnChainInvoicePanel } from '@/components/pay/OnChainInvoicePanel';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 
@@ -166,11 +174,15 @@ function buildReceiptVerifyUrl(entry: AuditorDisclosedEntry, ownerAddress?: Addr
   return `${origin}/verify?pass=${encodeURIComponent(passCode)}`;
 }
 
-export default function SendAndInvoicePage() {
+function SendAndInvoiceContent() {
+  const searchParams = useSearchParams();
+  const urlInvoiceId = searchParams.get('invoiceId') ?? undefined;
+
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { signMessageAsync } = useSignMessage();
   const { writeContractAsync } = useWriteContract();
+  const queryClient = useQueryClient();
 
   const privateNotes = usePrivateNotesStore();
   const addressBook = useAddressBookStore();
@@ -180,7 +192,17 @@ export default function SendAndInvoicePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [activeTab, setActiveTab] = useState('send');
+  const [activeTab, setActiveTab] = useState(
+    urlInvoiceId && isHex(urlInvoiceId) && urlInvoiceId.length === 66
+      ? 'invoices'
+      : 'send',
+  );
+
+  useEffect(() => {
+    if (urlInvoiceId && isHex(urlInvoiceId) && urlInvoiceId.length === 66) {
+      setActiveTab('invoices');
+    }
+  }, [urlInvoiceId]);
 
   // Sub-tab 1: Send Privately
   const [transferMode, setTransferMode] = useState<'shield' | 'confidential'>('shield');
@@ -195,15 +217,11 @@ export default function SendAndInvoicePage() {
   const [batchCsvText, setBatchCsvText] = useState('');
   const [batchAddAmount, setBatchAddAmount] = useState('1000.00');
 
-  // Sub-tab 3: Create & Pay Invoices
-  const [vendorName, setVendorName] = useState('');
-  const [vendorAddress, setVendorAddress] = useState('');
-  const [invoiceToken, setInvoiceToken] = useState<string>(
-    CONTRACT_ADDRESSES.usdc !== zeroAddress ? CONTRACT_ADDRESSES.usdc : '',
-  );
-  const [invoiceAmount, setInvoiceAmount] = useState('');
-  const [dueDate, setDueDate] = useState('2026-11-30');
-  const [invoicePayload, setInvoicePayload] = useState('');
+  // Sub-tab 3: Prefill states for OnChainInvoicePanel
+  const [invoicePrefill, setInvoicePrefill] = useState<{
+    name?: string;
+    address?: string;
+  }>({});
 
   // Sub-tab 4: Saved Contacts / Vendor Address Book
   const [newContactName, setNewContactName] = useState('');
@@ -386,6 +404,7 @@ export default function SendAndInvoicePage() {
           await client.waitForTransactionReceipt({ hash: txHash });
 
           privateNotes.recordLocalNote(note, txHash);
+          await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
 
           const nowIso = new Date().toISOString();
           const verifyUrl = buildReceiptVerifyUrl(
@@ -592,7 +611,9 @@ export default function SendAndInvoicePage() {
           chainId: portaldotTestnet.id,
         });
         await client.waitForTransactionReceipt({ hash: txHash });
+
         privateNotes.recordLocalNote(note, txHash);
+        await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
 
         const nowIso = new Date().toISOString();
         const verifyUrl = buildReceiptVerifyUrl(
@@ -751,6 +772,8 @@ export default function SendAndInvoicePage() {
         });
         await client.waitForTransactionReceipt({ hash: txHash });
 
+        await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
+
         const nowIso = new Date().toISOString();
         for (const { row, note } of createdNotes) {
           privateNotes.recordLocalNote(note, txHash);
@@ -905,170 +928,6 @@ export default function SendAndInvoicePage() {
     setNewContactAddress('');
     setNewContactRef('');
     setStatus('Saved contact added to your business address book.');
-  }
-
-  async function handleCreateInvoice(event: React.FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    setError('');
-    setStatus('');
-    try {
-      if (!vendorName.trim()) {
-        throw new Error('Enter the vendor or supplier name.');
-      }
-      if (!isAddress(vendorAddress) || vendorAddress.toLowerCase() === zeroAddress) {
-        throw new Error('Enter a valid vendor wallet address starting with 0x.');
-      }
-      if (!invoiceAmount || Number(invoiceAmount) <= 0) {
-        throw new Error('Enter an invoice amount greater than zero.');
-      }
-      const tokenAddr =
-        isAddress(invoiceToken) && invoiceToken.toLowerCase() !== zeroAddress
-          ? invoiceToken
-          : CONTRACT_ADDRESSES.usdc;
-      const invoiceRef = await sha256Bytes32(
-        `kudex-invoice:${vendorName.trim()}:${vendorAddress}:${invoiceAmount}:${dueDate}:${Date.now()}`,
-      );
-      const nowIso = new Date().toISOString();
-      const doc = JSON.stringify(
-        {
-          version: 'kudex-business-invoice-v1',
-          vendorName: vendorName.trim(),
-          vendor: vendorAddress,
-          token: tokenAddr,
-          amount: invoiceAmount,
-          dueDate,
-          paymentReference: invoiceRef,
-          createdAt: nowIso,
-        },
-        null,
-        2,
-      );
-      setInvoicePayload(doc);
-
-      const verifyUrl = buildReceiptVerifyUrl(
-        {
-          date: nowIso,
-          payee: `${vendorName.trim()} (${truncateAddress(vendorAddress)})`,
-          reference: `Invoice Due ${dueDate}`,
-          amount: invoiceAmount,
-          currency: 'USDC',
-          commitment: invoiceRef,
-        },
-        address,
-      );
-
-      recordCompletedActivity({
-        id: invoiceRef.slice(0, 12),
-        kind: `Invoice · ${vendorName.trim()}`,
-        recipientOrVendor: truncateAddress(vendorAddress),
-        recipientAddress: vendorAddress,
-        amountLabel: `$${Number(invoiceAmount).toFixed(2)}`,
-        numericAmount: invoiceAmount,
-        reference: `Invoice Due ${dueDate}`,
-        status: 'Invoice Ready',
-        timestamp: new Date().toLocaleTimeString(),
-        timestampIso: nowIso,
-        commitment: invoiceRef,
-        verificationUrl: verifyUrl,
-      });
-      setStatus(
-        'Invoice created. Send the invoice file to your customer or pay it in one click below.',
-      );
-    } catch (cause) {
-      setError(getReadableErrorMessage(cause));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handlePayInvoice() {
-    setBusy(true);
-    setError('');
-    setStatus('');
-    try {
-      if (!client || !address || !connected) {
-        throw new Error('Connect your wallet on the active network to pay this invoice.');
-      }
-      if (!invoicePayload.trim()) {
-        throw new Error('Create an invoice above or paste an invoice code first.');
-      }
-      const parsed = JSON.parse(invoicePayload) as {
-        vendorName?: string;
-        vendor: string;
-        token: string;
-        amount: string;
-        paymentReference?: string;
-      };
-      if (
-        !isAddress(parsed.vendor) ||
-        parsed.vendor.toLowerCase() === zeroAddress ||
-        !isAddress(parsed.token) ||
-        parsed.token.toLowerCase() === zeroAddress
-      ) {
-        throw new Error(
-          'This invoice needs a valid vendor wallet address and payment token contract.',
-        );
-      }
-      const decimals = await client.readContract({
-        address: parsed.token as Address,
-        abi: erc20Abi,
-        functionName: 'decimals',
-      });
-      const units = parseUnits(parsed.amount, decimals);
-      const sim = await client.simulateContract({
-        address: parsed.token as Address,
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [parsed.vendor as Address, units],
-        account: address,
-      });
-      const txHash = await writeContractAsync({
-        ...sim.request,
-        account: address,
-        chainId: portaldotTestnet.id,
-      });
-      await client.waitForTransactionReceipt({ hash: txHash });
-
-      const commitment =
-        parsed.paymentReference && isHex(parsed.paymentReference) && parsed.paymentReference.length === 66
-          ? (parsed.paymentReference as Hex)
-          : await sha256Bytes32(`kudex-paid-invoice:${txHash}`);
-      const nowIso = new Date().toISOString();
-      const verifyUrl = buildReceiptVerifyUrl(
-        {
-          date: nowIso,
-          payee: `${parsed.vendorName || 'Business Vendor'} (${truncateAddress(parsed.vendor)})`,
-          reference: `Settled Invoice ${parsed.vendorName || ''}`.trim(),
-          amount: parsed.amount,
-          currency: 'USDC',
-          commitment,
-          txHash,
-        },
-        address,
-      );
-
-      recordCompletedActivity({
-        id: txHash.slice(0, 12),
-        kind: `Paid · ${parsed.vendorName || 'Business Invoice'}`,
-        recipientOrVendor: truncateAddress(parsed.vendor),
-        recipientAddress: parsed.vendor,
-        amountLabel: `$${Number(parsed.amount).toFixed(2)}`,
-        numericAmount: parsed.amount,
-        reference: `Settled Invoice ${parsed.vendorName || ''}`.trim(),
-        status: 'Invoice Paid',
-        timestamp: new Date().toLocaleTimeString(),
-        timestampIso: nowIso,
-        commitment,
-        transactionHash: txHash,
-        verificationUrl: verifyUrl,
-      });
-      setStatus(`Invoice paid in full (${truncateAddress(txHash)}).`);
-    } catch (cause) {
-      setError(getReadableErrorMessage(cause));
-    } finally {
-      setBusy(false);
-    }
   }
 
   async function handleCreateAuditorPass(event: React.FormEvent) {
@@ -1320,6 +1179,15 @@ export default function SendAndInvoicePage() {
               Send From Existing Private Balance
             </button>
           </div>
+
+          {/* On-Chain Business Directory Lookup */}
+          <BusinessLookupBar
+            label="Lookup Verified Business Handle (On-Chain)"
+            onSelectBusiness={(biz) => {
+              setRecipient(biz.payoutAddress);
+              setPaymentNote((prev) => prev || `${biz.businessName} Settlement`);
+            }}
+          />
 
           {/* Quick-fill from Saved Contacts */}
           {addressBook.contacts.length > 0 && (
@@ -1690,184 +1558,68 @@ export default function SendAndInvoicePage() {
           </section>
         </Tabs.Content>
 
-        {/* SUB-TAB 3: Create & Pay Invoices */}
+        {/* SUB-TAB 3: Create & Pay Invoices (On-Chain Escrow + Team Sign-Off) */}
         <Tabs.Content value="invoices" className="space-y-6">
-          <div className="grid items-start gap-6 xl:grid-cols-2">
-            <form
-              onSubmit={(e) => void handleCreateInvoice(e)}
-              className="panel min-w-0 space-y-5"
-            >
-              <div>
-                <h2 className="text-xl font-bold">Create a Business Invoice</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Generate a clean payment request with vendor details, amount, and due
-                  date.
-                </p>
-              </div>
-
-              {addressBook.contacts.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {addressBook.contacts.map((contact) => (
-                    <button
-                      key={contact.id}
-                      type="button"
-                      onClick={() => {
-                        setVendorName(contact.name);
-                        setVendorAddress(contact.address);
-                      }}
-                      className="min-h-10 rounded-xl border border-border bg-secondary px-3 py-1.5 text-sm font-semibold transition hover:border-primary"
-                    >
-                      {contact.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="min-w-0">
-                  <label htmlFor="inv-vendor-name" className="mb-2 block text-sm font-medium">
-                    Vendor Name
-                  </label>
-                  <input
-                    id="inv-vendor-name"
-                    name="vendorName"
-                    value={vendorName}
-                    onChange={(e) => setVendorName(e.target.value)}
-                    placeholder="Northstar Logistics LLC"
-                    disabled={busy}
-                    required
-                    className="field-input"
-                  />
-                </div>
-
-                <div className="min-w-0">
-                  <label htmlFor="inv-vendor-addr" className="mb-2 block text-sm font-medium">
-                    Vendor Wallet Address
-                  </label>
-                  <input
-                    id="inv-vendor-addr"
-                    name="vendorAddress"
-                    value={vendorAddress}
-                    onChange={(e) => setVendorAddress(e.target.value)}
-                    placeholder="0x…"
-                    autoComplete="off"
-                    spellCheck={false}
-                    disabled={busy}
-                    required
-                    className="field-input"
-                  />
-                </div>
-
-                <div className="min-w-0">
-                  <label htmlFor="inv-amount" className="mb-2 block text-sm font-medium">
-                    Invoice Amount (USDC)
-                  </label>
-                  <input
-                    id="inv-amount"
-                    name="invoiceAmount"
-                    type="number"
-                    min="0"
-                    step="any"
-                    inputMode="decimal"
-                    value={invoiceAmount}
-                    onChange={(e) => setInvoiceAmount(e.target.value)}
-                    placeholder="4800.00"
-                    disabled={busy}
-                    required
-                    className="field-input font-bold tabular-nums"
-                  />
-                </div>
-
-                <div className="min-w-0">
-                  <label htmlFor="inv-due" className="mb-2 block text-sm font-medium">
-                    Due Date
-                  </label>
-                  <input
-                    id="inv-due"
-                    name="dueDate"
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    disabled={busy}
-                    className="field-input tabular-nums"
-                  />
-                </div>
-
-                <div className="min-w-0 sm:col-span-2">
-                  <label htmlFor="inv-token" className="mb-2 block text-sm font-medium">
-                    Payment Token Contract (Defaults to configured USDC)
-                  </label>
-                  <input
-                    id="inv-token"
-                    name="invoiceToken"
-                    value={invoiceToken}
-                    onChange={(e) => setInvoiceToken(e.target.value)}
-                    placeholder="0x… token contract"
-                    autoComplete="off"
-                    spellCheck={false}
-                    disabled={busy}
-                    className="field-input font-mono text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <button type="submit" disabled={busy} className="quiet-link">
-                  <FiFileText aria-hidden="true" />
-                  <span>Create Invoice</span>
-                </button>
-                {invoicePayload && (
-                  <button
-                    type="button"
-                    onClick={() => downloadFile(invoicePayload, 'kudex-invoice.json')}
-                    className="quiet-link text-sm"
-                  >
-                    <FiDownload aria-hidden="true" />
-                    <span>Download Invoice</span>
-                  </button>
-                )}
-              </div>
-            </form>
-
-            <section className="panel min-w-0 space-y-5">
-              <div>
-                <h2 className="text-xl font-bold">Pay an Invoice in 1 Click</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Review an invoice created on the left or paste one from a supplier to
-                  pay immediately.
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="invoice-code-box" className="mb-2 block text-sm font-medium">
-                  Invoice Details
-                </label>
-                <textarea
-                  id="invoice-code-box"
-                  rows={7}
-                  value={invoicePayload}
-                  onChange={(e) => setInvoicePayload(e.target.value)}
-                  placeholder="Paste a Kudex business invoice here to pay in one click"
-                  disabled={busy}
-                  className="field-input font-mono text-sm"
-                />
-              </div>
-
-              <button
-                type="button"
-                disabled={busy || !invoicePayload.trim()}
-                onClick={() => void handlePayInvoice()}
-                className="action-link w-full disabled:opacity-40"
-              >
-                <FiCheckCircle aria-hidden="true" />
-                <span>Pay Invoice in 1 Click</span>
-              </button>
-            </section>
-          </div>
+          <OnChainInvoicePanel
+            initialInvoiceId={urlInvoiceId}
+            savedContacts={addressBook.contacts}
+            prefillVendorName={invoicePrefill.name}
+            prefillVendorAddress={invoicePrefill.address}
+            onInvoiceActivity={(entry) => {
+              const verifyUrl = buildReceiptVerifyUrl(
+                {
+                  date: entry.timestampIso,
+                  payee: entry.recipientAddress,
+                  reference: entry.reference,
+                  amount: entry.numericAmount,
+                  currency: 'USDC',
+                  commitment: entry.commitment,
+                  txHash: entry.transactionHash,
+                },
+                address,
+              );
+              recordCompletedActivity({
+                id: entry.id,
+                kind: entry.kind,
+                recipientOrVendor: truncateAddress(entry.recipientAddress),
+                recipientAddress: entry.recipientAddress,
+                amountLabel: `$${Number(entry.numericAmount).toFixed(2)}`,
+                numericAmount: entry.numericAmount,
+                reference: entry.reference,
+                status: entry.status,
+                timestamp: new Date().toLocaleTimeString(),
+                timestampIso: entry.timestampIso,
+                commitment: entry.commitment,
+                transactionHash: entry.transactionHash,
+                verificationUrl: verifyUrl,
+              });
+            }}
+          />
         </Tabs.Content>
 
-        {/* SUB-TAB 4: Saved Contacts / Vendor Address Book */}
-        <Tabs.Content value="contacts" className="space-y-6">
+        {/* SUB-TAB 4: Saved Contacts & On-Chain Verified Business Directory */}
+        <Tabs.Content value="contacts" className="space-y-8">
+          <BusinessDirectoryPanel
+            onPayBusiness={(biz: OnChainBusinessRecord) => {
+              setRecipient(biz.payoutAddress);
+              setPaymentNote(`${biz.businessName} Settlement`);
+              setActiveTab('send');
+            }}
+            onInvoiceBusiness={(biz: OnChainBusinessRecord) => {
+              setInvoicePrefill({ name: biz.businessName, address: biz.payoutAddress });
+              setActiveTab('invoices');
+            }}
+            onAddBusinessToBatch={(biz: OnChainBusinessRecord) => {
+              appendContactToBatch({
+                id: biz.owner,
+                name: biz.businessName,
+                address: biz.payoutAddress,
+                category: 'Supplier',
+                defaultReference: `${biz.businessName} Settlement`,
+              });
+            }}
+          />
+
           <div className="grid items-start gap-6 xl:grid-cols-[0.95fr_1.05fr]">
             <form onSubmit={handleAddSavedContact} className="panel min-w-0 space-y-5">
               <div>
@@ -2303,5 +2055,19 @@ export default function SendAndInvoicePage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function SendAndInvoicePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-sm text-muted-foreground">
+          Loading payment workspace…
+        </div>
+      }
+    >
+      <SendAndInvoiceContent />
+    </Suspense>
   );
 }

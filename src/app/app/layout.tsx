@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FiSidebar } from 'react-icons/fi';
 import { ThemeToggle } from '@/components/brand/ThemeToggle';
 import { ConnectWalletButton } from '@/components/navigation/ConnectWalletButton';
+import { ActivityDrawer } from '@/components/navigation/ActivityDrawer';
 import { Sidebar, APP_NAV_ITEMS } from '@/components/navigation/Sidebar';
 import { MobileDrawer } from '@/components/navigation/MobileDrawer';
 
@@ -65,6 +66,7 @@ export default function AppWorkspaceLayout({ children }: { children: React.React
           </div>
 
           <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <ActivityDrawer />
             <Link
               href="/docs"
               className="hidden min-h-11 items-center rounded-xl border border-border bg-card px-3.5 text-sm font-medium text-muted-foreground transition hover:text-foreground md:inline-flex"

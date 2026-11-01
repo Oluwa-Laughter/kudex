@@ -9,6 +9,7 @@ import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/Signa
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {KudexVault} from "./KudexVault.sol";
 import {KudexDaaSAdapter} from "./KudexDaaSAdapter.sol";
+import {IKudexPOTStaking} from "./KudexPOTStaking.sol";
 
 contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     using SafeERC20 for IERC20;
@@ -16,7 +17,8 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     uint256 public constant BPS_DENOMINATOR = 10_000;
     uint256 public constant DEFAULT_PROTOCOL_FEE_BPS = 10; // 0.10% default settlement fee
     uint256 public constant MAX_PROTOCOL_FEE_BPS = 100; // 1.00% maximum cap
-    uint256 public constant VAULT_FEE_SHARE_BPS = 8_000; // 80% to KudexVault depositors, 20% to Protection Reserve
+    uint256 public constant VAULT_FEE_SHARE_BPS = 8_000; // 80% to KudexVault depositors when POT staking is unset
+    uint256 public constant MAX_STAKER_SHARE_BPS = 2_000; // Up to 20% of collected fees to POT stakers
 
     struct Order {
         address maker;
@@ -51,8 +53,11 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     uint256 public protocolFeeBps = DEFAULT_PROTOCOL_FEE_BPS;
     address public yieldVault;
     address public protectionReserve;
+    address public potStaking;
+    uint256 public potStakerFeeShareBps;
     uint256 public totalVaultYieldRouted;
     uint256 public totalProtectionReserveRouted;
+    uint256 public totalPotStakerRevenueRouted;
 
     mapping(address => mapping(uint256 => bool)) public orderCancelled;
     mapping(address => mapping(uint256 => bool)) public nonceUsed;
@@ -61,6 +66,7 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     event RFQSettled(bytes32 indexed orderHash, address indexed taker, address maker);
     event OrderCancelled(address indexed maker, uint256 indexed nonce);
     event FeeRoutingUpdated(address indexed yieldVault, address indexed protectionReserve, uint256 protocolFeeBps);
+    event PotStakingUpdated(address indexed potStaking, uint256 stakerFeeShareBps);
     event ProtocolFeeRouted(
         bytes32 indexed orderHash,
         address indexed feeToken,
@@ -91,10 +97,32 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
         emit FeeRoutingUpdated(_yieldVault, _protectionReserve, protocolFeeBps);
     }
 
+    function setPotStaking(address _potStaking, uint256 _stakerFeeShareBps) external onlyOwner {
+        if (_stakerFeeShareBps > MAX_STAKER_SHARE_BPS) revert InvalidFeeConfiguration();
+        if (_potStaking != address(0) && _potStaking.code.length == 0) {
+            revert InvalidFeeConfiguration();
+        }
+        potStaking = _potStaking;
+        potStakerFeeShareBps = _potStaking == address(0) ? 0 : _stakerFeeShareBps;
+        emit PotStakingUpdated(_potStaking, potStakerFeeShareBps);
+    }
+
     function setProtocolFeeBps(uint256 _protocolFeeBps) external onlyOwner {
         if (_protocolFeeBps > MAX_PROTOCOL_FEE_BPS) revert InvalidFeeConfiguration();
         protocolFeeBps = _protocolFeeBps;
         emit FeeRoutingUpdated(yieldVault, protectionReserve, _protocolFeeBps);
+    }
+
+    /// @notice Returns true if either maker or taker staked >= 100 POT (100 * 10^14 base units).
+    function qualifiesForFeeWaiver(address maker, address taker) public view returns (bool) {
+        if (potStaking == address(0) || potStaking.code.length == 0) return false;
+        IKudexPOTStaking staking = IKudexPOTStaking(potStaking);
+        return staking.qualifiesForFeeWaiver(taker) || staking.qualifiesForFeeWaiver(maker);
+    }
+
+    function effectiveFeeBps(address maker, address taker) public view returns (uint256) {
+        if (protocolFeeBps == 0 || qualifiesForFeeWaiver(maker, taker)) return 0;
+        return protocolFeeBps;
     }
 
     function hashOrder(Order memory order) public view returns (bytes32) {
@@ -123,8 +151,8 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
         if (
             yieldVault != address(0)
                 && (
-                    msg.sender == yieldVault || msg.sender == protectionReserve || order.maker == yieldVault
-                        || order.maker == protectionReserve
+                    msg.sender == yieldVault || msg.sender == protectionReserve || msg.sender == potStaking
+                        || order.maker == yieldVault || order.maker == protectionReserve || order.maker == potStaking
                 )
         ) revert InvalidOrder();
         if (block.timestamp > order.deadline) revert OrderExpired();
@@ -142,15 +170,16 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
         emit RFQSettled(orderHash, msg.sender, order.maker);
     }
 
-    function _computeFeePlan(Order calldata order) private view returns (FeePlan memory plan) {
+    function _computeFeePlan(Order calldata order, address taker) private view returns (FeePlan memory plan) {
         uint256 feeOnIn = 0;
         uint256 feeOnOut = 0;
-        if (yieldVault != address(0) && protocolFeeBps > 0 && !KudexVault(yieldVault).isDefaulted()) {
+        uint256 activeBps = effectiveFeeBps(order.maker, taker);
+        if (yieldVault != address(0) && activeBps > 0 && !KudexVault(yieldVault).isDefaulted()) {
             address vaultAsset = KudexVault(yieldVault).asset();
             if (order.tokenOut == vaultAsset) {
-                feeOnOut = (order.amountOut * protocolFeeBps) / BPS_DENOMINATOR;
+                feeOnOut = (order.amountOut * activeBps) / BPS_DENOMINATOR;
             } else if (order.tokenIn == vaultAsset) {
-                feeOnIn = (order.amountIn * protocolFeeBps) / BPS_DENOMINATOR;
+                feeOnIn = (order.amountIn * activeBps) / BPS_DENOMINATOR;
             }
         }
         plan = FeePlan({
@@ -162,7 +191,7 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     }
 
     function _executeOrderTransfers(Order calldata order, bytes32 orderHash) private {
-        FeePlan memory plan = _computeFeePlan(order);
+        FeePlan memory plan = _computeFeePlan(order, msg.sender);
         Balances memory beforeTransfer = _balances(order, msg.sender);
 
         IERC20(order.tokenIn).safeTransferFrom(order.maker, msg.sender, plan.takerExpectedIn);
@@ -189,9 +218,24 @@ contract KudexRFQMarket is Ownable, ReentrancyGuard, EIP712 {
     }
 
     function _routeCollectedFee(bytes32 orderHash, address feeToken, uint256 totalFee) private {
-        uint256 vaultShare = (totalFee * VAULT_FEE_SHARE_BPS) / BPS_DENOMINATOR;
-        uint256 reserveShare = totalFee - vaultShare;
+        uint256 stakerShare = 0;
+        if (
+            potStaking != address(0) && potStakerFeeShareBps > 0
+                && IKudexPOTStaking(potStaking).rewardToken() == feeToken
+        ) {
+            stakerShare = (totalFee * potStakerFeeShareBps) / BPS_DENOMINATOR;
+        }
 
+        uint256 distributableAfterStakers = totalFee - stakerShare;
+        uint256 vaultShare = (distributableAfterStakers * VAULT_FEE_SHARE_BPS) / BPS_DENOMINATOR;
+        uint256 reserveShare = distributableAfterStakers - vaultShare;
+
+        if (stakerShare > 0) {
+            IERC20(feeToken).forceApprove(potStaking, stakerShare);
+            IKudexPOTStaking(potStaking).distributeProtocolRevenue(stakerShare);
+            IERC20(feeToken).forceApprove(potStaking, 0);
+            totalPotStakerRevenueRouted += stakerShare;
+        }
         if (vaultShare > 0) {
             IERC20(feeToken).forceApprove(yieldVault, vaultShare);
             KudexVault(yieldVault).distributeYield(vaultShare);

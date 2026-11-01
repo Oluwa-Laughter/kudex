@@ -10,6 +10,11 @@ const rfqMarket = configuredAddress(process.env.NEXT_PUBLIC_RFQ_ROUTER_ADDRESS);
 const daasAdapter = configuredAddress(process.env.NEXT_PUBLIC_DAAS_ADAPTER_ADDRESS);
 const verifier = configuredAddress(process.env.NEXT_PUBLIC_VERIFIER_ADDRESS);
 const usdc = configuredAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS);
+const invoiceEscrow = configuredAddress(process.env.NEXT_PUBLIC_INVOICE_ESCROW_ADDRESS);
+const businessRegistry = configuredAddress(
+  process.env.NEXT_PUBLIC_BUSINESS_REGISTRY_ADDRESS,
+);
+const potStaking = configuredAddress(process.env.NEXT_PUBLIC_POT_STAKING_ADDRESS);
 
 export const CONTRACT_ADDRESSES = {
   vault,
@@ -17,9 +22,15 @@ export const CONTRACT_ADDRESSES = {
   daasAdapter,
   verifier,
   usdc,
+  invoiceEscrow,
+  businessRegistry,
+  potStaking,
 } as const;
 
 export const isVaultConfigured = vault !== zeroAddress && usdc !== zeroAddress;
+export const isInvoiceEscrowConfigured = invoiceEscrow !== zeroAddress;
+export const isBusinessRegistryConfigured = businessRegistry !== zeroAddress;
+export const isPotStakingConfigured = potStaking !== zeroAddress;
 
 // Populated by the receipt/artifact-verifying deployment importer, never guessed.
 export const VAULT_CODE_HASH = process.env.NEXT_PUBLIC_VAULT_CODE_HASH;

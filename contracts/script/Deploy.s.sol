@@ -6,6 +6,9 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {KudexVault} from "../src/KudexVault.sol";
 import {KudexRFQMarket} from "../src/KudexRFQMarket.sol";
 import {KudexDaaSAdapter} from "../src/KudexDaaSAdapter.sol";
+import {KudexInvoiceEscrow} from "../src/KudexInvoiceEscrow.sol";
+import {KudexBusinessRegistry} from "../src/KudexBusinessRegistry.sol";
+import {KudexPOTStaking} from "../src/KudexPOTStaking.sol";
 import {KudexTestToken} from "../src/KudexTestToken.sol";
 import {Groth16Verifier} from "../src/verifiers/Groth16Verifier.sol";
 
@@ -32,13 +35,23 @@ contract DeployKudex is Script {
         KudexVault vault = new KudexVault(IERC20(asset), "Kudex Public Treasury Vault", "kVAULT", address(verifier));
         KudexRFQMarket router = new KudexRFQMarket();
         KudexDaaSAdapter adapter = new KudexDaaSAdapter(address(vault));
+        KudexPOTStaking potStaking = new KudexPOTStaking(asset);
+        KudexBusinessRegistry businessRegistry = new KudexBusinessRegistry();
+        KudexInvoiceEscrow invoiceEscrow =
+            new KudexInvoiceEscrow(address(vault), address(adapter), address(potStaking));
+
         vault.setDefaultController(address(adapter));
         router.setFeeRouting(address(vault), address(adapter));
+        router.setPotStaking(address(potStaking), 1000);
+
         console2.log("Collateral:", asset);
         console2.log("Disabled privacy verifier:", address(verifier));
         console2.log("Public vault:", address(vault));
         console2.log("Signed RFQ router:", address(router));
         console2.log("Risk adapter:", address(adapter));
+        console2.log("POT staking:", address(potStaking));
+        console2.log("Business registry:", address(businessRegistry));
+        console2.log("Invoice escrow:", address(invoiceEscrow));
         vm.stopBroadcast();
     }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi';
 import { erc20Abi, formatUnits, zeroAddress, type Hex } from 'viem';
 import { FiDownload } from 'react-icons/fi';
@@ -21,6 +22,7 @@ import { kudexRFQMarketAbi } from '@/lib/contracts/abis';
 import { parseSignedOffer } from '@/lib/contracts/orders';
 import { inspectSignedOffer, type RfqInspection } from '@/lib/contracts/rfq-client';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
+import { LIVE_ACTIVITY_QUERY_KEY } from '@/lib/hooks/useLiveActivity';
 import { getReadableErrorMessage } from '@/lib/utils';
 
 function offerStatus(data: RfqInspection) {
@@ -44,6 +46,7 @@ export function RfqOfferReview({
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
+  const queryClient = useQueryClient();
   const [review, setReview] = useState<{ raw: string; data: RfqInspection }>();
   const [busy, setBusy] = useState(false);
   const actionLock = useRef(false);
@@ -264,6 +267,7 @@ export function RfqOfferReview({
             chainId: portaldotTestnet.id,
           }),
         );
+        await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
         setStatus('Offer cancellation confirmed. Token allowance is unchanged.');
       } else {
         if (isMaker) throw new Error('Switch to the taker wallet to fill this offer.');
@@ -298,6 +302,7 @@ export function RfqOfferReview({
             chainId: portaldotTestnet.id,
           }),
         );
+        await queryClient.invalidateQueries({ queryKey: [LIVE_ACTIVITY_QUERY_KEY] });
         setStatus(
           `Offer settlement ${finality}. A matching settlement event confirms the exact-transfer exchange.`,
         );

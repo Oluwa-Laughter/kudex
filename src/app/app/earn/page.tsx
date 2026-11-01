@@ -15,6 +15,7 @@ import { CONTRACT_ADDRESSES, isVaultConfigured } from '@/lib/contracts/addresses
 import { kudexDaaSAdapterAbi, kudexVaultAbi } from '@/lib/contracts/abis';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { PublicVault } from '@/components/dashboard/PublicVault';
+import { PotStakingCard } from '@/components/dashboard/PotStakingCard';
 import { RiskPanel } from '@/components/dashboard/RiskPanel';
 
 const BUSINESS_VAULTS = [
@@ -230,7 +231,7 @@ export default function EarnPage() {
             {revenueDistributedDisplay}
           </p>
           <p className="text-sm text-muted-foreground">
-            80% of the 0.10% settlement fee routed directly to vault depositors
+            Protocol settlement revenue routed directly into vault collateral
           </p>
         </div>
 
@@ -245,7 +246,7 @@ export default function EarnPage() {
             {protectionReserveDisplay}
           </p>
           <p className="text-sm text-muted-foreground">
-            20% of settlement fees held in the dedicated solvency reserve
+            Dedicated solvency reserve ready for 5-stage depositor protection
           </p>
         </div>
       </section>
@@ -323,7 +324,10 @@ export default function EarnPage() {
       {/* Simple Deposit / Withdraw Box */}
       <PublicVault selectedVaultTitle={selectedVault.name} />
 
-      {/* Built-In Payment Protection Widget */}
+      {/* POT Fee-Free Membership Card */}
+      <PotStakingCard rewardDecimals={tokenDecimals} rewardSymbol={tokenSymbol} />
+
+      {/* 5-Step Built-In Payment Protection Tracker */}
       <RiskPanel />
     </div>
   );

@@ -14,6 +14,8 @@ import {
   FiCheckCircle,
   FiArrowRight,
   FiRefreshCw,
+  FiDownload,
+  FiExternalLink,
 } from 'react-icons/fi';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { isVaultConfigured, CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
@@ -25,10 +27,23 @@ import {
   usePrivateNotesStore,
 } from '@/lib/crypto/noteSync';
 import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
-import { useProtocolEvents } from '@/lib/hooks/useProtocolEvents';
+import {
+  useLiveActivity,
+  type ActivityFilterGroup,
+} from '@/lib/hooks/useLiveActivity';
+import { downloadLiveActivityReceipt } from '@/components/navigation/ActivityDrawer';
 import { useAutoPilotStore, formatTimeRemaining } from '@/lib/sessionKeys';
-import { getReadableErrorMessage } from '@/lib/utils';
+import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
+
+const HOME_FILTER_PILLS: Array<{ id: ActivityFilterGroup; label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'payments', label: 'Payments' },
+  { id: 'invoices', label: 'Invoices' },
+  { id: 'vaults', label: 'Vaults' },
+  { id: 'swaps', label: 'Swaps' },
+  { id: 'protection', label: 'Protection' },
+];
 
 export default function HomeOverviewPage() {
   const { address } = useAccount();
@@ -36,7 +51,7 @@ export default function HomeOverviewPage() {
   const { signMessageAsync } = useSignMessage();
   const { data: gasBalance } = useBalance({ address, chainId: portaldotTestnet.id });
   const { data: nativeAccount } = useNativeAccount();
-  const events = useProtocolEvents();
+  const liveActivity = useLiveActivity('all');
   const autoPilot = useAutoPilotStore();
   const privateNotes = usePrivateNotesStore();
 
@@ -319,17 +334,37 @@ export default function HomeOverviewPage() {
       {/* Main Activity Chart */}
       <VolumeChart />
 
-      {/* Recent Activity Summary */}
-      <section className="panel space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h2 className="text-xl font-bold">Recent Account Activity</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Verified vault deposits, private transfers, and best-price swaps on the
-              network.
+      {/* Live Event-Indexed On-Chain Activity Ledger */}
+      <section className="panel space-y-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-bold">On-Chain Activity &amp; Receipts</h2>
+              {liveActivity.latestBlock !== null && (
+                <span className="rounded-full border border-border bg-secondary px-3 py-0.5 font-mono text-sm font-semibold text-muted-foreground tabular-nums">
+                  Synced · Block #{liveActivity.latestBlock.toString()}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Real-time event logs indexed directly from network blocks across payments,
+              invoices, vaults, POT fee locks, and swaps.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void liveActivity.refetch()}
+              disabled={liveActivity.isFetching}
+              className="quiet-link text-sm disabled:opacity-50"
+            >
+              <FiRefreshCw
+                className={liveActivity.isFetching ? 'animate-spin text-primary' : ''}
+                aria-hidden="true"
+              />
+              <span>Refresh Blocks</span>
+            </button>
             <Link
               href="/verify"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
@@ -337,55 +372,155 @@ export default function HomeOverviewPage() {
               <span>Public Auditor Portal</span>
               <FiArrowRight aria-hidden="true" />
             </Link>
-            <Link
-              href="/app/pay"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
-            >
-              <span>Create 1-Click Auditor Pass</span>
-              <FiArrowRight aria-hidden="true" />
-            </Link>
           </div>
         </div>
 
-        {events.data && events.data.chartSeries.some((b) => b.rawVolumeBigInt > 0n) ? (
-          <div className="table-region rounded-xl border border-border">
+        {/* Filter Pills: Scope + Categories */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div
+            role="tablist"
+            aria-label="Account activity scope"
+            className="inline-flex flex-wrap gap-1.5 rounded-xl border border-border bg-secondary p-1"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={liveActivity.scope === 'all'}
+              onClick={() => liveActivity.setScope('all')}
+              className={`min-h-9 rounded-lg px-3 py-1 text-sm font-semibold transition ${
+                liveActivity.scope === 'all'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              All Network Activity
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={liveActivity.scope === 'mine'}
+              onClick={() => liveActivity.setScope('mine')}
+              className={`min-h-9 rounded-lg px-3 py-1 text-sm font-semibold transition ${
+                liveActivity.scope === 'mine'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              My Account Activity
+            </button>
+          </div>
+
+          <div
+            role="group"
+            aria-label="Activity category filter"
+            className="flex flex-wrap gap-1.5"
+          >
+            {HOME_FILTER_PILLS.map((pill) => {
+              const active = liveActivity.filterGroup === pill.id;
+              return (
+                <button
+                  key={pill.id}
+                  type="button"
+                  onClick={() => liveActivity.setFilterGroup(pill.id)}
+                  className={`min-h-9 rounded-full border px-3.5 py-1 text-sm font-semibold transition ${
+                    active
+                      ? 'border-primary bg-primary/15 text-primary'
+                      : 'border-border bg-secondary text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {liveActivity.filteredItems.length > 0 ? (
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="Live on-chain activity ledger"
+            className="table-region rounded-xl border border-border"
+          >
             <table className="w-full text-left text-sm">
               <thead className="border-b border-border bg-secondary text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3">Activity</th>
-                  <th className="px-4 py-3">Window</th>
-                  <th className="px-4 py-3">Settled Volume</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Category &amp; Event</th>
+                  <th className="px-4 py-3">Block &amp; Tx Hash</th>
+                  <th className="px-4 py-3">Settled Amount</th>
+                  <th className="px-4 py-3">Receipt &amp; Audit</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {events.data.chartSeries
-                  .filter((b) => b.rawVolumeBigInt > 0n)
-                  .map((b) => (
-                    <tr key={b.day}>
-                      <td className="px-4 py-3 font-semibold">
-                        Vault Deposit &amp; Payment Settlement
-                      </td>
-                      <td className="px-4 py-3 font-mono tabular-nums">#{b.day}</td>
-                      <td className="px-4 py-3 font-mono font-bold text-primary tabular-nums">
-                        {formatUnits(b.rawVolumeBigInt, events.data!.decimals)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="emerald-badge">
-                          <FiCheckCircle aria-hidden="true" />
-                          <span>Confirmed</span>
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                {liveActivity.filteredItems.slice(0, 25).map((item) => (
+                  <tr key={item.id}>
+                    <td className="px-4 py-3">
+                      <span className="emerald-badge">
+                        <FiCheckCircle aria-hidden="true" />
+                        <span>{item.category}</span>
+                      </span>
+                      <span className="mt-1 block font-semibold text-foreground">
+                        {item.title}
+                      </span>
+                      <span className="block text-muted-foreground">{item.subtitle}</span>
+                    </td>
+                    <td className="px-4 py-3 font-mono tabular-nums">
+                      <span className="block font-bold text-foreground">
+                        #{item.blockNumber.toString()}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {truncateAddress(item.transactionHash)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-mono font-bold text-primary tabular-nums">
+                      {item.formattedAmount}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => downloadLiveActivityReceipt(item)}
+                          className="quiet-link px-3 py-1.5 text-sm"
+                        >
+                          <FiDownload aria-hidden="true" />
+                          <span>Download Receipt</span>
+                        </button>
+                        <Link
+                          href={item.verificationUrl}
+                          className="quiet-link px-3 py-1.5 text-sm"
+                        >
+                          <FiExternalLink aria-hidden="true" />
+                          <span>Verify</span>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="rounded-xl bg-secondary p-5 text-sm text-muted-foreground">
-            No recent transactions in the active window yet. Send a private payment,
-            deposit into a Fixed-Yield Business Vault, or swap assets to see live
-            confirmations here.
+          <div className="rounded-2xl border border-border bg-secondary/60 p-6 space-y-4">
+            <div className="space-y-1">
+              <p className="font-bold text-foreground">
+                No Confirmed On-Chain Transactions in This Filter Yet
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Execute a private payment, create an on-chain invoice, lock POT for 0%
+                fees, or deposit into a Fixed-Yield Business Vault to index your first live
+                block receipt.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/app/pay" className="action-link text-sm">
+                <FiSend aria-hidden="true" />
+                <span>Start a Payment</span>
+              </Link>
+              <Link href="/app/earn" className="quiet-link text-sm">
+                <FiTrendingUp className="text-primary" aria-hidden="true" />
+                <span>Deposit Funds</span>
+              </Link>
+            </div>
           </div>
         )}
       </section>
