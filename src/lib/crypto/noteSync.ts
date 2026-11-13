@@ -196,7 +196,7 @@ export async function restorePrivateNotesFromNetwork(params: {
   decimals: number;
 }> {
   const { client, vaultAddress, ownerAddress, key } = params;
-  const latestBlock = await client.getBlockNumber();
+  const latestBlock = await client.getBlockNumber({ cacheTime: 0 });
   const defaultLookback = latestBlock > 50_000n ? latestBlock - 50_000n : 0n;
   const fromBlock = params.fromBlock ?? defaultLookback;
 

@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiClock,
   FiDownload,
+  FiExternalLink,
   FiGlobe,
   FiRepeat,
   FiShield,
@@ -17,8 +18,18 @@ import {
 } from 'react-icons/fi';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { RfqWorkspace } from '@/components/dashboard/RfqWorkspace';
-import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
+import { downloadLiveActivityReceipt } from '@/components/navigation/ActivityDrawer';
+import {
+  CONTRACT_ADDRESSES,
+  isPotStakingConfigured,
+} from '@/lib/contracts/addresses';
+import { kudexPOTStakingAbi, kudexRFQMarketAbi } from '@/lib/contracts/abis';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
+import {
+  createPrivateNoteMetadata,
+  usePrivateNotesStore,
+} from '@/lib/crypto/noteSync';
+import { useLiveActivity } from '@/lib/hooks/useLiveActivity';
 import { useProtocolEvents } from '@/lib/hooks/useProtocolEvents';
 import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 
@@ -85,6 +96,11 @@ export default function TradeAndBridgePage() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const events = useProtocolEvents();
+  const liveActivity = useLiveActivity('all');
+  const liveSwapItems = liveActivity.allItems.filter(
+    (item) => item.filterGroup === 'swaps',
+  );
+  const privateNotes = usePrivateNotesStore();
 
   const [mode, setMode] = useState<'swap' | 'bridge'>('swap');
   const [sourceNetwork, setSourceNetwork] = useState('base');
@@ -101,6 +117,7 @@ export default function TradeAndBridgePage() {
 
   const collateralToken = CONTRACT_ADDRESSES.usdc;
   const hasCollateralToken = collateralToken !== zeroAddress;
+  const hasRfqMarket = CONTRACT_ADDRESSES.rfqMarket !== zeroAddress;
 
   const tokenBalanceQuery = useReadContract({
     chainId: portaldotTestnet.id,
@@ -123,6 +140,27 @@ export default function TradeAndBridgePage() {
     },
   });
 
+  const feeWaiverQuery = useReadContract({
+    chainId: portaldotTestnet.id,
+    address: CONTRACT_ADDRESSES.potStaking,
+    abi: kudexPOTStakingAbi,
+    functionName: 'qualifiesForFeeWaiver',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: Boolean(address && isPotStakingConfigured),
+    },
+  });
+
+  const rfqFeeBpsQuery = useReadContract({
+    chainId: portaldotTestnet.id,
+    address: CONTRACT_ADDRESSES.rfqMarket,
+    abi: kudexRFQMarketAbi,
+    functionName: 'protocolFeeBps',
+    query: {
+      enabled: hasRfqMarket,
+    },
+  });
+
   const networkFeed = useQuery<{ block: string; gasPriceBaseUnits: string }>({
     queryKey: ['trade-network-feed'],
     staleTime: 15_000,
@@ -136,6 +174,9 @@ export default function TradeAndBridgePage() {
   });
 
   const targetAsset = mode === 'bridge' ? payAsset : receiveAsset;
+  const hasFeeWaiver = Boolean(feeWaiverQuery.data);
+  const onChainSwapFeeRate =
+    rfqFeeBpsQuery.data !== undefined ? Number(rfqFeeBpsQuery.data) / 10_000 : 0.0003;
 
   useEffect(() => {
     let active = true;
@@ -161,7 +202,14 @@ export default function TradeAndBridgePage() {
   const numericPay = Number(payAmount);
   const validPay = Number.isFinite(numericPay) && numericPay > 0;
   const fromUsd = validPay ? numericPay * (ASSET_RATES_USD[payAsset] ?? 1) : 0;
-  const feeRate = mode === 'bridge' ? 0.0005 : 0.0003;
+  const feeRate =
+    mode === 'bridge'
+      ? hasFeeWaiver
+        ? 0.0002
+        : 0.0005
+      : hasFeeWaiver
+        ? 0
+        : onChainSwapFeeRate;
   const feeAmount = validPay ? numericPay * feeRate : 0;
   const netUsd = Math.max(0, fromUsd * (1 - feeRate));
   const computedReceive =
@@ -219,6 +267,20 @@ export default function TradeAndBridgePage() {
 
       const signature = await signMessageAsync({ message: authorizationText });
       const receiptId = await sha256Hex(signature);
+
+      if (receivePrivately) {
+        const note = await createPrivateNoteMetadata({
+          owner: address,
+          recipient: address,
+          value: formattedReceive,
+          decimals: targetAsset === 'tPOT' ? 14 : targetAsset === 'WETH' ? 18 : 6,
+          assetSymbol: targetAsset,
+          memo: `${routeTitle} via Best-Price Auto-Routing`,
+        });
+        privateNotes.recordLocalNote(note);
+        setStealthCommitment(note.commitment);
+        setClaimSecret(note.nullifierPreimage);
+      }
 
       setHistory((prev) => [
         {
@@ -420,7 +482,9 @@ export default function TradeAndBridgePage() {
                   You Receive
                 </label>
                 <span className="text-sm font-semibold text-primary tabular-nums">
-                  Fee: {(feeRate * 100).toFixed(2)}% ({feeAmount.toFixed(4)} {payAsset})
+                  {hasFeeWaiver && mode === 'swap'
+                    ? `Fee: 0.00% (POT Fee-Free Member)`
+                    : `Fee: ${(feeRate * 100).toFixed(2)}% (${feeAmount.toFixed(4)} ${payAsset})`}
                 </span>
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_11rem]">
@@ -564,6 +628,7 @@ export default function TradeAndBridgePage() {
           <section className="panel space-y-4">
             <h2 className="text-xl font-bold">Recent Swaps &amp; Network Transfers</h2>
             {history.length === 0 &&
+            liveSwapItems.length === 0 &&
             (!events.data ||
               (events.data.totalSettlements === 0 &&
                 events.data.totalDepositEvents === 0)) ? (
@@ -589,6 +654,44 @@ export default function TradeAndBridgePage() {
                     <p className="mt-1 font-bold text-primary tabular-nums">
                       {item.youPay} → {item.youReceive} ({item.destinationPrivacy})
                     </p>
+                  </li>
+                ))}
+                {liveSwapItems.slice(0, 5).map((swapItem) => (
+                  <li
+                    key={swapItem.id}
+                    className="rounded-xl border border-primary/30 bg-secondary/70 p-3.5 space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-foreground">
+                        {swapItem.title}
+                      </span>
+                      <span className="font-mono font-bold text-primary tabular-nums">
+                        Block #{swapItem.blockNumber.toString()}
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground">{swapItem.subtitle}</p>
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-mono font-bold text-primary tabular-nums">
+                        {swapItem.formattedAmount}
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => downloadLiveActivityReceipt(swapItem)}
+                          className="quiet-link px-2.5 py-1 text-sm"
+                        >
+                          <FiDownload aria-hidden="true" />
+                          <span>Receipt</span>
+                        </button>
+                        <Link
+                          href={swapItem.verificationUrl}
+                          className="quiet-link px-2.5 py-1 text-sm"
+                        >
+                          <FiExternalLink aria-hidden="true" />
+                          <span>Verify</span>
+                        </Link>
+                      </div>
+                    </div>
                   </li>
                 ))}
                 {events.data && events.data.totalSettlements > 0 && (

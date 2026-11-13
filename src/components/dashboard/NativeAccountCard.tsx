@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { FiArrowUpRight, FiRefreshCw } from 'react-icons/fi';
+import { FiRefreshCw } from 'react-icons/fi';
 import { useNativeWallet } from '@/components/navigation/NativeWalletProvider';
 import { useNativeAccount } from '@/lib/hooks/useNativeAccount';
 
@@ -10,26 +9,7 @@ export function NativeAccountCard() {
   const account = useNativeAccount();
 
   if (!selected) {
-    return (
-      <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
-        <div>
-          <h2 className="text-base font-bold text-foreground">
-            Linked Native Extension Account
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Connect your native browser extension from the wallet menu to view your native
-            balance and linked settlement address.
-          </p>
-        </div>
-        <Link
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline"
-          href="/docs"
-        >
-          <span>Read Docs</span>
-          <FiArrowUpRight aria-hidden="true" />
-        </Link>
-      </section>
-    );
+    return null;
   }
 
   return (

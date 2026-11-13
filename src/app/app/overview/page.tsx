@@ -234,13 +234,18 @@ export default function HomeOverviewPage() {
         </p>
       )}
 
-      {/* Top Summary Bar: 4 Clean Cards */}
+      {/* Top Summary Bar: 4 Clean KPI Cards */}
       <section
         aria-label="Account summary"
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
-        <div className="panel min-w-0 space-y-2">
-          <span className="text-sm font-medium text-muted-foreground">Total Balance</span>
+        <div className="kpi-card min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-muted-foreground">
+              Total Balance
+            </span>
+            <FiShield className="text-muted-foreground" aria-hidden="true" />
+          </div>
           <p className="text-2xl font-bold tracking-tight text-foreground tabular-nums sm:text-3xl">
             {totalBalanceLabel}
           </p>
@@ -249,9 +254,9 @@ export default function HomeOverviewPage() {
           </p>
         </div>
 
-        <div className="panel min-w-0 space-y-2">
+        <div className="kpi-card min-w-0 space-y-2 border-primary/30">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-semibold text-muted-foreground">
               Private Balance
             </span>
             <FiLock className="text-primary" aria-hidden="true" />
@@ -266,10 +271,13 @@ export default function HomeOverviewPage() {
           </p>
         </div>
 
-        <div className="panel min-w-0 space-y-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            Current Yield Earned
-          </span>
+        <div className="kpi-card min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-muted-foreground">
+              Current Yield Earned
+            </span>
+            <FiTrendingUp className="text-primary" aria-hidden="true" />
+          </div>
           <p className="text-2xl font-bold tracking-tight text-foreground tabular-nums sm:text-3xl">
             {yieldDisplay}
           </p>
@@ -280,10 +288,13 @@ export default function HomeOverviewPage() {
           </p>
         </div>
 
-        <div className="panel min-w-0 space-y-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            Auto-Pilot Status
-          </span>
+        <div className="kpi-card min-w-0 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-muted-foreground">
+              Auto-Pilot Status
+            </span>
+            <FiCpu className="text-accent" aria-hidden="true" />
+          </div>
           <p className="text-2xl font-bold tracking-tight text-accent tabular-nums sm:text-3xl">
             {autoPilotDisplay}
           </p>
@@ -329,6 +340,70 @@ export default function HomeOverviewPage() {
           </span>
           <FiArrowRight className="text-accent" aria-hidden="true" />
         </Link>
+      </section>
+
+      {/* End-to-End Business Treasury Workflow Guide */}
+      <section
+        aria-label="Treasury workflow steps"
+        className="panel grid gap-4 lg:grid-cols-3"
+      >
+        <div className="min-w-0 flex items-start gap-3.5 rounded-xl border border-border bg-secondary/60 p-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card font-mono text-sm font-bold text-primary shadow-sm tabular-nums">
+            01
+          </span>
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-bold text-foreground">
+                Shield Payments &amp; Invoices
+              </span>
+              {privateNotes.notes.length > 0 && (
+                <span className="emerald-badge">Active</span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Send single or CSV batch vendor payments in Stealth Mode or issue on-chain
+              escrow invoices with team sign-off.
+            </p>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex items-start gap-3.5 rounded-xl border border-border bg-secondary/60 p-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card font-mono text-sm font-bold text-primary shadow-sm tabular-nums">
+            02
+          </span>
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-bold text-foreground">
+                Earn Protected Yield &amp; 0% Fee Tier
+              </span>
+              {position.data && position.data.shares > 0n && (
+                <span className="emerald-badge">Earning</span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Allocate idle cash into Fixed-Yield Business Vaults and lock 100 POT to
+              waive protocol invoice and swap fees.
+            </p>
+          </div>
+        </div>
+
+        <div className="min-w-0 flex items-start gap-3.5 rounded-xl border border-border bg-secondary/60 p-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card font-mono text-sm font-bold text-primary shadow-sm tabular-nums">
+            03
+          </span>
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-bold text-foreground">
+                Automate &amp; Share Auditor Pass
+              </span>
+              {autoPilot.active && <span className="emerald-badge">On Auto-Pilot</span>}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Set Auto-Pilot spending rules for recurring operations and export a
+              wallet-less 1-Click Auditor Pass for accounting.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Main Activity Chart */}

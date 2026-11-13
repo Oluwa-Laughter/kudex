@@ -1270,6 +1270,37 @@ function SendAndInvoiceContent() {
                 </div>
               ) : (
                 <>
+                  {privateNotes.notes.filter((n) => !n.spent).length > 0 && (
+                    <div className="min-w-0 sm:col-span-2 space-y-2 rounded-xl border border-border bg-secondary/60 p-4">
+                      <span className="block text-sm font-semibold text-foreground">
+                        Select From Your Synced Private Notes:
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {privateNotes.notes
+                          .filter((n) => !n.spent)
+                          .map((note) => (
+                            <button
+                              key={note.commitment}
+                              type="button"
+                              onClick={() => {
+                                setSpendSecret(note.nullifierHash);
+                                setSendAmount(note.value);
+                                if (note.memo) setPaymentNote(note.memo);
+                              }}
+                              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-1.5 text-sm font-semibold transition hover:border-primary"
+                            >
+                              <FiLock className="text-primary" aria-hidden="true" />
+                              <span className="tabular-nums">
+                                ${note.value} {note.assetSymbol}
+                              </span>
+                              <span className="text-muted-foreground">
+                                · {note.memo || truncateAddress(note.commitment)}
+                              </span>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="min-w-0 sm:col-span-2">
                     <label
                       htmlFor="spend-secret"
@@ -1282,28 +1313,36 @@ function SendAndInvoiceContent() {
                       name="spendSecret"
                       value={spendSecret}
                       onChange={(e) => setSpendSecret(e.target.value)}
-                      placeholder="0x… private claim secret"
+                      placeholder="0x… private claim secret (or select a synced note above)"
                       autoComplete="off"
                       spellCheck={false}
                       disabled={busy}
                       className="field-input font-mono text-sm"
                     />
                   </div>
-                  <div className="min-w-0 sm:col-span-2">
-                    <label htmlFor="proof-json" className="mb-2 block text-sm font-medium">
-                      Verification Receipt Bundle (Optional JSON)
-                    </label>
-                    <textarea
-                      id="proof-json"
-                      name="proofJson"
-                      rows={3}
-                      value={proofJson}
-                      onChange={(e) => setProofJson(e.target.value)}
-                      placeholder='{"a":["0","0"],"b":[["0","0"],["0","0"]],"c":["0","0"]}'
-                      disabled={busy}
-                      className="field-input font-mono text-sm"
-                    />
-                  </div>
+                  <details className="min-w-0 sm:col-span-2 rounded-xl border border-border bg-secondary/50 p-4">
+                    <summary className="text-sm font-semibold text-foreground">
+                      Advanced Custom Verification Receipt Bundle (Optional)
+                    </summary>
+                    <div className="mt-3">
+                      <label
+                        htmlFor="proof-json"
+                        className="mb-2 block text-sm font-medium"
+                      >
+                        Verification Receipt Bundle (Optional JSON)
+                      </label>
+                      <textarea
+                        id="proof-json"
+                        name="proofJson"
+                        rows={3}
+                        value={proofJson}
+                        onChange={(e) => setProofJson(e.target.value)}
+                        placeholder='{"a":["0","0"],"b":[["0","0"],["0","0"]],"c":["0","0"]}'
+                        disabled={busy}
+                        className="field-input font-mono text-sm"
+                      />
+                    </div>
+                  </details>
                 </>
               )}
             </div>
@@ -1701,56 +1740,71 @@ function SendAndInvoiceContent() {
               </div>
 
               <div className="space-y-3">
-                {addressBook.contacts.map((contact) => (
-                  <div
-                    key={contact.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-secondary/60 p-4"
-                  >
-                    <div className="min-w-0 space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-foreground">{contact.name}</span>
-                        <span className="emerald-badge">{contact.category}</span>
-                      </div>
-                      <p className="font-mono text-sm text-muted-foreground">
-                        {truncateAddress(contact.address)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {contact.defaultReference}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setRecipient(contact.address);
-                          setPaymentNote(contact.defaultReference);
-                          setActiveTab('send');
-                        }}
-                        className="quiet-link px-3 py-1.5 text-sm"
-                      >
-                        <FiSend aria-hidden="true" />
-                        <span>Pay</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => appendContactToBatch(contact)}
-                        className="quiet-link px-3 py-1.5 text-sm"
-                      >
-                        <FiPlus aria-hidden="true" />
-                        <span>Add to Batch</span>
-                      </button>
-                      <button
-                        type="button"
-                        aria-label={`Remove ${contact.name}`}
-                        onClick={() => addressBook.removeContact(contact.id)}
-                        className="quiet-link px-3 py-1.5 text-sm text-destructive hover:text-destructive"
-                      >
-                        <FiTrash2 aria-hidden="true" />
-                      </button>
-                    </div>
+                {addressBook.contacts.length === 0 ? (
+                  <div className="rounded-xl border border-border bg-secondary/60 p-5 space-y-2">
+                    <p className="font-semibold text-foreground">
+                      No saved contacts in this browser yet
+                    </p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      Add a verified supplier, contractor, or employee using the form on
+                      the left, or select a business directly from the On-Chain Verified
+                      Business Directory above.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  addressBook.contacts.map((contact) => (
+                    <div
+                      key={contact.id}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-secondary/60 p-4"
+                    >
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-foreground">
+                            {contact.name}
+                          </span>
+                          <span className="emerald-badge">{contact.category}</span>
+                        </div>
+                        <p className="font-mono text-sm text-muted-foreground">
+                          {truncateAddress(contact.address)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {contact.defaultReference}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRecipient(contact.address);
+                            setPaymentNote(contact.defaultReference);
+                            setActiveTab('send');
+                          }}
+                          className="quiet-link px-3 py-1.5 text-sm"
+                        >
+                          <FiSend aria-hidden="true" />
+                          <span>Pay</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => appendContactToBatch(contact)}
+                          className="quiet-link px-3 py-1.5 text-sm"
+                        >
+                          <FiPlus aria-hidden="true" />
+                          <span>Add to Batch</span>
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Remove ${contact.name}`}
+                          onClick={() => addressBook.removeContact(contact.id)}
+                          className="quiet-link px-3 py-1.5 text-sm text-destructive hover:text-destructive"
+                        >
+                          <FiTrash2 aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </section>
           </div>

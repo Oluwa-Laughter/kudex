@@ -181,32 +181,15 @@ export interface SavedContact {
 
 const CONTACTS_STORAGE_KEY = 'kudex-saved-contacts-v1';
 
-const DEFAULT_CONTACTS: SavedContact[] = [
-  {
-    id: 'contact-northstar',
-    name: 'Northstar Logistics LLC',
-    address: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-    category: 'Supplier',
-    defaultReference: 'Monthly Freight & Fulfillment Retainer',
-  },
-  {
-    id: 'contact-meridian',
-    name: 'Meridian Cloud Systems',
-    address: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
-    category: 'Supplier',
-    defaultReference: 'Infrastructure & Hosting Invoice',
-  },
-];
-
 function loadSavedContacts(): SavedContact[] {
-  if (typeof window === 'undefined') return DEFAULT_CONTACTS;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = window.localStorage.getItem(CONTACTS_STORAGE_KEY);
-    if (!raw) return DEFAULT_CONTACTS;
+    if (!raw) return [];
     const parsed = JSON.parse(raw) as SavedContact[];
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_CONTACTS;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return DEFAULT_CONTACTS;
+    return [];
   }
 }
 
@@ -227,7 +210,7 @@ interface AddressBookState {
 }
 
 export const useAddressBookStore = create<AddressBookState>((set) => ({
-  contacts: DEFAULT_CONTACTS,
+  contacts: [],
   hydrate: () => set({ contacts: loadSavedContacts() }),
   addContact: (entry) =>
     set((state) => {

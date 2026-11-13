@@ -121,8 +121,8 @@ export const useAutoPilotStore = create<AutoPilotState>((set) => ({
   },
   recurringPayment: {
     enabled: false,
-    vendorName: 'Northstar Logistics LLC',
-    recipientAddress: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+    vendorName: '',
+    recipientAddress: '',
     amountUsd: 450,
     cadence: 'Month',
     lastExecutedAtIso: null,

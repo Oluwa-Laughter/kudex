@@ -184,7 +184,7 @@ export async function verifyAuditorPassOnChain(
   if (vaultConfigured) {
     try {
       const [block, code] = await Promise.all([
-        client.getBlockNumber(),
+        client.getBlockNumber({ cacheTime: 0 }),
         client.getBytecode({ address: payload.vaultAddress as Address }),
       ]);
       observedBlock = block.toString();

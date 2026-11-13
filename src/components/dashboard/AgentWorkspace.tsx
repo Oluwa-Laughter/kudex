@@ -21,6 +21,7 @@ import { AGENT_EXECUTOR, executorAbi } from '@/lib/agent/contracts';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
 import { CONTRACT_ADDRESSES } from '@/lib/contracts/addresses';
 import { usePrivateNotesStore } from '@/lib/crypto/noteSync';
+import { useAddressBookStore } from '@/lib/payroll/csvParser';
 import {
   SPENDING_BUDGET_PRESETS,
   TIME_LIMIT_OPTIONS,
@@ -48,6 +49,7 @@ export function AgentWorkspace() {
   const client = usePublicClient({ chainId: portaldotTestnet.id });
   const { writeContractAsync } = useWriteContract();
   const privateNotes = usePrivateNotesStore();
+  const addressBook = useAddressBookStore();
 
   const [advancedTab, setAdvancedTab] = useState('builder');
   const [createdId, setCreatedId] = useState<`0x${string}`>();
@@ -79,6 +81,8 @@ export function AgentWorkspace() {
 
   useEffect(() => {
     hydrateTasks();
+    addressBook.hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrateTasks]);
 
   const anyActionAllowed =
@@ -665,6 +669,25 @@ export function AgentWorkspace() {
             </div>
 
             <div className="space-y-3">
+              {addressBook.contacts.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {addressBook.contacts.slice(0, 3).map((contact) => (
+                    <button
+                      key={contact.id}
+                      type="button"
+                      onClick={() =>
+                        updateRecurringPayment({
+                          vendorName: contact.name,
+                          recipientAddress: contact.address,
+                        })
+                      }
+                      className="rounded-lg border border-border bg-card px-2.5 py-1 text-sm font-semibold text-foreground transition hover:border-primary"
+                    >
+                      {contact.name}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="recurring-vendor-input"
@@ -678,7 +701,7 @@ export function AgentWorkspace() {
                   onChange={(e) =>
                     updateRecurringPayment({ vendorName: e.target.value })
                   }
-                  placeholder="Northstar Logistics LLC"
+                  placeholder="Verified Supplier or Contractor Name"
                   className="field-input mb-2"
                 />
                 <input

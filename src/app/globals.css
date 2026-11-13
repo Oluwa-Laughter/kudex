@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --background-rgb: 255 255 255;
+    --background: #f8fafc;
+    --background-rgb: 248 250 252;
     --foreground: #0f172a;
     --foreground-rgb: 15 23 42;
     --card: #ffffff;
@@ -21,19 +21,19 @@
     --emerald-brand: #059669;
     --primary-foreground: #ffffff;
     --primary-foreground-rgb: 255 255 255;
-    --secondary: #f8fafc;
-    --secondary-rgb: 248 250 252;
+    --secondary: #f1f5f9;
+    --secondary-rgb: 241 245 249;
     --secondary-foreground: #0f172a;
     --secondary-foreground-rgb: 15 23 42;
-    --muted: #f8fafc;
-    --muted-rgb: 248 250 252;
+    --muted: #f1f5f9;
+    --muted-rgb: 241 245 249;
     --muted-foreground: #475569;
     --muted-foreground-rgb: 71 85 105;
-    --accent: #2563eb;
-    --accent-rgb: 37 99 235;
+    --accent: #1d4ed8;
+    --accent-rgb: 29 78 216;
     --accent-foreground: #ffffff;
     --accent-foreground-rgb: 255 255 255;
-    --cobalt-btn: #2563eb;
+    --cobalt-btn: #1d4ed8;
     --destructive: #b91c1c;
     --destructive-rgb: 185 28 28;
     --destructive-foreground: #ffffff;
@@ -42,48 +42,48 @@
     --border-rgb: 226 232 240;
     --input: #cbd5e1;
     --input-rgb: 203 213 225;
-    --ring: #2563eb;
-    --ring-rgb: 37 99 235;
+    --ring: #1d4ed8;
+    --ring-rgb: 29 78 216;
     --radius: 0.875rem;
   }
 
   .dark {
-    --background: #06080d;
-    --background-rgb: 6 8 13;
-    --foreground: #edf1f9;
-    --foreground-rgb: 237 241 249;
-    --card: #0e121b;
-    --card-rgb: 14 18 27;
-    --card-foreground: #edf1f9;
-    --card-foreground-rgb: 237 241 249;
-    --popover: #161c2b;
-    --popover-rgb: 22 28 43;
-    --popover-foreground: #edf1f9;
-    --popover-foreground-rgb: 237 241 249;
+    --background: #060911;
+    --background-rgb: 6 9 17;
+    --foreground: #f1f5f9;
+    --foreground-rgb: 241 245 249;
+    --card: #0c111d;
+    --card-rgb: 12 17 29;
+    --card-foreground: #f1f5f9;
+    --card-foreground-rgb: 241 245 249;
+    --popover: #131b2e;
+    --popover-rgb: 19 27 46;
+    --popover-foreground: #f1f5f9;
+    --popover-foreground-rgb: 241 245 249;
     --primary: #00e599;
     --primary-rgb: 0 229 153;
     --emerald-brand: #00e599;
-    --primary-foreground: #06080d;
-    --primary-foreground-rgb: 6 8 13;
-    --secondary: #161c2b;
-    --secondary-rgb: 22 28 43;
-    --secondary-foreground: #d8e2f5;
-    --secondary-foreground-rgb: 216 226 245;
-    --muted: #111724;
-    --muted-rgb: 17 23 36;
-    --muted-foreground: #abb6ce;
-    --muted-foreground-rgb: 171 182 206;
+    --primary-foreground: #060911;
+    --primary-foreground-rgb: 6 9 17;
+    --secondary: #131b2e;
+    --secondary-rgb: 19 27 46;
+    --secondary-foreground: #e2e8f0;
+    --secondary-foreground-rgb: 226 232 240;
+    --muted: #111827;
+    --muted-rgb: 17 24 39;
+    --muted-foreground: #b4c0d8;
+    --muted-foreground-rgb: 180 192 216;
     --accent: #6ea0ff;
     --accent-rgb: 110 160 255;
-    --accent-foreground: #06080d;
-    --accent-foreground-rgb: 6 8 13;
-    --cobalt-btn: #2e68ff;
+    --accent-foreground: #060911;
+    --accent-foreground-rgb: 6 9 17;
+    --cobalt-btn: #2563eb;
     --destructive: #ffb0a9;
     --destructive-rgb: 255 176 169;
     --destructive-foreground: #361411;
     --destructive-foreground-rgb: 54 20 17;
-    --border: #21293d;
-    --border-rgb: 33 41 61;
+    --border: #1e293b;
+    --border-rgb: 30 41 59;
     --input: #4f5e7d;
     --input-rgb: 79 94 125;
     --ring: #00e599;
@@ -154,16 +154,19 @@
     @apply mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground;
   }
   .panel {
-    @apply rounded-2xl border border-border bg-card p-5 sm:p-6;
+    @apply rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6;
+  }
+  .kpi-card {
+    @apply relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-primary/40 sm:p-6;
   }
   .field-input {
     @apply w-full min-w-0 rounded-xl border border-input bg-background px-4 py-3 text-base tabular-nums transition-colors focus:border-primary disabled:opacity-50;
   }
   .workspace-tab {
-    @apply inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[state=active]:bg-secondary data-[state=active]:text-primary;
+    @apply inline-flex min-h-11 items-center gap-2 rounded-xl border border-transparent px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground data-[state=active]:border-primary/30 data-[state=active]:bg-secondary data-[state=active]:text-primary data-[state=active]:shadow-sm;
   }
   .action-link {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
     background-color: var(--cobalt-btn);
     transition:
       opacity 160ms ease,
@@ -177,7 +180,7 @@
     transition-duration: 0ms;
   }
   .cobalt-action {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm;
     background-color: var(--cobalt-btn);
     transition:
       opacity 160ms ease,
@@ -198,17 +201,20 @@
     border-color: rgb(var(--primary-rgb) / 0.35);
   }
   .danger-action {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-40;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:opacity-40;
   }
   .quiet-link {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground;
-    transition: background-color 160ms ease;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
   }
   .quiet-link:hover {
     background: var(--secondary);
+    border-color: rgb(var(--primary-rgb) / 0.35);
   }
   .eyebrow {
-    @apply mb-2 flex items-center gap-2 text-sm font-medium text-primary;
+    @apply mb-2 flex items-center gap-2 text-sm font-semibold tracking-tight text-primary;
   }
   .glass-panel {
     @apply border border-border bg-card;

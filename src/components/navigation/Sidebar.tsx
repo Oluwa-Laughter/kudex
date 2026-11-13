@@ -9,8 +9,10 @@ import {
   FiRepeat,
   FiCpu,
   FiArrowUpRight,
+  FiShield,
 } from 'react-icons/fi';
 import { Logo } from '@/components/brand/Logo';
+import { useAutoPilotStore } from '@/lib/sessionKeys';
 
 export const APP_NAV_ITEMS = [
   { name: 'Home', href: '/app/overview', icon: FiHome },
@@ -28,6 +30,7 @@ export function SidebarContent({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const autoPilot = useAutoPilotStore();
 
   return (
     <div className="flex h-full flex-col gap-6 p-4">
@@ -35,7 +38,7 @@ export function SidebarContent({
         {compact ? (
           <Link
             href="/"
-            className="flex h-11 items-center justify-center rounded-xl bg-secondary font-heading text-lg font-bold text-primary"
+            className="flex h-11 items-center justify-center rounded-xl border border-border bg-secondary font-heading text-lg font-bold text-primary"
             aria-label="Kudex home"
           >
             K
@@ -56,12 +59,12 @@ export function SidebarContent({
               title={compact ? item.name : undefined}
               aria-label={compact ? item.name : undefined}
               aria-current={active ? 'page' : undefined}
-              className={`flex min-h-11 items-center gap-3 rounded-xl px-3.5 text-sm font-semibold transition-colors duration-150 ${
+              className={`flex min-h-11 items-center gap-3 rounded-xl border px-3.5 text-sm font-semibold transition-all duration-150 ${
                 compact ? 'justify-center px-0' : ''
               } ${
                 active
-                  ? 'bg-secondary text-primary shadow-sm'
-                  : 'text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
+                  ? 'border-primary/35 bg-secondary text-primary shadow-sm'
+                  : 'border-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
               }`}
             >
               <item.icon size={18} aria-hidden="true" className="shrink-0" />
@@ -71,18 +74,25 @@ export function SidebarContent({
         })}
       </nav>
 
-      <div className="mt-auto">
+      <div className="mt-auto space-y-3">
         {!compact && (
-          <div className="rounded-2xl border border-border bg-secondary p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <FiCpu className="text-primary" aria-hidden="true" />
-              <span>Auto-Pilot Ready</span>
+          <div className="rounded-2xl border border-border bg-secondary/70 p-4 space-y-2.5">
+            <div className="flex items-center justify-between gap-2 text-sm font-semibold text-foreground">
+              <span className="inline-flex items-center gap-2">
+                <FiCpu className="text-primary" aria-hidden="true" />
+                <span>
+                  {autoPilot.active ? 'Auto-Pilot Active' : 'Auto-Pilot Ready'}
+                </span>
+              </span>
+              <FiShield className="text-primary" aria-hidden="true" />
             </div>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-              Set a clear spending limit and time window for your Kudex Agent.
+            <p className="text-sm leading-relaxed text-muted-foreground tabular-nums">
+              {autoPilot.active
+                ? `Active budget: $${autoPilot.spendingBudget.toLocaleString()} max per session.`
+                : 'Set a clear spending limit and time window for your Kudex Agent.'}
             </p>
             <Link
-              className="mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+              className="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
               href="/app/agent"
               onClick={onNavigate}
             >

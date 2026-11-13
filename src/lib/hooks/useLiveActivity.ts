@@ -247,7 +247,7 @@ export async function indexLiveActivity(params: {
     ([key, addr]) => key !== 'usdc' && addr !== zeroAddress,
   );
 
-  const latestBlock = await params.client.getBlockNumber();
+  const latestBlock = await params.client.getBlockNumber({ cacheTime: 0 });
   const span = params.maxBlockSpan ?? 5_000n;
   const fromBlock = latestBlock > span ? latestBlock - span : 0n;
 
