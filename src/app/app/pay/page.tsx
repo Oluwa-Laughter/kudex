@@ -40,11 +40,16 @@ import {
   FiTrash2,
   FiExternalLink,
   FiAlertTriangle,
+  FiArrowDownLeft,
+  FiLink2,
 } from 'react-icons/fi';
 import { CONTRACT_ADDRESSES, isVaultConfigured } from '@/lib/contracts/addresses';
 import { kudexVaultAbi } from '@/lib/contracts/abis';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
-import { LIVE_ACTIVITY_QUERY_KEY } from '@/lib/hooks/useLiveActivity';
+import {
+  LIVE_ACTIVITY_QUERY_KEY,
+  useLiveActivity,
+} from '@/lib/hooks/useLiveActivity';
 import {
   buildNoteSyncDomainMessage,
   createPrivateNoteMetadata,
@@ -61,8 +66,10 @@ import {
   type SavedContact,
 } from '@/lib/payroll/csvParser';
 import {
+  EXPENSE_CATEGORIES,
   buildAuditorPassSignatureMessage,
   encodeAuditorPass,
+  useAuditorPassStore,
   type AuditorDisclosedEntry,
 } from '@/lib/audit/auditorPass';
 import {
@@ -77,6 +84,7 @@ import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 interface PaymentActivityItem {
   id: string;
   kind: string;
+  category?: string;
   recipientOrVendor: string;
   recipientAddress: string;
   amountLabel: string;
@@ -89,17 +97,6 @@ interface PaymentActivityItem {
   nullifier?: Hex;
   transactionHash?: Hex;
   verificationUrl: string;
-}
-
-interface AuditorPassItem {
-  id: string;
-  auditorName: string;
-  contactOrAddress: string;
-  scope: string;
-  passCode: string;
-  entryCount: number;
-  createdAt: string;
-  active: boolean;
 }
 
 const AUDITOR_SCOPES = [
@@ -177,6 +174,12 @@ function buildReceiptVerifyUrl(entry: AuditorDisclosedEntry, ownerAddress?: Addr
 function SendAndInvoiceContent() {
   const searchParams = useSearchParams();
   const urlInvoiceId = searchParams.get('invoiceId') ?? undefined;
+  const urlPayTo = searchParams.get('payTo') ?? '';
+  const urlAmount = searchParams.get('amount') ?? '';
+  const urlMemo = searchParams.get('memo') ?? '';
+  const urlCategory = searchParams.get('category') ?? '';
+  const urlTab = searchParams.get('tab') ?? '';
+  const urlCsv = searchParams.get('csv') ?? '';
 
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
@@ -186,35 +189,62 @@ function SendAndInvoiceContent() {
 
   const privateNotes = usePrivateNotesStore();
   const addressBook = useAddressBookStore();
+  const auditorPassStore = useAuditorPassStore();
+  const liveMineActivity = useLiveActivity('mine');
 
   useEffect(() => {
     addressBook.hydrate();
+    auditorPassStore.hydrate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [activeTab, setActiveTab] = useState(
+  const initialTab =
     urlInvoiceId && isHex(urlInvoiceId) && urlInvoiceId.length === 66
       ? 'invoices'
-      : 'send',
-  );
+      : urlTab && ['send', 'receive', 'batch', 'invoices', 'contacts', 'auditor'].includes(urlTab)
+        ? urlTab
+        : 'send';
+
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
     if (urlInvoiceId && isHex(urlInvoiceId) && urlInvoiceId.length === 66) {
       setActiveTab('invoices');
+    } else if (
+      urlTab &&
+      ['send', 'receive', 'batch', 'invoices', 'contacts', 'auditor'].includes(urlTab)
+    ) {
+      setActiveTab(urlTab);
     }
-  }, [urlInvoiceId]);
+  }, [urlInvoiceId, urlTab]);
 
   // Sub-tab 1: Send Privately
   const [transferMode, setTransferMode] = useState<'shield' | 'confidential'>('shield');
-  const [recipient, setRecipient] = useState('');
-  const [sendAmount, setSendAmount] = useState('');
-  const [paymentNote, setPaymentNote] = useState('');
+  const [recipient, setRecipient] = useState(
+    urlPayTo && isAddress(urlPayTo) ? urlPayTo : '',
+  );
+  const [sendAmount, setSendAmount] = useState(
+    urlAmount && Number(urlAmount) > 0 ? urlAmount : '',
+  );
+  const [paymentNote, setPaymentNote] = useState(urlMemo);
+  const [expenseCategory, setExpenseCategory] = useState<string>(
+    EXPENSE_CATEGORIES.includes(urlCategory as (typeof EXPENSE_CATEGORIES)[number])
+      ? urlCategory
+      : 'Suppliers',
+  );
   const [spendSecret, setSpendSecret] = useState('');
   const [proofJson, setProofJson] = useState('');
   const [privateReceiptJson, setPrivateReceiptJson] = useState('');
 
+  // Payment Request & Receive Generator
+  const [requestAddress, setRequestAddress] = useState('');
+  const [requestAmount, setRequestAmount] = useState('1250.00');
+  const [requestMemo, setRequestMemo] = useState('Monthly Retainer Settlement');
+  const [requestCategory, setRequestCategory] = useState('Contractors');
+  const [copiedRequestUrl, setCopiedRequestUrl] = useState(false);
+
   // Sub-tab 2: Batch Payroll & Vendor Run
-  const [batchCsvText, setBatchCsvText] = useState('');
+  const [batchCsvText, setBatchCsvText] = useState(urlCsv);
   const [batchAddAmount, setBatchAddAmount] = useState('1000.00');
 
   // Sub-tab 3: Prefill states for OnChainInvoicePanel
@@ -230,13 +260,39 @@ function SendAndInvoiceContent() {
     useState<SavedContact['category']>('Supplier');
   const [newContactRef, setNewContactRef] = useState('');
 
-  // Sub-tab 5: 1-Click Auditor Pass
+  // Sub-tab 5: 1-Click Auditor Pass (persisted in useAuditorPassStore)
   const [organizationName, setOrganizationName] = useState('Kudex Treasury Operations');
   const [auditorName, setAuditorName] = useState('');
   const [auditorContact, setAuditorContact] = useState('');
   const [auditorScope, setAuditorScope] = useState('Full Audit Verification');
-  const [passes, setPasses] = useState<AuditorPassItem[]>([]);
   const [copiedCode, setCopiedCode] = useState('');
+  const passes = auditorPassStore.passes;
+
+  useEffect(() => {
+    if (urlPayTo && isAddress(urlPayTo)) {
+      setRecipient(urlPayTo);
+      setActiveTab('send');
+    }
+    if (urlAmount && Number(urlAmount) > 0) setSendAmount(urlAmount);
+    if (urlMemo) setPaymentNote(urlMemo);
+    if (urlCategory) setExpenseCategory(urlCategory);
+    if (urlCsv) {
+      setBatchCsvText(urlCsv);
+      setActiveTab('batch');
+    }
+  }, [urlPayTo, urlAmount, urlMemo, urlCategory, urlCsv]);
+
+  const effectiveRequestAddress = requestAddress.trim() || address || '';
+  const paymentRequestUrl =
+    typeof window !== 'undefined' && isAddress(effectiveRequestAddress)
+      ? `${window.location.origin}/app/pay?payTo=${encodeURIComponent(effectiveRequestAddress)}${
+          requestAmount && Number(requestAmount) > 0
+            ? `&amount=${encodeURIComponent(requestAmount)}`
+            : ''
+        }${requestMemo.trim() ? `&memo=${encodeURIComponent(requestMemo.trim())}` : ''}${
+          requestCategory ? `&category=${encodeURIComponent(requestCategory)}` : ''
+        }`
+      : '';
 
   // Cross-device encrypted note restore state
   const [syncingNotes, setSyncingNotes] = useState(false);
@@ -441,6 +497,7 @@ function SendAndInvoiceContent() {
           recordCompletedActivity({
             id: txHash.slice(0, 12),
             kind: 'Private Payment (Stealth Mode)',
+            category: expenseCategory,
             recipientOrVendor: truncateAddress(recipient),
             recipientAddress: recipient,
             amountLabel: 'Hidden on public ledger',
@@ -510,6 +567,7 @@ function SendAndInvoiceContent() {
           recordCompletedActivity({
             id: note.commitment.slice(0, 12),
             kind: 'Signed Private Payment Pass',
+            category: expenseCategory,
             recipientOrVendor: truncateAddress(recipient),
             recipientAddress: recipient,
             amountLabel: 'Hidden on public ledger',
@@ -945,7 +1003,7 @@ function SendAndInvoiceContent() {
 
       const issuedAt = new Date().toISOString();
 
-      // Combine disclosed session payments + restored encrypted notes without duplicates
+      // Combine disclosed session payments + restored encrypted notes + live indexed on-chain activity without duplicates
       const seenCommitments = new Set<string>();
       const entries: AuditorDisclosedEntry[] = [];
 
@@ -957,6 +1015,7 @@ function SendAndInvoiceContent() {
           date: item.timestampIso,
           payee: `${item.kind} (${item.recipientOrVendor})`,
           reference: item.reference,
+          category: item.category || 'Operations',
           amount: item.numericAmount,
           currency: 'USDC',
           commitment: item.commitment,
@@ -973,11 +1032,30 @@ function SendAndInvoiceContent() {
           date: note.createdAt,
           payee: note.recipient ? truncateAddress(note.recipient) : truncateAddress(note.owner),
           reference: note.memo || 'Shielded Private Balance Note',
+          category: 'Private Treasury',
           amount: note.value,
           currency: note.assetSymbol,
           commitment: note.commitment,
           nullifier: note.nullifierHash,
           txHash: note.transactionHash,
+        });
+      }
+
+      for (const liveItem of liveMineActivity.filteredItems) {
+        const commitmentKey = liveItem.commitment.toLowerCase();
+        if (seenCommitments.has(commitmentKey)) continue;
+        const parsedAmount = Number(liveItem.numericAmount);
+        if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) continue;
+        seenCommitments.add(commitmentKey);
+        entries.push({
+          date: liveItem.timestampIso,
+          payee: `${liveItem.category} — ${liveItem.subtitle}`,
+          reference: liveItem.title,
+          category: liveItem.filterGroup === 'invoices' ? 'Suppliers' : liveItem.category,
+          amount: liveItem.numericAmount,
+          currency: liveItem.assetSymbol || 'USDC',
+          commitment: liveItem.commitment,
+          txHash: liveItem.transactionHash,
         });
       }
 
@@ -1009,19 +1087,16 @@ function SendAndInvoiceContent() {
 
       const passId = (await sha256Bytes32(passCode)).slice(2, 12);
 
-      setPasses((prev) => [
-        {
-          id: passId,
-          auditorName: auditorName.trim(),
-          contactOrAddress: auditorContact.trim(),
-          scope: auditorScope,
-          passCode,
-          entryCount: entries.length,
-          createdAt: new Date().toLocaleString(),
-          active: true,
-        },
-        ...prev,
-      ]);
+      auditorPassStore.addPass({
+        id: passId,
+        auditorName: auditorName.trim(),
+        contactOrAddress: auditorContact.trim(),
+        scope: auditorScope,
+        passCode,
+        entryCount: entries.length,
+        createdAt: new Date().toLocaleString(),
+        active: true,
+      });
       setAuditorName('');
       setAuditorContact('');
       setStatus(
@@ -1035,9 +1110,7 @@ function SendAndInvoiceContent() {
   }
 
   function revokeAuditorPass(id: string) {
-    setPasses((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, active: false } : item)),
-    );
+    auditorPassStore.revokePass(id);
     setStatus('Auditor access revoked immediately.');
   }
 
@@ -1130,6 +1203,9 @@ function SendAndInvoiceContent() {
           <Tabs.Trigger value="send" className="workspace-tab">
             <FiSend aria-hidden="true" /> Send Privately
           </Tabs.Trigger>
+          <Tabs.Trigger value="receive" className="workspace-tab">
+            <FiArrowDownLeft aria-hidden="true" /> Request &amp; Receive
+          </Tabs.Trigger>
           <Tabs.Trigger value="batch" className="workspace-tab">
             <FiUsers aria-hidden="true" /> Batch Payroll &amp; Vendor Run
           </Tabs.Trigger>
@@ -1146,6 +1222,21 @@ function SendAndInvoiceContent() {
 
         {/* SUB-TAB 1: Send Privately */}
         <Tabs.Content value="send" className="panel space-y-6">
+          {urlPayTo && isAddress(urlPayTo) && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/40 bg-accent/10 px-4 py-3.5 text-sm">
+              <div className="min-w-0">
+                <span className="block font-bold text-foreground">
+                  Payment Request Loaded from Link
+                </span>
+                <span className="text-muted-foreground">
+                  Recipient and amount were pre-filled from a shareable checkout link.
+                  Verify the wallet address below before confirming.
+                </span>
+              </div>
+              <span className="emerald-badge">{expenseCategory}</span>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3.5">
             <div className="flex items-center gap-2.5 text-sm font-bold text-primary">
               <FiShield size={18} aria-hidden="true" />
@@ -1254,20 +1345,37 @@ function SendAndInvoiceContent() {
               </div>
 
               {transferMode === 'shield' ? (
-                <div className="min-w-0 sm:col-span-2">
-                  <label htmlFor="pay-memo" className="mb-2 block text-sm font-medium">
-                    Private Memo (Optional · Encrypted on-chain for cross-device recovery)
-                  </label>
-                  <input
-                    id="pay-memo"
-                    name="memo"
-                    value={paymentNote}
-                    onChange={(e) => setPaymentNote(e.target.value)}
-                    placeholder="October Contractor Payroll · Supplier Retainer"
-                    disabled={busy}
-                    className="field-input"
-                  />
-                </div>
+                <>
+                  <div className="min-w-0">
+                    <label htmlFor="pay-memo" className="mb-2 block text-sm font-medium">
+                      Private Memo (Optional · Encrypted on-chain for recovery)
+                    </label>
+                    <input
+                      id="pay-memo"
+                      name="memo"
+                      value={paymentNote}
+                      onChange={(e) => setPaymentNote(e.target.value)}
+                      placeholder="October Contractor Payroll · Supplier Retainer"
+                      disabled={busy}
+                      className="field-input"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="mb-2 block text-sm font-medium">
+                      Accounting Expense Category
+                    </span>
+                    <CustomSelect
+                      label="Accounting expense category"
+                      value={expenseCategory}
+                      options={EXPENSE_CATEGORIES.map((cat) => ({
+                        value: cat,
+                        label: cat,
+                      }))}
+                      onChange={setExpenseCategory}
+                      disabled={busy}
+                    />
+                  </div>
+                </>
               ) : (
                 <>
                   {privateNotes.notes.filter((n) => !n.spent).length > 0 && (
@@ -1376,6 +1484,226 @@ function SendAndInvoiceContent() {
               )}
             </div>
           </form>
+        </Tabs.Content>
+
+        {/* SUB-TAB 1B: Request & Receive (Shareable Payment Links + Claimable Private Notes Inbox) */}
+        <Tabs.Content value="receive" className="space-y-6">
+          <div className="grid items-start gap-6 xl:grid-cols-2">
+            <section className="panel min-w-0 space-y-5">
+              <div>
+                <h2 className="text-xl font-bold">
+                  Create a Shareable Payment Request Link
+                </h2>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Send a pre-filled checkout link to clients or partners with zero gas
+                  cost. When they open it, your wallet address, amount, and reference are
+                  ready to pay in 1 click.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="request-address"
+                    className="mb-2 block text-sm font-medium"
+                  >
+                    Receiving Wallet Address
+                  </label>
+                  <input
+                    id="request-address"
+                    value={requestAddress}
+                    onChange={(e) => setRequestAddress(e.target.value)}
+                    placeholder={address ?? '0x… connect wallet or paste destination'}
+                    spellCheck={false}
+                    className="field-input font-mono text-sm"
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="request-amount"
+                      className="mb-2 block text-sm font-medium"
+                    >
+                      Requested Amount (USDC)
+                    </label>
+                    <input
+                      id="request-amount"
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={requestAmount}
+                      onChange={(e) => setRequestAmount(e.target.value)}
+                      className="field-input font-bold tabular-nums"
+                    />
+                  </div>
+                  <div>
+                    <span className="mb-2 block text-sm font-medium">
+                      Accounting Category
+                    </span>
+                    <CustomSelect
+                      label="Payment request category"
+                      value={requestCategory}
+                      options={EXPENSE_CATEGORIES.map((cat) => ({
+                        value: cat,
+                        label: cat,
+                      }))}
+                      onChange={setRequestCategory}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="request-memo"
+                    className="mb-2 block text-sm font-medium"
+                  >
+                    Payment Reference / Memo
+                  </label>
+                  <input
+                    id="request-memo"
+                    value={requestMemo}
+                    onChange={(e) => setRequestMemo(e.target.value)}
+                    placeholder="Design Sprint Milestone #2"
+                    className="field-input"
+                  />
+                </div>
+              </div>
+
+              {paymentRequestUrl ? (
+                <div className="space-y-3 rounded-xl border border-primary/35 bg-primary/10 p-4">
+                  <span className="block text-sm font-bold text-primary">
+                    Ready Shareable Checkout Link
+                  </span>
+                  <p className="break-all rounded-lg border border-border bg-card p-3 font-mono text-sm text-foreground">
+                    {paymentRequestUrl}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void copyText(paymentRequestUrl, 'request-url');
+                        setCopiedRequestUrl(true);
+                        window.setTimeout(() => setCopiedRequestUrl(false), 2000);
+                      }}
+                      className="action-link text-sm"
+                    >
+                      {copiedRequestUrl ? (
+                        <FiCheck aria-hidden="true" />
+                      ) : (
+                        <FiLink2 aria-hidden="true" />
+                      )}
+                      <span>
+                        {copiedRequestUrl ? 'Payment Link Copied' : 'Copy Payment Link'}
+                      </span>
+                    </button>
+                    <Link
+                      href={`/app/pay?payTo=${encodeURIComponent(effectiveRequestAddress)}&amount=${encodeURIComponent(requestAmount)}&memo=${encodeURIComponent(requestMemo)}&category=${encodeURIComponent(requestCategory)}`}
+                      className="quiet-link text-sm"
+                    >
+                      <FiExternalLink aria-hidden="true" />
+                      <span>Preview Payer View</span>
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <p className="rounded-xl border border-border bg-secondary/60 p-4 text-sm text-muted-foreground">
+                  Connect your wallet or enter a valid 0x receiving address above to
+                  generate a shareable payment link.
+                </p>
+              )}
+            </section>
+
+            <section className="panel min-w-0 space-y-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold">
+                    Incoming Private Payments &amp; Claimable Funds
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Private payments synced to your wallet are held in your shielded
+                    vault balance and can be cashed out or re-spent anytime.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={syncingNotes}
+                  onClick={() => void handleRestorePrivateBalance()}
+                  className="quiet-link text-sm disabled:opacity-50"
+                >
+                  <FiRefreshCw
+                    className={syncingNotes ? 'animate-spin text-primary' : 'text-primary'}
+                    aria-hidden="true"
+                  />
+                  <span>Sync Notes</span>
+                </button>
+              </div>
+
+              {privateNotes.notes.length === 0 ? (
+                <div className="rounded-xl border border-border bg-secondary/60 p-5 space-y-3">
+                  <p className="font-semibold text-foreground">
+                    No private payment notes synced in this browser yet
+                  </p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    Click Sync Notes above or &quot;Restore Private Balance from
+                    Network&quot; in the header to scan encrypted on-chain logs for funds
+                    sent to your wallet.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {privateNotes.notes.map((note) => (
+                    <div
+                      key={note.commitment}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-secondary/60 p-4"
+                    >
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-lg font-bold text-primary tabular-nums">
+                            {note.value} {note.assetSymbol}
+                          </span>
+                          <span className="emerald-badge">
+                            {note.spent ? 'Settled / Spent' : 'Available'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground">
+                          {note.memo || 'Private Settlement Note'}
+                        </p>
+                        <p className="font-mono text-sm text-muted-foreground">
+                          Ref {truncateAddress(note.commitment)}
+                        </p>
+                      </div>
+
+                      {!note.spent && (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTransferMode('confidential');
+                              setSpendSecret(note.nullifierHash);
+                              setSendAmount(note.value);
+                              setPaymentNote(note.memo || '');
+                              setActiveTab('send');
+                            }}
+                            className="quiet-link px-3 py-1.5 text-sm"
+                          >
+                            <FiSend aria-hidden="true" />
+                            <span>Re-Spend Privately</span>
+                          </button>
+                          <Link
+                            href={`/app/earn?mode=redeem&amount=${encodeURIComponent(note.value)}`}
+                            className="action-link px-3 py-1.5 text-sm"
+                          >
+                            <span>Withdraw to Wallet</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
         </Tabs.Content>
 
         {/* SUB-TAB 2: Batch Payroll & Vendor Run */}
@@ -1918,9 +2246,11 @@ function SendAndInvoiceContent() {
                   <dd className="font-bold text-primary">None (Read-Only)</dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-muted-foreground">Disclosable Session Records</dt>
+                  <dt className="text-muted-foreground">Disclosable Ledger Records</dt>
                   <dd className="font-bold tabular-nums">
-                    {activity.length + privateNotes.notes.length}
+                    {activity.length +
+                      privateNotes.notes.length +
+                      liveMineActivity.filteredItems.length}
                   </dd>
                 </div>
                 <div className="flex items-center justify-between">

@@ -30,6 +30,7 @@ function VerifyPortalContent() {
 
   const [passInput, setPassInput] = useState(urlPass);
   const [statement, setStatement] = useState<VerifiedAuditStatement | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
@@ -281,6 +282,46 @@ function VerifyPortalContent() {
             </div>
           </dl>
 
+          {/* Category Breakdown Filter Pills */}
+          {statement.rows.length > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'ALL',
+                  ...Array.from(
+                    new Set(
+                      statement.rows.map((r) => r.category || 'Operations'),
+                    ),
+                  ),
+                ].map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`min-h-9 rounded-full border px-3.5 py-1 text-sm font-semibold transition ${
+                      categoryFilter === cat
+                        ? 'border-primary bg-primary/15 text-primary'
+                        : 'border-border bg-secondary text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {cat === 'ALL' ? 'All Categories' : cat}
+                  </button>
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground tabular-nums">
+                Showing{' '}
+                {
+                  statement.rows.filter(
+                    (r) =>
+                      categoryFilter === 'ALL' ||
+                      (r.category || 'Operations') === categoryFilter,
+                  ).length
+                }{' '}
+                of {statement.rows.length} entries
+              </span>
+            </div>
+          )}
+
           {/* Ledger Table */}
           <div
             tabIndex={0}
@@ -292,6 +333,7 @@ function VerifyPortalContent() {
               <thead className="border-b border-border bg-secondary text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3">Settlement Date</th>
+                  <th className="px-4 py-3">Category</th>
                   <th className="px-4 py-3">Payee / Counterparty</th>
                   <th className="px-4 py-3">Invoice / Reference</th>
                   <th className="px-4 py-3">Disclosed Amount</th>
@@ -303,7 +345,7 @@ function VerifyPortalContent() {
                 {statement.rows.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-4 py-6 text-center text-muted-foreground"
                     >
                       This auditor pass was issued with zero disclosed payment entries in
@@ -311,44 +353,55 @@ function VerifyPortalContent() {
                     </td>
                   </tr>
                 ) : (
-                  statement.rows.map((row, idx) => (
-                    <tr key={`${row.commitment}-${idx}`}>
-                      <td className="px-4 py-3 font-mono tabular-nums">
-                        {row.date.slice(0, 10)}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-foreground">
-                        {row.payee}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{row.reference}</td>
-                      <td className="px-4 py-3 font-bold text-foreground tabular-nums">
-                        $
-                        {Number(row.amount).toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}{' '}
-                        {row.currency}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground">
-                        {truncateAddress(row.commitment)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={
-                            row.commitmentRecordedOnChain
-                              ? 'emerald-badge'
-                              : 'inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-sm font-semibold text-foreground'
-                          }
-                        >
-                          {row.commitmentRecordedOnChain ? (
-                            <FiCheckCircle aria-hidden="true" />
-                          ) : (
-                            <FiClock className="text-primary" aria-hidden="true" />
-                          )}
-                          <span>{row.verificationLabel}</span>
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                  statement.rows
+                    .filter(
+                      (row) =>
+                        categoryFilter === 'ALL' ||
+                        (row.category || 'Operations') === categoryFilter,
+                    )
+                    .map((row, idx) => (
+                      <tr key={`${row.commitment}-${idx}`}>
+                        <td className="px-4 py-3 font-mono tabular-nums">
+                          {row.date.slice(0, 10)}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-muted-foreground">
+                          {row.category || 'Operations'}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-foreground">
+                          {row.payee}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {row.reference}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-foreground tabular-nums">
+                          $
+                          {Number(row.amount).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                          {row.currency}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-muted-foreground">
+                          {truncateAddress(row.commitment)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={
+                              row.commitmentRecordedOnChain
+                                ? 'emerald-badge'
+                                : 'inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-sm font-semibold text-foreground'
+                            }
+                          >
+                            {row.commitmentRecordedOnChain ? (
+                              <FiCheckCircle aria-hidden="true" />
+                            ) : (
+                              <FiClock className="text-primary" aria-hidden="true" />
+                            )}
+                            <span>{row.verificationLabel}</span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))
                 )}
               </tbody>
             </table>

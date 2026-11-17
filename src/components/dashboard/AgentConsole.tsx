@@ -17,6 +17,7 @@ import {
 import { PreFlightSimCard } from '@/components/generative/PreFlightSimCard';
 import { RFQQuoteCard } from '@/components/generative/RFQQuoteCard';
 import { ShieldReceiptCard } from '@/components/generative/ShieldReceiptCard';
+import { PayrollCsvDraftCard } from '@/components/generative/PayrollCsvDraftCard';
 import { useNativeWallet } from '@/components/navigation/NativeWalletProvider';
 import type { AgentReply } from '@/lib/agent/types';
 
@@ -41,6 +42,10 @@ const starterPrompts = [
   {
     label: 'Check if my active vaults are 100% protected',
     icon: FiShield,
+  },
+  {
+    label: 'Draft a batch payroll CSV schedule for my saved contacts',
+    icon: FiActivity,
   },
 ] as const;
 
@@ -67,6 +72,14 @@ const labels: Record<string, string> = {
   address: 'Account',
 };
 
+function extractRequestedAmount(question: string, fallback = 500): number {
+  const stripped = question.replaceAll(',', '');
+  const match = stripped.match(/\$?\b(\d+(?:\.\d+)?)\b/);
+  if (!match) return fallback;
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) && parsed > 0 && parsed !== 100 ? parsed : fallback;
+}
+
 function renderConfirmationCards(question: string) {
   const q = question.toLowerCase();
   const wantsVault =
@@ -76,35 +89,72 @@ function renderConfirmationCards(question: string) {
     q.includes('2,500') ||
     q.includes('2500');
   const wantsSwap = q.includes('swap') || q.includes('trade') || q.includes('route');
+  const wantsPayroll =
+    q.includes('payroll') || q.includes('csv') || q.includes('batch');
   const wantsPrivate =
     q.includes('private balance') ||
     q.includes('hide') ||
     q.includes('stealth') ||
-    q.includes('privately');
+    q.includes('privately') ||
+    q.includes('pay ');
+
+  const defaultAmt = wantsVault ? 2500 : 500;
+  const parsedAmount = extractRequestedAmount(question, defaultAmt);
+  const formattedAmt = parsedAmount.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const tokenMatches = question.match(/\b(USDC|USDT|WETH|tPOT)\b/gi) ?? [];
+  const tokenIn = (tokenMatches[0] ?? 'USDC').toUpperCase();
+  const tokenOutCandidate = (tokenMatches[1] ?? (tokenIn === 'USDC' ? 'USDT' : 'USDC')).toUpperCase();
+  const tokenOut = tokenOutCandidate === tokenIn ? (tokenIn === 'USDC' ? 'USDT' : 'USDC') : tokenOutCandidate;
+  const addressMatch = question.match(/0x[a-fA-F0-9]{40}/);
+
+  const isTreasuryVault = q.includes('treasury') && !q.includes('highest') && !q.includes('invoice');
+  const targetVaultName = isTreasuryVault
+    ? 'Short-Term Treasury Vault'
+    : 'Verified Business Invoice Pool';
+
+  const estOut =
+    tokenIn === 'WETH' || tokenOut === 'WETH' || tokenIn === 'tPOT' || tokenOut === 'tPOT'
+      ? 'Live rate'
+      : (parsedAmount * 0.9997).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
   return (
     <div className="mt-4 space-y-4">
       {wantsVault && (
         <PreFlightSimCard
-          amountLabel={q.includes('2,500') || q.includes('2500') ? '$2,500.00 USDC' : '$1,000.00 USDC'}
-          vaultName="Verified Business Invoice Pool"
+          amountLabel={`$${formattedAmt} USDC`}
+          numericAmount={String(parsedAmount)}
+          vaultId={isTreasuryVault ? 'treasury' : 'invoices'}
+          vaultName={targetVaultName}
           protectionSummary="Protected — 100% Safety Reserve"
         />
       )}
       {wantsSwap && (
         <RFQQuoteCard
           quote={{
-            tokenIn: 'USDC',
-            tokenOut: 'USDT',
-            amountIn: q.includes('500') ? '500.00' : '1,000.00',
-            estimatedReceive: q.includes('500') ? '499.85' : '999.70',
+            tokenIn,
+            tokenOut,
+            amountIn: formattedAmt,
+            estimatedReceive: estOut,
             hideInPrivateBalance: wantsPrivate,
           }}
         />
       )}
-      {wantsPrivate && (
+      {wantsPayroll && (
+        <PayrollCsvDraftCard defaultAmount={parsedAmount.toFixed(2)} />
+      )}
+      {wantsPrivate && !wantsPayroll && (
         <ShieldReceiptCard
-          amountLabel={q.includes('500') ? '500.00 USDC' : '1,000.00 USDC'}
+          amountLabel={`${formattedAmt} ${tokenIn}`}
+          numericAmount={String(parsedAmount)}
+          recipientAddress={addressMatch?.[0]}
+          memo={addressMatch ? 'Agent-Prepared Private Payment' : undefined}
           destinationLabel="Private Balances (Stealth Mode)"
         />
       )}

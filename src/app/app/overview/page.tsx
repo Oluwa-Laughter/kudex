@@ -35,6 +35,7 @@ import { downloadLiveActivityReceipt } from '@/components/navigation/ActivityDra
 import { useAutoPilotStore, formatTimeRemaining } from '@/lib/sessionKeys';
 import { getReadableErrorMessage, truncateAddress } from '@/lib/utils';
 import { VolumeChart } from '@/components/dashboard/VolumeChart';
+import { TreasuryCashflowPlanner } from '@/components/dashboard/TreasuryCashflowPlanner';
 
 const HOME_FILTER_PILLS: Array<{ id: ActivityFilterGroup; label: string }> = [
   { id: 'all', label: 'All' },
@@ -183,6 +184,17 @@ export default function HomeOverviewPage() {
   const autoPilotDisplay = autoPilot.active
     ? `$${autoPilot.spendingBudget.toLocaleString('en-US')} · ${formatTimeRemaining(autoPilot.expiresAtMs)}`
     : 'Off · Manual Approval';
+
+  const walletCashUsd = position.data
+    ? Number(formatUnits(position.data.balance, position.data.decimals))
+    : 0;
+  const vaultCashUsd = position.data
+    ? Number(formatUnits(position.data.assets, position.data.decimals))
+    : 0;
+  const privateBalanceUsd = hasRestoredForAddress
+    ? Number((privateNotes.formattedRestoredBalance ?? '0').replaceAll(',', '')) || 0
+    : 0;
+  const cashSymbol = position.data?.symbol ?? 'USDC';
 
   return (
     <div className="space-y-8">
@@ -405,6 +417,14 @@ export default function HomeOverviewPage() {
           </div>
         </div>
       </section>
+
+      {/* Working Capital, Receivables & Runway Forecaster */}
+      <TreasuryCashflowPlanner
+        walletCashUsd={walletCashUsd}
+        vaultCashUsd={vaultCashUsd}
+        privateBalanceUsd={privateBalanceUsd}
+        assetSymbol={cashSymbol}
+      />
 
       {/* Main Activity Chart */}
       <VolumeChart />

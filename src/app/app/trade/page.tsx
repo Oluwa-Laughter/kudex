@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, useReadContract, useSignMessage } from 'wagmi';
 import { erc20Abi, formatUnits, zeroAddress } from 'viem';
@@ -63,12 +64,18 @@ const SWAP_ASSETS = [
   { value: 'tPOT', label: 'tPOT', description: 'Network Reserve Asset' },
 ];
 
-const ASSET_RATES_USD: Record<string, number> = {
+const DEFAULT_ASSET_RATES_USD: Record<string, number> = {
   USDC: 1,
   USDT: 1,
   WETH: 2650,
   tPOT: 0.42,
 };
+
+interface MarketRatesResponse {
+  rates: Record<string, number>;
+  source: 'live-market' | 'reference-fallback';
+  observedAt: string;
+}
 
 interface RoutedOrderRecord {
   id: string;
@@ -92,7 +99,14 @@ async function sha256Hex(input: string): Promise<string> {
   );
 }
 
-export default function TradeAndBridgePage() {
+function TradeAndBridgeContent() {
+  const searchParams = useSearchParams();
+  const urlMode = searchParams.get('mode');
+  const urlPay = searchParams.get('pay');
+  const urlFrom = searchParams.get('from');
+  const urlTo = searchParams.get('to');
+  const urlPrivate = searchParams.get('private');
+
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const events = useProtocolEvents();
@@ -102,18 +116,38 @@ export default function TradeAndBridgePage() {
   );
   const privateNotes = usePrivateNotesStore();
 
-  const [mode, setMode] = useState<'swap' | 'bridge'>('swap');
+  const [mode, setMode] = useState<'swap' | 'bridge'>(
+    urlMode === 'bridge' ? 'bridge' : 'swap',
+  );
   const [sourceNetwork, setSourceNetwork] = useState('base');
-  const [payAsset, setPayAsset] = useState('USDC');
-  const [receiveAsset, setReceiveAsset] = useState('USDT');
-  const [payAmount, setPayAmount] = useState('1000');
-  const [receivePrivately, setReceivePrivately] = useState(true);
+  const [payAsset, setPayAsset] = useState(
+    urlFrom && SWAP_ASSETS.some((a) => a.value === urlFrom) ? urlFrom : 'USDC',
+  );
+  const [receiveAsset, setReceiveAsset] = useState(
+    urlTo && SWAP_ASSETS.some((a) => a.value === urlTo) ? urlTo : 'USDT',
+  );
+  const [payAmount, setPayAmount] = useState(
+    urlPay && Number(urlPay) > 0 ? urlPay : '1000',
+  );
+  const [receivePrivately, setReceivePrivately] = useState(
+    urlPrivate === '0' ? false : true,
+  );
   const [stealthCommitment, setStealthCommitment] = useState('');
   const [claimSecret, setClaimSecret] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [history, setHistory] = useState<RoutedOrderRecord[]>([]);
+
+  useEffect(() => {
+    if (urlMode === 'swap' || urlMode === 'bridge') setMode(urlMode);
+    if (urlPay && Number(urlPay) > 0) setPayAmount(urlPay);
+    if (urlFrom && SWAP_ASSETS.some((a) => a.value === urlFrom)) setPayAsset(urlFrom);
+    if (urlTo && SWAP_ASSETS.some((a) => a.value === urlTo)) setReceiveAsset(urlTo);
+    if (urlPrivate === '0' || urlPrivate === '1') {
+      setReceivePrivately(urlPrivate === '1');
+    }
+  }, [urlMode, urlPay, urlFrom, urlTo, urlPrivate]);
 
   const collateralToken = CONTRACT_ADDRESSES.usdc;
   const hasCollateralToken = collateralToken !== zeroAddress;
@@ -173,6 +207,20 @@ export default function TradeAndBridgePage() {
     },
   });
 
+  const marketRates = useQuery<MarketRatesResponse>({
+    queryKey: ['trade-market-rates'],
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    retry: 0,
+    queryFn: async () => {
+      const r = await fetch('/api/market/rates');
+      if (!r.ok) throw new Error('Market rates unavailable');
+      return r.json();
+    },
+  });
+
+  const activeRates = marketRates.data?.rates ?? DEFAULT_ASSET_RATES_USD;
+
   const targetAsset = mode === 'bridge' ? payAsset : receiveAsset;
   const hasFeeWaiver = Boolean(feeWaiverQuery.data);
   const onChainSwapFeeRate =
@@ -201,7 +249,7 @@ export default function TradeAndBridgePage() {
 
   const numericPay = Number(payAmount);
   const validPay = Number.isFinite(numericPay) && numericPay > 0;
-  const fromUsd = validPay ? numericPay * (ASSET_RATES_USD[payAsset] ?? 1) : 0;
+  const fromUsd = validPay ? numericPay * (activeRates[payAsset] ?? 1) : 0;
   const feeRate =
     mode === 'bridge'
       ? hasFeeWaiver
@@ -212,10 +260,13 @@ export default function TradeAndBridgePage() {
         : onChainSwapFeeRate;
   const feeAmount = validPay ? numericPay * feeRate : 0;
   const netUsd = Math.max(0, fromUsd * (1 - feeRate));
+  const estimatedAmmCostUsd = validPay ? fromUsd * 0.0035 : 0;
+  const kudexFeeUsd = validPay ? fromUsd * feeRate : 0;
+  const estimatedSavingsUsd = Math.max(0, estimatedAmmCostUsd - kudexFeeUsd);
   const computedReceive =
     targetAsset === payAsset
       ? Math.max(0, numericPay - feeAmount)
-      : netUsd / (ASSET_RATES_USD[targetAsset] ?? 1);
+      : netUsd / (activeRates[targetAsset] ?? 1);
   const formattedReceive = validPay
     ? computedReceive >= 1
       ? computedReceive.toFixed(2)
@@ -438,6 +489,25 @@ export default function TradeAndBridgePage() {
 
           {/* You Pay / You Receive */}
           <div className="space-y-4">
+            {mode === 'swap' && (
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentPay = payAsset;
+                    setPayAsset(receiveAsset);
+                    setReceiveAsset(currentPay);
+                  }}
+                  disabled={busy}
+                  aria-label="Invert swap assets"
+                  className="quiet-link px-3.5 py-1.5 text-sm"
+                >
+                  <FiRepeat aria-hidden="true" />
+                  <span>Flip Pair ({receiveAsset} → {payAsset})</span>
+                </button>
+              </div>
+            )}
+
             <div className="rounded-xl border border-border bg-secondary/70 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <label htmlFor="trade-you-pay" className="text-sm font-semibold">
@@ -475,6 +545,25 @@ export default function TradeAndBridgePage() {
                 />
               </div>
             </div>
+
+            {mode === 'swap' && (
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentPay = payAsset;
+                    setPayAsset(receiveAsset);
+                    setReceiveAsset(currentPay);
+                  }}
+                  disabled={busy}
+                  aria-label="Invert swap assets"
+                  className="quiet-link px-3.5 py-1.5 text-sm"
+                >
+                  <FiRepeat aria-hidden="true" />
+                  <span>Flip Pair ({receiveAsset} → {payAsset})</span>
+                </button>
+              </div>
+            )}
 
             <div className="rounded-xl border border-border bg-secondary/70 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -616,6 +705,20 @@ export default function TradeAndBridgePage() {
                     : 'Public Wallet Balance'}
                 </dd>
               </div>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <dt className="text-muted-foreground">Quote Feed Source</dt>
+                <dd className="font-semibold text-foreground">
+                  {marketRates.data?.source === 'live-market'
+                    ? 'Live Market Spot'
+                    : 'Reference Quote'}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <dt className="text-muted-foreground">Savings vs Public AMM (~0.35%)</dt>
+                <dd className="font-bold text-primary tabular-nums">
+                  +${estimatedSavingsUsd.toFixed(2)} USD
+                </dd>
+              </div>
               <div className="flex items-center justify-between pt-1">
                 <dt className="text-base font-bold">Guaranteed Net Output</dt>
                 <dd className="text-xl font-bold text-primary tabular-nums">
@@ -733,5 +836,19 @@ export default function TradeAndBridgePage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function TradeAndBridgePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-sm text-muted-foreground">
+          Loading Trade &amp; Bridge workspace…
+        </div>
+      }
+    >
+      <TradeAndBridgeContent />
+    </Suspense>
   );
 }

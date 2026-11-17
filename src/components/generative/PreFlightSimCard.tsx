@@ -3,15 +3,20 @@ import { FiArrowRight, FiShield, FiTrendingUp } from 'react-icons/fi';
 
 export interface PreFlightSimCardProps {
   amountLabel?: string;
+  numericAmount?: string;
+  vaultId?: 'treasury' | 'invoices';
   vaultName?: string;
   protectionSummary?: string;
 }
 
 export function PreFlightSimCard({
   amountLabel = '$2,500.00 USDC',
+  numericAmount = '2500',
+  vaultId = 'invoices',
   vaultName = 'Verified Business Invoice Pool',
   protectionSummary = 'Protected — Safety Reserve Active',
 }: PreFlightSimCardProps) {
+  const earnHref = `/app/earn?vault=${vaultId}&amount=${encodeURIComponent(numericAmount)}`;
   return (
     <div className="rounded-2xl border border-border bg-secondary p-5 space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -42,7 +47,7 @@ export function PreFlightSimCard({
       </p>
 
       <div className="flex flex-wrap justify-end">
-        <Link className="action-link text-sm" href="/app/earn">
+        <Link className="action-link text-sm" href={earnHref}>
           <span>Review Deposit in Earn</span>
           <FiArrowRight aria-hidden="true" />
         </Link>

@@ -41,8 +41,12 @@ const { vault, usdc: asset } = CONTRACT_ADDRESSES;
 
 export function PublicVault({
   selectedVaultTitle = 'Short-Term Treasury Vault',
+  initialAmount,
+  initialOperation,
 }: {
   selectedVaultTitle?: string;
+  initialAmount?: string;
+  initialOperation?: 'deposit' | 'redeem';
 }) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: portaldotTestnet.id });
@@ -50,8 +54,20 @@ export function PublicVault({
   const { writeContractAsync } = useWriteContract();
   const queryClient = useQueryClient();
   const privateNotes = usePrivateNotesStore();
-  const [amount, setAmount] = useState('');
-  const [operation, setOperation] = useState<'deposit' | 'redeem'>('deposit');
+  const [amount, setAmount] = useState(
+    initialAmount && Number(initialAmount) > 0 ? initialAmount : '',
+  );
+  const [operation, setOperation] = useState<'deposit' | 'redeem'>(
+    initialOperation ?? 'deposit',
+  );
+
+  useEffect(() => {
+    if (initialAmount && Number(initialAmount) > 0) setAmount(initialAmount);
+  }, [initialAmount]);
+
+  useEffect(() => {
+    if (initialOperation) setOperation(initialOperation);
+  }, [initialOperation]);
   const [stealthDeposit, setStealthDeposit] = useState(false);
   const [review, setReview] = useState<Review>();
   const [pending, setPending] = useState<Pending>();

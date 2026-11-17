@@ -17,6 +17,8 @@ export function RFQQuoteCard({ quote }: RFQQuoteProps) {
   const receiveLabel = quote
     ? `${quote.estimatedReceive} ${quote.tokenOut}`
     : '499.50 USDC (Stealth)';
+  const rawAmount = (quote?.amountIn ?? '500').replaceAll(',', '');
+  const tradeHref = `/app/trade?mode=swap&pay=${encodeURIComponent(rawAmount)}&from=${encodeURIComponent(quote?.tokenIn ?? 'USDC')}&to=${encodeURIComponent(quote?.tokenOut ?? 'USDT')}&private=${quote?.hideInPrivateBalance ? '1' : '0'}`;
 
   return (
     <div className="rounded-2xl border border-border bg-secondary p-5 space-y-4">
@@ -51,7 +53,7 @@ export function RFQQuoteCard({ quote }: RFQQuoteProps) {
           <FiShield aria-hidden="true" />
           <span>Can deliver directly to Private Balance</span>
         </span>
-        <Link className="action-link text-sm" href="/app/trade">
+        <Link className="action-link text-sm" href={tradeHref}>
           <span>Open Trade &amp; Bridge</span>
           <FiArrowRight aria-hidden="true" />
         </Link>

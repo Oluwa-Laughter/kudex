@@ -30,6 +30,7 @@ import {
   FiFileText,
   FiLock,
   FiRefreshCw,
+  FiSlash,
   FiUsers,
 } from 'react-icons/fi';
 import { portaldotTestnet } from '@/lib/chains/portaldot';
@@ -57,6 +58,18 @@ const STATUS_LABELS: Record<number, string> = {
   2: 'Settled On-Chain',
   3: 'Cancelled',
 };
+
+function formatDueAgingLabel(dueTimestamp: bigint, statusNum: number): string {
+  if (statusNum === 2) return 'Paid';
+  if (statusNum === 3) return 'Cancelled';
+  const nowSec = Math.floor(Date.now() / 1000);
+  const dueSec = Number(dueTimestamp);
+  if (!Number.isFinite(dueSec) || dueSec <= 0) return 'Open Due Date';
+  const diffDays = Math.ceil((dueSec - nowSec) / 86_400);
+  if (diffDays < 0) return `Overdue by ${Math.abs(diffDays)}d`;
+  if (diffDays === 0) return 'Due Today';
+  return `Due in ${diffDays}d`;
+}
 
 export interface RecordedInvoiceActivity {
   id: string;
@@ -462,6 +475,38 @@ export function OnChainInvoicePanel({
       await client.waitForTransactionReceipt({ hash: txHash });
       await refreshInvoices();
       setStatus(`Team sign-off recorded on-chain (${truncateAddress(txHash)}).`);
+    } catch (cause) {
+      setError(getReadableErrorMessage(cause));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleCancelOnChainInvoice() {
+    if (!validActiveId) return;
+    setBusy(true);
+    setError('');
+    setStatus('');
+    try {
+      if (!address || !connected || !client || !isInvoiceEscrowConfigured) {
+        throw new Error('Connect the issuer wallet on the active network to cancel this invoice.');
+      }
+      setStatus('Cancelling unpaid on-chain invoice…');
+      const sim = await client.simulateContract({
+        address: CONTRACT_ADDRESSES.invoiceEscrow,
+        abi: kudexInvoiceEscrowAbi,
+        functionName: 'cancelInvoice',
+        args: [validActiveId],
+        account: address,
+      });
+      const txHash = await writeContractAsync({
+        ...sim.request,
+        account: address,
+        chainId: portaldotTestnet.id,
+      });
+      await client.waitForTransactionReceipt({ hash: txHash });
+      await refreshInvoices();
+      setStatus(`Invoice cancelled on-chain (${truncateAddress(txHash)}).`);
     } catch (cause) {
       setError(getReadableErrorMessage(cause));
     } finally {
@@ -959,6 +1004,15 @@ export function OnChainInvoicePanel({
                         } Signed`}
                   </dd>
                 </div>
+                <div>
+                  <dt className="text-muted-foreground">Due Date &amp; Aging</dt>
+                  <dd className="font-bold text-foreground tabular-nums">
+                    {formatDueAgingLabel(
+                      liveDetail.invoice.dueTimestamp,
+                      Number(liveDetail.invoice.status),
+                    )}
+                  </dd>
+                </div>
               </dl>
 
               <div className="flex flex-wrap gap-2.5 pt-1">
@@ -999,6 +1053,20 @@ export function OnChainInvoicePanel({
                     </button>
                   </>
                 )}
+
+                {(Number(liveDetail.invoice.status) === 0 ||
+                  Number(liveDetail.invoice.status) === 1) &&
+                  address?.toLowerCase() === liveDetail.invoice.issuer.toLowerCase() && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void handleCancelOnChainInvoice()}
+                      className="quiet-link text-sm text-destructive hover:text-destructive disabled:opacity-40"
+                    >
+                      <FiSlash aria-hidden="true" />
+                      <span>Cancel Invoice</span>
+                    </button>
+                  )}
               </div>
             </div>
           ) : (
@@ -1055,50 +1123,73 @@ export function OnChainInvoicePanel({
               <thead className="border-b border-border bg-secondary text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3">Invoice ID</th>
-                  <th className="px-4 py-3">Issuer</th>
+                  <th className="px-4 py-3">Role / Counterparty</th>
                   <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3">Approvals</th>
+                  <th className="px-4 py-3">Aging &amp; Approvals</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {accountInvoicesQuery.data.map((inv) => (
-                  <tr key={inv.invoiceId}>
-                    <td className="px-4 py-3 font-mono">
-                      {truncateAddress(inv.invoiceId)}
-                    </td>
-                    <td className="px-4 py-3 font-mono">
-                      {truncateAddress(inv.issuer)}
-                    </td>
-                    <td className="px-4 py-3 font-bold text-primary tabular-nums">
-                      {Number(formatUnits(inv.amount, 6)).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}{' '}
-                      USDC
-                    </td>
-                    <td className="px-4 py-3 tabular-nums">
-                      {inv.requiredApprovers.length === 0
-                        ? 'Auto'
-                        : `${inv.approvalCount.toString()}/${inv.requiredApprovers.length}`}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="emerald-badge">
-                        {STATUS_LABELS[Number(inv.status)] ?? 'Active'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => setActiveInvoiceId(inv.invoiceId)}
-                        className="quiet-link px-3 py-1.5 text-sm"
-                      >
-                        Inspect &amp; Pay
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {accountInvoicesQuery.data.map((inv) => {
+                  const isIssuer =
+                    Boolean(address) &&
+                    inv.issuer.toLowerCase() === address!.toLowerCase();
+                  const statusNum = Number(inv.status);
+                  const agingLabel = formatDueAgingLabel(inv.dueTimestamp, statusNum);
+                  return (
+                    <tr key={inv.invoiceId}>
+                      <td className="px-4 py-3 font-mono">
+                        {truncateAddress(inv.invoiceId)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="block font-semibold text-foreground">
+                          {isIssuer ? 'Receivable (You Issued)' : 'Payable / Approver'}
+                        </span>
+                        <span className="font-mono text-muted-foreground">
+                          {truncateAddress(inv.issuer)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-bold text-primary tabular-nums">
+                        {Number(formatUnits(inv.amount, 6)).toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}{' '}
+                        USDC
+                      </td>
+                      <td className="px-4 py-3 tabular-nums">
+                        <span
+                          className={`block font-semibold ${
+                            agingLabel.startsWith('Overdue')
+                              ? 'text-destructive'
+                              : 'text-foreground'
+                          }`}
+                        >
+                          {agingLabel}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {inv.requiredApprovers.length === 0
+                            ? 'Instant pay'
+                            : `${inv.approvalCount.toString()}/${inv.requiredApprovers.length} signed`}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="emerald-badge">
+                          {STATUS_LABELS[statusNum] ?? 'Active'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          type="button"
+                          onClick={() => setActiveInvoiceId(inv.invoiceId)}
+                          className="quiet-link px-3 py-1.5 text-sm"
+                        >
+                          Inspect &amp; Pay
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

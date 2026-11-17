@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useReadContract } from 'wagmi';
 import { erc20Abi, formatUnits, zeroAddress } from 'viem';
@@ -48,9 +49,21 @@ function formatTokenFixed(
   return `${whole.toLocaleString('en-US')}.${frac}`;
 }
 
-export default function EarnPage() {
-  const [selectedVaultId, setSelectedVaultId] =
-    useState<(typeof BUSINESS_VAULTS)[number]['id']>('treasury');
+function EarnContent() {
+  const searchParams = useSearchParams();
+  const urlVault = searchParams.get('vault');
+  const urlAmount = searchParams.get('amount') ?? undefined;
+  const urlMode = searchParams.get('mode');
+
+  const [selectedVaultId, setSelectedVaultId] = useState<
+    (typeof BUSINESS_VAULTS)[number]['id']
+  >(urlVault === 'invoices' ? 'invoices' : 'treasury');
+
+  useEffect(() => {
+    if (urlVault === 'invoices' || urlVault === 'treasury') {
+      setSelectedVaultId(urlVault);
+    }
+  }, [urlVault]);
 
   const vaultSnap = useQuery<{
     totalAssets: string;
@@ -322,7 +335,11 @@ export default function EarnPage() {
       </section>
 
       {/* Simple Deposit / Withdraw Box */}
-      <PublicVault selectedVaultTitle={selectedVault.name} />
+      <PublicVault
+        selectedVaultTitle={selectedVault.name}
+        initialAmount={urlAmount}
+        initialOperation={urlMode === 'redeem' ? 'redeem' : undefined}
+      />
 
       {/* POT Fee-Free Membership Card */}
       <PotStakingCard rewardDecimals={tokenDecimals} rewardSymbol={tokenSymbol} />
@@ -330,5 +347,19 @@ export default function EarnPage() {
       {/* 5-Step Built-In Payment Protection Tracker */}
       <RiskPanel />
     </div>
+  );
+}
+
+export default function EarnPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-sm text-muted-foreground">
+          Loading Fixed-Yield Business Vaults…
+        </div>
+      }
+    >
+      <EarnContent />
+    </Suspense>
   );
 }

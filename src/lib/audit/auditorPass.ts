@@ -1,3 +1,4 @@
+import { create } from 'zustand';
 import { z } from 'zod';
 import {
   isAddress,
@@ -11,10 +12,23 @@ import { kudexVaultAbi } from '../contracts/abis.ts';
 
 export const AUDITOR_PASS_PREFIX = 'kudex_pass_v1.';
 
+export const EXPENSE_CATEGORIES = [
+  'Payroll',
+  'Suppliers',
+  'Software & Cloud',
+  'Contractors',
+  'Operations',
+  'Treasury Yield',
+  'Legal & Audit',
+] as const;
+
+export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
+
 const auditorEntrySchema = z.object({
   date: z.string(),
   payee: z.string().min(1).max(160),
   reference: z.string().max(240),
+  category: z.string().max(64).optional(),
   amount: z.string().regex(/^\d+(\.\d+)?$/),
   currency: z.string().min(1).max(16),
   commitment: z.string().regex(/^0x[0-9a-fA-F]{64}$/),
@@ -284,6 +298,7 @@ export function formatQuickBooksXeroCsv(statement: VerifiedAuditStatement): stri
     '*Date',
     '*Amount',
     'Currency',
+    'Category',
     'Payee',
     'Description',
     'Reference',
@@ -300,6 +315,7 @@ export function formatQuickBooksXeroCsv(statement: VerifiedAuditStatement): stri
         escapeCsvCell(row.date.slice(0, 10)),
         escapeCsvCell(`-${Number(row.amount).toFixed(2)}`),
         escapeCsvCell(row.currency),
+        escapeCsvCell(row.category || 'Operations'),
         escapeCsvCell(row.payee),
         escapeCsvCell(`${statement.payload.scope} — ${row.reference}`),
         escapeCsvCell(row.reference),
@@ -312,3 +328,63 @@ export function formatQuickBooksXeroCsv(statement: VerifiedAuditStatement): stri
   }
   return lines.join('\n');
 }
+
+export interface PersistedAuditorPassItem {
+  id: string;
+  auditorName: string;
+  contactOrAddress: string;
+  scope: string;
+  passCode: string;
+  entryCount: number;
+  createdAt: string;
+  active: boolean;
+}
+
+const AUDITOR_PASSES_STORAGE_KEY = 'kudex-auditor-passes-v1';
+
+function loadAuditorPasses(): PersistedAuditorPassItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(AUDITOR_PASSES_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as PersistedAuditorPassItem[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveAuditorPasses(items: PersistedAuditorPassItem[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(AUDITOR_PASSES_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+interface AuditorPassStoreState {
+  passes: PersistedAuditorPassItem[];
+  hydrate: () => void;
+  addPass: (pass: PersistedAuditorPassItem) => void;
+  revokePass: (id: string) => void;
+}
+
+export const useAuditorPassStore = create<AuditorPassStoreState>((set) => ({
+  passes: [],
+  hydrate: () => set({ passes: loadAuditorPasses() }),
+  addPass: (pass) =>
+    set((state) => {
+      const next = [pass, ...state.passes].slice(0, 50);
+      saveAuditorPasses(next);
+      return { passes: next };
+    }),
+  revokePass: (id) =>
+    set((state) => {
+      const next = state.passes.map((item) =>
+        item.id === id ? { ...item, active: false } : item,
+      );
+      saveAuditorPasses(next);
+      return { passes: next };
+    }),
+}));

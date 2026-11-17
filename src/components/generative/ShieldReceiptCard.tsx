@@ -3,13 +3,25 @@ import { FiArrowRight, FiLock, FiCheckCircle } from 'react-icons/fi';
 
 export interface ShieldReceiptCardProps {
   amountLabel?: string;
+  numericAmount?: string;
+  recipientAddress?: string;
+  memo?: string;
   destinationLabel?: string;
 }
 
 export function ShieldReceiptCard({
   amountLabel = '500.00 USDC',
+  numericAmount = '500',
+  recipientAddress,
+  memo,
   destinationLabel = 'Private Balances (Stealth Mode)',
 }: ShieldReceiptCardProps) {
+  const payParams = new URLSearchParams();
+  if (recipientAddress) payParams.set('payTo', recipientAddress);
+  if (numericAmount) payParams.set('amount', numericAmount);
+  if (memo) payParams.set('memo', memo);
+  const payHref = `/app/pay${payParams.toString() ? `?${payParams.toString()}` : ''}`;
+
   return (
     <div className="rounded-2xl border border-primary/30 bg-secondary p-5 space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -34,11 +46,14 @@ export function ShieldReceiptCard({
       </p>
 
       <div className="flex flex-wrap gap-3">
-        <Link className="action-link text-sm" href="/app/pay">
+        <Link className="action-link text-sm" href={payHref}>
           <span>Send Private Payment</span>
           <FiArrowRight aria-hidden="true" />
         </Link>
-        <Link className="quiet-link text-sm" href="/app/earn">
+        <Link
+          className="quiet-link text-sm"
+          href={`/app/earn?amount=${encodeURIComponent(numericAmount)}`}
+        >
           <span>Deposit &amp; Hide in Vault</span>
         </Link>
       </div>

@@ -42,16 +42,19 @@ export type AgentProgress =
 
 function buildGuidedPlainEnglishAnswer(message: string): string {
   const lower = message.toLowerCase();
+  if (lower.includes('payroll') || lower.includes('csv') || lower.includes('batch')) {
+    return 'Batch Payroll & Vendor Runs let you settle up to 50 private employee or supplier payouts in a single transaction with automatic duplicate-address protection. Review the pre-generated CSV draft below and click "Open in Batch Payroll" to validate and confirm.';
+  }
   if (lower.includes('vault') || lower.includes('2,500') || lower.includes('yield')) {
-    return 'Fixed-Yield Business Vaults earn steady, predictable returns backed by real-world business invoices and short-term treasuries. Open the Earn tab (/app/earn) to compare the Short-Term Treasury Vault and Verified Business Invoice Pool, verify Built-In Payment Protection status, and choose "Deposit & Hide Balance" in your wallet.';
+    return 'Fixed-Yield Business Vaults earn steady, predictable returns backed by real-world business invoices and short-term treasuries. Click "Review Deposit in Earn" below to open the pre-filled vault deposit form and verify Built-In Payment Protection status.';
   }
   if (lower.includes('swap') || lower.includes('private balance') || lower.includes('500')) {
-    return 'Best-Price Auto-Routing compares routes in the background for zero price slippage and the lowest fee. Open Trade & Bridge (/app/trade), enter 500 USDC, check "Receive directly into my Private Balance," and confirm once in your wallet.';
+    return 'Best-Price Auto-Routing compares routes in the background for zero price slippage and the lowest fee. Click "Open Trade & Bridge" below with your pre-filled amount and Stealth Mode toggled on, then confirm once in your wallet.';
   }
   if (lower.includes('protect') || lower.includes('100%') || lower.includes('safe')) {
     return 'Built-In Payment Protection monitors vault health continuously. If a borrower fails to pay an invoice on time, Kudex automatically freezes the pool and recovers your funds from the safety reserve. Review the live vault observation below or open Earn (/app/earn) for the full health meter.';
   }
-  return 'Kudex Agent helps you manage Private Balances (Stealth Mode), Fixed-Yield Business Vaults with Built-In Payment Protection, Best-Price Auto-Routing swaps, and Auto-Pilot Rules (Spending Limits). Ask about a deposit, swap, invoice payment, or check your live vault status below.';
+  return 'Kudex Agent helps you manage Private Balances (Stealth Mode), Fixed-Yield Business Vaults with Built-In Payment Protection, Best-Price Auto-Routing swaps, Batch Payroll CSV runs, and Auto-Pilot Rules (Spending Limits). Ask about a deposit, swap, payroll run, invoice payment, or check your live vault status below.';
 }
 
 export async function answerAgent(
