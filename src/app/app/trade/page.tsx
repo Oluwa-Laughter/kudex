@@ -489,25 +489,6 @@ function TradeAndBridgeContent() {
 
           {/* You Pay / You Receive */}
           <div className="space-y-4">
-            {mode === 'swap' && (
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const currentPay = payAsset;
-                    setPayAsset(receiveAsset);
-                    setReceiveAsset(currentPay);
-                  }}
-                  disabled={busy}
-                  aria-label="Invert swap assets"
-                  className="quiet-link px-3.5 py-1.5 text-sm"
-                >
-                  <FiRepeat aria-hidden="true" />
-                  <span>Flip Pair ({receiveAsset} → {payAsset})</span>
-                </button>
-              </div>
-            )}
-
             <div className="rounded-xl border border-border bg-secondary/70 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <label htmlFor="trade-you-pay" className="text-sm font-semibold">

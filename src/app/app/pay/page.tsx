@@ -1365,7 +1365,6 @@ function SendAndInvoiceContent() {
                       Accounting Expense Category
                     </span>
                     <CustomSelect
-                      label="Accounting expense category"
                       value={expenseCategory}
                       options={EXPENSE_CATEGORIES.map((cat) => ({
                         value: cat,
@@ -1542,7 +1541,6 @@ function SendAndInvoiceContent() {
                       Accounting Category
                     </span>
                     <CustomSelect
-                      label="Payment request category"
                       value={requestCategory}
                       options={EXPENSE_CATEGORIES.map((cat) => ({
                         value: cat,
